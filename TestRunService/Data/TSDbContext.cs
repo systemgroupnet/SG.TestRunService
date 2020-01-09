@@ -8,7 +8,7 @@ namespace SG.TestRunService.Data
 {
     public class TSDbContext : DbContext
     {
-        public TSDbContext(DbContextOptions options)
+        public TSDbContext(DbContextOptions<TSDbContext> options)
             : base(options)
         {
         }
@@ -20,13 +20,20 @@ namespace SG.TestRunService.Data
             modelBuilder.Entity<TestImpactCodeSignature>()
                 .HasIndex(s => new { s.TestId, s.Signature })
                 .IsUnique();
+            modelBuilder.Entity<Test>()
+                .HasIndex(t => new { t.Azure_TestBuildId, t.Azure_TestCaseId })
+                .IsUnique();
+            modelBuilder.Entity<TestLastState>()
+                .HasIndex(t => t.TestId)
+                .IsUnique();
         }
 
-        public DbSet<TestRunSession> TestRunSessions { get; set; }
-        public DbSet<TestRun> TestRuns { get; set; }
-        public DbSet<Test> Tests { get; set; }
-        public DbSet<Attachement> Attachements { get; set; }
-        public DbSet<TestImpactCodeSignature> TestCaseImpactCodeSignatures { get; set; }
-
+        public DbSet<Test> Test { get; set; }
+        public DbSet<TestRunSession> TestRunSession { get; set; }
+        public DbSet<TestRun> TestRun { get; set; }
+        public DbSet<Attachement> Attachement { get; set; }
+        public DbSet<TestImpactCodeSignature> TestCaseImpactCodeSignature { get; set; }
+        public DbSet<ExtraData> ExtraData { get; set; }
+        public DbSet<TestLastState> TestLastState { get; set; }
     }
 }
