@@ -9,9 +9,10 @@ namespace SG.TestRunService.Data
     {
         public int Id { get; set; }
         public int TestRunId { get; set; }
-        public TestRunSession Run { get; set; }
+        public TestRunSession Session { get; set; }
         public int TestId { get; set; }
         public IList<Attachement> Attachements { get; set; }
+
         [Timestamp]
         public byte[] Timestamp { get; set; }
     }

@@ -9,7 +9,6 @@ namespace SG.TestRunService.Data
     public class ExtraData
     {
         public int Id { get; set; }
-
         public int? TestId { get; set; }
         public int? TestRunId { get; set; }
         public int? TestRunSessionId { get; set; }
