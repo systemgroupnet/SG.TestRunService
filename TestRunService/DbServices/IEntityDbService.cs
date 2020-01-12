@@ -13,6 +13,6 @@ namespace SG.TestRunService.DbServices
         Task InsertAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);
         Task DeleteAsync(TEntity entity);
-        Task DeleteAsync(int id);
+        Task<TEntity> DeleteAsync(int id);
     }
 }

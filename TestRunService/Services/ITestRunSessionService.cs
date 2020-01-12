@@ -1,6 +1,6 @@
 ﻿using SG.TestRunService.Data;
 using SG.TestRunService.DbServices;
-using SG.TestRunService.Models;
+using SG.TestRunService.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +10,7 @@ namespace SG.TestRunService.Services
 {
     public interface ITestRunSessionService
     {
-        Task InsertSessionAsync(TestRunSessionRequest session);
+        Task InsertSessionAsync(TestRunSessionDto session);
+        Task<TestRunSession> DeleteSessionAsync(int sessionId);
     }
 }

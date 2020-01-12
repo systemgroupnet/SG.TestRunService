@@ -5,10 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SG.TestRunService.Models
+namespace SG.TestRunService.Dto
 {
-    [AutoMap(typeof(TestRun))]
-    public class TestRunRequest
+    public class TestRunDto
     {
         public int Id { get; set; }
         public int TestRunId { get; set; }

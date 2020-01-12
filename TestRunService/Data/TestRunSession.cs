@@ -10,7 +10,7 @@ namespace SG.TestRunService.Data
         public int Id { get; set; }
         public string TeamProject { get; set; }
         public DateTime StartTime { get; set; }
-        public DateTime FinishTime { get; set; }
+        public DateTime? FinishTime { get; set; }
         public int Azure_ProductBuildId { get; set; }
         public int Azure_TestBuildId { get; set; }
         public string Azure_ProductBuildNumber { get; set; }

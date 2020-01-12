@@ -6,16 +6,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SG.TestRunService.Models
+namespace SG.TestRunService.Dto
 {
-    [AutoMap(typeof(TestRunSession))]
-    public class TestRunSessionRequest
+    public class TestRunSessionDto
     {
         [Required]
         public string TeamProject { get; set; }
         [Required]
         public DateTime StartTime { get; set; }
-        public DateTime FinishTime { get; set; }
+        public DateTime? FinishTime { get; set; }
         [Required]
         public int Azure_ProductBuildId { get; set; }
         [Required]
@@ -27,6 +26,6 @@ namespace SG.TestRunService.Models
         [Required]
         public string SourceVersion { get; set; }
         public TestSessionOutcome Outcome { get; set; }
-        public List<TestRunRequest> TestRuns { get; set; }
+        public List<TestRunDto> TestRuns { get; set; }
     }
 }

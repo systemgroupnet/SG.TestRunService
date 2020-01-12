@@ -47,10 +47,11 @@ namespace SG.TestRunService.DbServices.Implementations
             return Db.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<TEntity> DeleteAsync(int id)
         {
             var e = await Db.FindAsync<TEntity>(id);
             await DeleteAsync(e);
+            return e;
         }
     }
 }

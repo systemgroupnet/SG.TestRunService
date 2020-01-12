@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SG.TestRunService.Models;
+using SG.TestRunService.Dto;
 using SG.TestRunService.Services;
 
 namespace SG.TestRunService.Controllers
@@ -21,9 +21,15 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> InsertSession(TestRunSessionRequest session)
+        public async Task<ActionResult> InsertSession(TestRunSessionDto session)
         {
             await _service.InsertSessionAsync(session);
+            return Ok();
+        }
+
+        public async Task<ActionResult> DeleteSession(int sessionId)
+        {
+            await _service.DeleteSessionAsync(sessionId);
             return Ok();
         }
     }

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using SG.TestRunService.Data;
 using SG.TestRunService.DbServices;
-using SG.TestRunService.Models;
+using SG.TestRunService.Dto;
 using SG.TestRunService.Services;
 using System;
 using System.Collections.Generic;
@@ -23,9 +23,14 @@ namespace SG.TestRunService.ServiceImplementations
             _mapper = mapper;
         }
 
-        public async Task InsertSessionAsync(TestRunSessionRequest session)
+        public async Task InsertSessionAsync(TestRunSessionDto session)
         {
             await _sessionDbService.InsertAsync(_mapper.Map<TestRunSession>(session));
+        }
+
+        public async Task<TestRunSession> DeleteSessionAsync(int sessionId)
+        {
+            return await _sessionDbService.DeleteAsync(sessionId);
         }
     }
 }
