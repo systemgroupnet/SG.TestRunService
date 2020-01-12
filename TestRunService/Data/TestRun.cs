@@ -8,7 +8,7 @@ namespace SG.TestRunService.Data
     public class TestRun
     {
         public int Id { get; set; }
-        public int TestRunId { get; set; }
+        public int TestRunSessionId { get; set; }
         public TestRunSession Session { get; set; }
         public int TestId { get; set; }
         public IList<Attachement> Attachements { get; set; }

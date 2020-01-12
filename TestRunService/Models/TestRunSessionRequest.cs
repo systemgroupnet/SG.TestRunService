@@ -6,9 +6,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SG.TestRunService.Dto
+namespace SG.TestRunService.Models
 {
-    public class TestRunSessionDto
+    public class TestRunSessionRequest
     {
         [Required]
         public string TeamProject { get; set; }

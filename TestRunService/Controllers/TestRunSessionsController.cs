@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SG.TestRunService.Dto;
+using SG.TestRunService.Models;
 using SG.TestRunService.Services;
 
 namespace SG.TestRunService.Controllers
@@ -21,16 +21,41 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> InsertSession(TestRunSessionDto session)
+        public async Task<ActionResult> Insert(TestRunSessionRequest session)
         {
             await _service.InsertSessionAsync(session);
-            return Ok();
+            return CreatedAtAction(nameof(GetById), session.);
         }
 
-        public async Task<ActionResult> DeleteSession(int sessionId)
+        [HttpDelete]
+        public async Task<ActionResult> Delete(int sessionId)
         {
-            await _service.DeleteSessionAsync(sessionId);
-            return Ok();
+            return Ok(await _service.DeleteSessionAsync(sessionId));
+        }
+
+        [HttpGet("")]
+        public async Task<ActionResult> GetAll()
+        {
+            return new JsonResult(await _service.GetAllSessionsAsync());
+        }
+
+        [HttpGet("{sessionId:int}")]
+        public async Task<ActionResult> GetById(int sessionId)
+        {
+            return new JsonResult(await _service.GetSessionAsync(sessionId));
+        }
+
+        [HttpGet("{sessionId:int}/runs")]
+        public async Task<ActionResult> GetAllTestRuns(int sessionId)
+        {
+            return new JsonResult(await _service.GetSessionTestRunsAsync(sessionId));
+        }
+
+        [HttpPost("{sessionId:int}/runs")]
+        public async Task<ActionResult> InsertTestRun(int sessionId, TestRunDto testRun)
+        {
+
+            return Created();
         }
     }
 }

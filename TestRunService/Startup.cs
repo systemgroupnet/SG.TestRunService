@@ -29,7 +29,7 @@ namespace SG.TestRunService
             services.AddDbContext<TSDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("db")));
 
-            services.AddAutoMapper()
+            services.AddAutoMapper(this.GetType());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
