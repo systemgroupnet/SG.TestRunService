@@ -10,10 +10,10 @@ namespace SG.TestRunService.Services
 {
     public interface ITestRunSessionService
     {
-        Task InsertSessionAsync(TestRunSessionRequest session);
-        Task<TestRunSessionRequest> DeleteSessionAsync(int sessionId);
-        Task<IReadOnlyList<TestRunSessionRequest>> GetAllSessionsAsync();
-        Task<TestRunSessionRequest> GetSessionAsync(int sessionId);
-        Task<IReadOnlyList<TestRunDto>> GetSessionTestRunsAsync(int sessionId);
+        Task<TestRunSessionResponse> InsertSessionAsync(TestRunSessionRequest session);
+        Task<TestRunSessionResponse> DeleteSessionAsync(int sessionId);
+        Task<IReadOnlyList<TestRunSessionResponse>> GetAllSessionsAsync();
+        Task<TestRunSessionResponse> GetSessionAsync(int sessionId);
+        Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId);
     }
 }

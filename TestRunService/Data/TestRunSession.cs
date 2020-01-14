@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SG.TestRunService.DbServices;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SG.TestRunService.Data
 {
-    public class TestRunSession
+    public class TestRunSession : IEntity
     {
         public int Id { get; set; }
         public string TeamProject { get; set; }

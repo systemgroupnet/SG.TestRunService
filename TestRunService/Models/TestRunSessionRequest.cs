@@ -1,10 +1,7 @@
-﻿using AutoMapper;
-using SG.TestRunService.Data;
+﻿using SG.TestRunService.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SG.TestRunService.Models
 {
@@ -26,6 +23,29 @@ namespace SG.TestRunService.Models
         [Required]
         public string SourceVersion { get; set; }
         public TestSessionOutcome Outcome { get; set; }
-        public List<TestRunDto> TestRuns { get; set; }
+        public List<TestRunRequest> TestRuns { get; set; }
+
+        public TestRunSession ToDataModel()
+        {
+            return new TestRunSession()
+            {
+                TeamProject = TeamProject,
+                StartTime = StartTime,
+                FinishTime = FinishTime,
+                Azure_ProductBuildId = Azure_ProductBuildId,
+                Azure_TestBuildId = Azure_TestBuildId,
+                Azure_ProductBuildNumber = Azure_ProductBuildNumber,
+                Azure_TestBuildNumber = Azure_TestBuildNumber,
+                SourceVersion = SourceVersion,
+                Outcome = Outcome,
+                TestRuns = TestRuns.ConvertAll(thisTestRun => new TestRun()
+                {
+                    TestId = thisTestRun.TestId,
+                    Outcome = thisTestRun.Outcome,
+                    StartTime = thisTestRun.StartTime,
+                    FinishTime = thisTestRun.FinishTime
+                })
+            };
+        }
     }
 }

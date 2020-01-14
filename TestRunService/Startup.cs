@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,8 +23,6 @@ namespace SG.TestRunService
             services.AddControllers();
             services.AddDbContext<TSDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("db")));
-
-            services.AddAutoMapper(this.GetType());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

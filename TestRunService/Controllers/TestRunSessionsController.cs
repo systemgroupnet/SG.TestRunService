@@ -21,41 +21,40 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Insert(TestRunSessionRequest session)
+        public async Task<ActionResult<TestRunSessionResponse>> Insert(TestRunSessionRequest session)
         {
             await _service.InsertSessionAsync(session);
-            return CreatedAtAction(nameof(GetById), session.);
+            return CreatedAtAction(nameof(GetById), session.ToDataModel());
         }
 
         [HttpDelete]
-        public async Task<ActionResult> Delete(int sessionId)
+        public async Task<ActionResult<TestRunSessionResponse>> Delete(int sessionId)
         {
             return Ok(await _service.DeleteSessionAsync(sessionId));
         }
 
         [HttpGet("")]
-        public async Task<ActionResult> GetAll()
+        public async Task<IReadOnlyList<TestRunSessionResponse>> GetAll()
         {
-            return new JsonResult(await _service.GetAllSessionsAsync());
+            return await _service.GetAllSessionsAsync();
         }
 
         [HttpGet("{sessionId:int}")]
-        public async Task<ActionResult> GetById(int sessionId)
+        public async Task<TestRunSessionResponse> GetById(int sessionId)
         {
-            return new JsonResult(await _service.GetSessionAsync(sessionId));
+            return await _service.GetSessionAsync(sessionId);
         }
 
         [HttpGet("{sessionId:int}/runs")]
-        public async Task<ActionResult> GetAllTestRuns(int sessionId)
+        public async Task<IReadOnlyList<TestRunResponse>> GetAllTestRuns(int sessionId)
         {
-            return new JsonResult(await _service.GetSessionTestRunsAsync(sessionId));
+            return await _service.GetSessionTestRunsAsync(sessionId);
         }
 
         [HttpPost("{sessionId:int}/runs")]
-        public async Task<ActionResult> InsertTestRun(int sessionId, TestRunDto testRun)
+        public async Task<ActionResult> InsertTestRun(int sessionId, TestRunRequest testRun)
         {
-
-            return Created();
+            throw new NotImplementedException();
         }
     }
 }

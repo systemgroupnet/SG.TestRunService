@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SG.TestRunService.DbServices;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SG.TestRunService.Data
 {
-    public class TestImpactCodeSignature
+    public class TestImpactCodeSignature : IEntity
     {
         public int Id { get; set; }
         public string Signature { get; set; }

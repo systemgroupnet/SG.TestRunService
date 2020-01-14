@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SG.TestRunService.DbServices;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace SG.TestRunService.Data
 {
-    public class ExtraData
+    public class ExtraData : IEntity
     {
         public int Id { get; set; }
         public int? TestId { get; set; }

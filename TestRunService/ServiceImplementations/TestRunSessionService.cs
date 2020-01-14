@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using SG.TestRunService.Data;
+﻿using SG.TestRunService.Data;
 using SG.TestRunService.DbServices;
 using SG.TestRunService.Models;
 using SG.TestRunService.Services;
@@ -14,41 +13,46 @@ namespace SG.TestRunService.ServiceImplementations
     {
         private readonly IEntityDbService<TestRunSession> _sessionDbService;
         private readonly IEntityDbService<TestRun> _testRunDbService;
-        private readonly IMapper _mapper;
 
-        public TestRunSessionService(IEntityDbService<TestRunSession> sessionDbService, IEntityDbService<TestRun> testRunDbService, IMapper mapper)
+        public TestRunSessionService(IEntityDbService<TestRunSession> sessionDbService, IEntityDbService<TestRun> testRunDbService)
         {
             _sessionDbService = sessionDbService;
             _testRunDbService = testRunDbService;
-            _mapper = mapper;
         }
 
-        public async Task<TestRunSession> InsertSessionAsync(TestRunSessionRequest sessionDto)
+        public async Task<TestRunSessionResponse> InsertSessionAsync(TestRunSessionRequest sessionDto)
         {
-            var session = _mapper.Map<TestRunSession>(sessionDto);
+            var session = sessionDto.ToDataModel();
             await _sessionDbService.InsertAsync(session);
-            return session;
+            return TestRunSessionResponse.FromDataModel(session);
         }
 
-        public async Task<TestRunSessionRequest> DeleteSessionAsync(int sessionId)
+        public async Task<TestRunSessionResponse> DeleteSessionAsync(int sessionId)
         {
-            return _mapper.Map<TestRunSessionRequest>(
+            return TestRunSessionResponse.FromDataModel(
                 await _sessionDbService.DeleteAsync(sessionId));
         }
 
-        public Task<IReadOnlyList<TestRunSessionRequest>> GetAllSessionsAsync()
+        public Task<IReadOnlyList<TestRunSessionResponse>> GetAllSessionsAsync()
         {
-            return _sessionDbService.GetAllAsync<TestRunSessionRequest>(_mapper);
+            return _sessionDbService.GetAllAsync(TestRunSessionResponse.Project);
         }
 
-        public Task<TestRunSessionRequest> GetSessionAsync(int sessionId)
+        public Task<TestRunSessionResponse> GetSessionAsync(int sessionId)
         {
-            return _sessionDbService.GetFirstOrDefaultAsync<TestRunSessionRequest>(s => s.Id == sessionId, _mapper);
+            return _sessionDbService.GetFirstOrDefaultAsync(
+                s => s.Id == sessionId,
+                TestRunSessionResponse.Project);
         }
 
-        public Task<IReadOnlyList<TestRunDto>> GetSessionTestRunsAsync(int sessionId)
+        public Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId)
         {
-            return _testRunDbService.GetFilteredAsync<TestRunDto>(r => r.TestRunSessionId == sessionId, _mapper);
+            return _testRunDbService.GetFilteredAsync(r => r.TestRunSessionId == sessionId, TestRunResponse.Project);
+        }
+
+        public Task<TestRunResponse> GetTestRunAsync(int testRunId)
+        {
+            return _testRunDbService.GetById(testRunId, TestRunResponse.Project);
         }
     }
 }

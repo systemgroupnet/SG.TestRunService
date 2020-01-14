@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SG.TestRunService.DbServices;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.Data
 {
-    public class TestLastState
+    public class TestLastState : IEntity
     {
         public int Id { get; set; }
         public int TestId { get; set; }
