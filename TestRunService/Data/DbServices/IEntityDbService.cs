@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace SG.TestRunService.DbServices
+namespace SG.TestRunService.Data.DbServices
 {
     public interface IEntityDbService<TEntity>
     {

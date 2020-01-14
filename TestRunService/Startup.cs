@@ -5,6 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SG.TestRunService.Data;
+using SG.TestRunService.DbServices;
+using SG.TestRunService.Infrastructure;
+using SG.TestRunService.Infrastructure.Implementations;
+using SG.TestRunService.ServiceImplementations;
+using SG.TestRunService.Services;
 
 namespace SG.TestRunService
 {
@@ -21,8 +26,12 @@ namespace SG.TestRunService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
             services.AddDbContext<TSDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("db")));
+
+            services.AddTransient<IBaseDbService, BaseDbService>();
+            services.AddTransient<ITestRunSessionService, TestRunSessionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

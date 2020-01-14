@@ -1,4 +1,4 @@
-﻿using SG.TestRunService.DbServices;
+﻿using SG.TestRunService.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

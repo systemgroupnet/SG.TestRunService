@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SG.TestRunService.DbServices
+namespace SG.TestRunService.Infrastructure
 {
     public interface IEntity
     {

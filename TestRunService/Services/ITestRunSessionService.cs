@@ -1,6 +1,4 @@
-﻿using SG.TestRunService.Data;
-using SG.TestRunService.DbServices;
-using SG.TestRunService.Models;
+﻿using SG.TestRunService.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +13,6 @@ namespace SG.TestRunService.Services
         Task<IReadOnlyList<TestRunSessionResponse>> GetAllSessionsAsync();
         Task<TestRunSessionResponse> GetSessionAsync(int sessionId);
         Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId);
+        Task<TestRunResponse> GetTestRunAsync(int testRunId);
     }
 }

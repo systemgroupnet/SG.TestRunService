@@ -21,6 +21,8 @@ namespace SG.TestRunService.Models
         [Required]
         public string Azure_TestBuildNumber { get; set; }
         [Required]
+        public string SuiteName { get; set; }
+        [Required]
         public string SourceVersion { get; set; }
         public TestSessionOutcome Outcome { get; set; }
         public List<TestRunRequest> TestRuns { get; set; }

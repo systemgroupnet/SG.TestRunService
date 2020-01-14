@@ -1,4 +1,4 @@
-﻿using SG.TestRunService.DbServices;
+﻿using SG.TestRunService.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,6 +16,7 @@ namespace SG.TestRunService.Data
         public int Azure_TestBuildId { get; set; }
         public string Azure_ProductBuildNumber { get; set; }
         public string Azure_TestBuildNumber { get; set; }
+        public string SuiteName { get; set; }
         public string SourceVersion { get; set; }
         public TestSessionOutcome Outcome { get; set; }
         public IList<TestRun> TestRuns { get; set; }
