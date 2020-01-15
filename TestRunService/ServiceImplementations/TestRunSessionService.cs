@@ -42,6 +42,13 @@ namespace SG.TestRunService.ServiceImplementations
             return _baseDbService.GetById<TestRunSession, TestRunSessionResponse>(sessionId, TestRunSessionResponse.Project);
         }
 
+        public async Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest)
+        {
+            var testRun = testRunRequest.ToDataModel(sessionId);
+            await _baseDbService.InsertAsync(testRun);
+            return TestRunResponse.From(testRun);
+        }
+
         public Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId)
         {
             return _baseDbService.GetFilteredAsync<TestRun, TestRunResponse>(

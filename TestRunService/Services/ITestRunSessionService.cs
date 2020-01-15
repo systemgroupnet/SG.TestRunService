@@ -12,6 +12,7 @@ namespace SG.TestRunService.Services
         Task<TestRunSessionResponse> DeleteSessionAsync(int sessionId);
         Task<IReadOnlyList<TestRunSessionResponse>> GetAllSessionsAsync();
         Task<TestRunSessionResponse> GetSessionAsync(int sessionId);
+        Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest);
         Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId);
         Task<TestRunResponse> GetTestRunAsync(int testRunId);
     }

@@ -15,6 +15,19 @@ namespace SG.TestRunService.Models
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
 
+        public static TestRunResponse From(TestRun testRun)
+        {
+            return new TestRunResponse()
+            {
+                Id = testRun.Id,
+                TestId = testRun.TestId,
+                TestRunSessionId = testRun.TestRunSessionId,
+                Outcome = testRun.Outcome,
+                StartTime = testRun.StartTime,
+                FinishTime = testRun.FinishTime
+            };
+        }
+
         public static IQueryable<TestRunResponse> Project(IQueryable<TestRun> runs)
         {
             return runs.Select(

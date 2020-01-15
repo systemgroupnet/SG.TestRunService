@@ -20,9 +20,10 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<TestRunResponse> GetRun(int id)
+        public async Task<TestRunResponse> GetById(int id)
         {
             return await _service.GetTestRunAsync(id);
         }
     }
 }
+

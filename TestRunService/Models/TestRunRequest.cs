@@ -9,5 +9,17 @@ namespace SG.TestRunService.Models
         public TestRunOutcome Outcome { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
+
+        public TestRun ToDataModel(int testRunSessionId)
+        {
+            return new TestRun()
+            {
+                TestRunSessionId = testRunSessionId,
+                TestId = TestId,
+                Outcome = Outcome,
+                StartTime = StartTime,
+                FinishTime = FinishTime
+            };
+        }
     }
 }

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SG.TestRunService.Data;
-using SG.TestRunService.DbServices;
 using SG.TestRunService.Infrastructure;
 using SG.TestRunService.Infrastructure.Implementations;
 using SG.TestRunService.ServiceImplementations;

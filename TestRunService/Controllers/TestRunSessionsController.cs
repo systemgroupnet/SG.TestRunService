@@ -52,9 +52,11 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpPost("{sessionId:int}/runs")]
-        public async Task<ActionResult> InsertTestRun(int sessionId, TestRunRequest testRun)
+        public async Task<ActionResult> InsertTestRun(int sessionId, TestRunRequest testRunRequest)
         {
-            throw new NotImplementedException();
+            var testRun = await _service.InsertTestRunAsync(sessionId, testRunRequest);
+            return CreatedAtAction(nameof(TestRunsController.GetById), nameof(TestRunsController), new { id = testRun.Id }, testRun);
         }
     }
 }
+
