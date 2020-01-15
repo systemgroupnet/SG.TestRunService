@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CA1027: Mark enums with FlagsAttribute
+dotnet_diagnostic.CA1027.severity = silent
