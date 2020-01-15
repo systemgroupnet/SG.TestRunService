@@ -1,0 +1,25 @@
+﻿using SG.TestRunService.Common.Data;
+using System;
+
+namespace SG.TestRunService.Common.Models
+{
+    public class TestRunRequest
+    {
+        public int TestId { get; set; }
+        public TestRunOutcome Outcome { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? FinishTime { get; set; }
+
+        public TestRun ToDataModel(int testRunSessionId)
+        {
+            return new TestRun()
+            {
+                TestRunSessionId = testRunSessionId,
+                TestId = TestId,
+                Outcome = Outcome,
+                StartTime = StartTime,
+                FinishTime = FinishTime
+            };
+        }
+    }
+}
