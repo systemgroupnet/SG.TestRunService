@@ -19,7 +19,7 @@ namespace SG.TestRunService.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("SG.TestRunService.Data.Attachment", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.Attachment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace SG.TestRunService.Migrations
                     b.ToTable("Attachment");
                 });
 
-            modelBuilder.Entity("SG.TestRunService.Data.ExtraData", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.ExtraData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -96,7 +96,7 @@ namespace SG.TestRunService.Migrations
                     b.ToTable("ExtraData");
                 });
 
-            modelBuilder.Entity("SG.TestRunService.Data.Test", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.Test", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -125,7 +125,7 @@ namespace SG.TestRunService.Migrations
                     b.ToTable("Test");
                 });
 
-            modelBuilder.Entity("SG.TestRunService.Data.TestImpactCodeSignature", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.TestImpactCodeSignature", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -158,7 +158,7 @@ namespace SG.TestRunService.Migrations
                     b.ToTable("TestCaseImpactCodeSignature");
                 });
 
-            modelBuilder.Entity("SG.TestRunService.Data.TestLastState", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.TestLastState", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -199,7 +199,7 @@ namespace SG.TestRunService.Migrations
                     b.ToTable("TestLastState");
                 });
 
-            modelBuilder.Entity("SG.TestRunService.Data.TestRun", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.TestRun", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,7 +234,7 @@ namespace SG.TestRunService.Migrations
                     b.ToTable("TestRun");
                 });
 
-            modelBuilder.Entity("SG.TestRunService.Data.TestRunSession", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.TestRunSession", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -281,36 +281,36 @@ namespace SG.TestRunService.Migrations
                     b.ToTable("TestRunSession");
                 });
 
-            modelBuilder.Entity("SG.TestRunService.Data.Attachment", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.Attachment", b =>
                 {
-                    b.HasOne("SG.TestRunService.Data.TestRun", null)
+                    b.HasOne("SG.TestRunService.Common.Data.TestRun", null)
                         .WithMany("Attachments")
                         .HasForeignKey("TestRunId");
 
-                    b.HasOne("SG.TestRunService.Data.TestRunSession", null)
+                    b.HasOne("SG.TestRunService.Common.Data.TestRunSession", null)
                         .WithMany("Attachments")
                         .HasForeignKey("TestRunSessionId");
                 });
 
-            modelBuilder.Entity("SG.TestRunService.Data.ExtraData", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.ExtraData", b =>
                 {
-                    b.HasOne("SG.TestRunService.Data.Test", null)
+                    b.HasOne("SG.TestRunService.Common.Data.Test", null)
                         .WithMany("ExtraData")
                         .HasForeignKey("TestId");
                 });
 
-            modelBuilder.Entity("SG.TestRunService.Data.TestLastState", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.TestLastState", b =>
                 {
-                    b.HasOne("SG.TestRunService.Data.Test", "Test")
+                    b.HasOne("SG.TestRunService.Common.Data.Test", "Test")
                         .WithMany()
                         .HasForeignKey("TestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SG.TestRunService.Data.TestRun", b =>
+            modelBuilder.Entity("SG.TestRunService.Common.Data.TestRun", b =>
                 {
-                    b.HasOne("SG.TestRunService.Data.TestRunSession", "Session")
+                    b.HasOne("SG.TestRunService.Common.Data.TestRunSession", "Session")
                         .WithMany("TestRuns")
                         .HasForeignKey("TestRunSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
