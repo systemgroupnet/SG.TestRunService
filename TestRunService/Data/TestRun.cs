@@ -15,7 +15,7 @@ namespace SG.TestRunService.Data
         public TestRunOutcome Outcome { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
-        public IList<Attachement> Attachements { get; set; }
+        public IList<Attachment> Attachments { get; set; }
 
         [Timestamp]
         public byte[] Timestamp { get; set; }

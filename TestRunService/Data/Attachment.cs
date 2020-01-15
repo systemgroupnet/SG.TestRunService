@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SG.TestRunService.Data
 {
-    public class Attachement : IEntity
+    public class Attachment : IEntity
     {
         public int Id { get; set; }
         public int? TestRunId { get; set; }

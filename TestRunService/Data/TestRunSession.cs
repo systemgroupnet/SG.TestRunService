@@ -20,7 +20,7 @@ namespace SG.TestRunService.Data
         public string SourceVersion { get; set; }
         public TestSessionOutcome Outcome { get; set; }
         public IList<TestRun> TestRuns { get; set; }
-        public IList<Attachement> Attachements { get; set; }
+        public IList<Attachment> Attachments { get; set; }
 
         [Timestamp]
         public byte[] Timestamp { get; set; }

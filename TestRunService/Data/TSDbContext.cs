@@ -34,7 +34,7 @@ namespace SG.TestRunService.Data
         public DbSet<Test> Test { get; set; }
         public DbSet<TestRunSession> TestRunSession { get; set; }
         public DbSet<TestRun> TestRun { get; set; }
-        public DbSet<Attachement> Attachement { get; set; }
+        public DbSet<Attachment> Attachment { get; set; }
         public DbSet<TestImpactCodeSignature> TestCaseImpactCodeSignature { get; set; }
         public DbSet<ExtraData> ExtraData { get; set; }
         public DbSet<TestLastState> TestLastState { get; set; }
