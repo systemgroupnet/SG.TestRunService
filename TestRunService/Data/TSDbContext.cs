@@ -26,6 +26,9 @@ namespace SG.TestRunService.Data
             modelBuilder.Entity<TestLastState>()
                 .HasIndex(t => t.TestId)
                 .IsUnique();
+            modelBuilder.Entity<TestRun>()
+                .HasIndex(t => new { t.TestRunSessionId, t.TestId })
+                .IsUnique();
         }
 
         public DbSet<Test> Test { get; set; }
