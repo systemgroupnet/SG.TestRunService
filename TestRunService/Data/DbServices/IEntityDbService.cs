@@ -12,7 +12,7 @@ namespace SG.TestRunService.Data.DbServices
         Task<IReadOnlyList<T>> GetAllAsync<T>(Func<IQueryable<TEntity>, IQueryable<T>> projector);
         Task<IReadOnlyList<T>> GetFilteredAsync<T>(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, T>> projection);
         Task<IReadOnlyList<T>> GetFilteredAsync<T>(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IQueryable<T>> projector);
-        Task<T> GetById<T>(int id, Func<IQueryable<TEntity>, IQueryable<T>> projector);
+        Task<T> GetByIdAsync<T>(int id, Func<IQueryable<TEntity>, IQueryable<T>> projector);
         Task<T> GetFirstOrDefaultAsync<T>(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IQueryable<T>> projector);
         Task InsertAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);

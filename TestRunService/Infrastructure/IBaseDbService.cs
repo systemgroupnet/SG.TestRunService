@@ -14,7 +14,8 @@ namespace SG.TestRunService.Infrastructure
         Task<IReadOnlyList<TOutput>> GetFilteredAsync<TEntity, TOutput>(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector) where TEntity : class, IEntity;
         Task<TOutput> GetFirstOrDefaultAsync<TEntity, TOutput>(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, TOutput>> projection) where TEntity : class, IEntity;
         Task<TOutput> GetFirstOrDefaultAsync<TEntity, TOutput>(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector) where TEntity : class, IEntity;
-        Task<TOutput> GetById<TEntity, TOutput>(int id, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector) where TEntity : class, IEntity;
+        Task<TOutput> GetByIdAsync<TEntity, TOutput>(int id, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector) where TEntity : class, IEntity;
+        Task<TEntity> GetByIdAsync<TEntity>(int id) where TEntity : class, IEntity;
         Task InsertAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
         Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
         Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;

@@ -47,9 +47,9 @@ namespace SG.TestRunService.Data.DbServices.Implementations
             return BaseDbService.GetFirstOrDefaultAsync(filter, projector);
         }
 
-        public Task<T> GetById<T>(int id, Func<IQueryable<TEntity>, IQueryable<T>> projector)
+        public Task<T> GetByIdAsync<T>(int id, Func<IQueryable<TEntity>, IQueryable<T>> projector)
         {
-            return BaseDbService.GetById(id, projector);
+            return BaseDbService.GetByIdAsync(id, projector);
         }
 
         public Task InsertAsync(TEntity entity)

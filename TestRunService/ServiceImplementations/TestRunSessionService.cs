@@ -39,7 +39,7 @@ namespace SG.TestRunService.ServiceImplementations
 
         public Task<TestRunSessionResponse> GetSessionAsync(int sessionId)
         {
-            return _baseDbService.GetById<TestRunSession, TestRunSessionResponse>(sessionId, TestRunSessionResponse.Project);
+            return _baseDbService.GetByIdAsync<TestRunSession, TestRunSessionResponse>(sessionId, TestRunSessionResponse.Project);
         }
 
         public async Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest)
@@ -57,7 +57,7 @@ namespace SG.TestRunService.ServiceImplementations
 
         public Task<TestRunResponse> GetTestRunAsync(int testRunId)
         {
-            return _baseDbService.GetById<TestRun, TestRunResponse>(testRunId, TestRunResponse.Project);
+            return _baseDbService.GetByIdAsync<TestRun, TestRunResponse>(testRunId, TestRunResponse.Project);
         }
     }
 }

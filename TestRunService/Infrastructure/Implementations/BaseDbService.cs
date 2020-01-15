@@ -53,10 +53,15 @@ namespace SG.TestRunService.Infrastructure.Implementations
             return await projector(_db.Set<TEntity>().Where(filter)).FirstOrDefaultAsync();
         }
 
-        public Task<TOutput> GetById<TEntity, TOutput>(int id, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector)
+        public Task<TOutput> GetByIdAsync<TEntity, TOutput>(int id, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector)
             where TEntity: class, IEntity
         {
-            return GetFirstOrDefaultAsync<TEntity, TOutput>(e => e.Id == id, projector);
+            return GetFirstOrDefaultAsync(e => e.Id == id, projector);
+        }
+
+        public Task<TEntity> GetByIdAsync<TEntity>(int id) where TEntity : class, IEntity
+        {
+            return _db.FindAsync<TEntity>(id).AsTask();
         }
 
         public async Task InsertAsync<TEntity>(TEntity entity)
