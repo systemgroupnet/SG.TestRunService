@@ -22,7 +22,7 @@ namespace SG.TestRunService.Data
                 .HasIndex(s => new { s.TestId, s.Signature })
                 .IsUnique();
             modelBuilder.Entity<Test>()
-                .HasIndex(t => new { t.Azure_TestBuildId, t.Azure_TestCaseId })
+                .HasIndex(t => new { t.Azure_TestCaseId })
                 .IsUnique();
             modelBuilder.Entity<TestLastState>()
                 .HasIndex(t => t.TestId)

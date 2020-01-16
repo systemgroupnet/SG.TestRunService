@@ -8,7 +8,6 @@ namespace SG.TestRunService.Common.Data
     {
         public int Id { get; set; }
         public int Azure_TestCaseId { get; set; }
-        public int Azure_TestBuildId { get; set; }
         public string Title { get; set; }
         public IList<ExtraData> ExtraData { get; set; }
 
