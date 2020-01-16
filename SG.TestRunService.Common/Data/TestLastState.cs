@@ -14,8 +14,9 @@ namespace SG.TestRunService.Common.Data
         public int Azure_ProductBuildId { get; set; }
         public int UpdateDate { get; set; }
         public string SourceVersion { get; set; }
-        public TestRunOutcome Outcome { get; set; }
+        public TestRunOutcome LastOutcome { get; set; }
         public bool ShouldBeRun { get; set; }
+        public RunReason? RunReason { get; set; }
 
         [Timestamp]
         public byte[] Timestamp { get; set; }
