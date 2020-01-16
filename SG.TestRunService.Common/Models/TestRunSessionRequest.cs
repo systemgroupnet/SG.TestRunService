@@ -10,8 +10,7 @@ namespace SG.TestRunService.Common.Models
         [Required]
         public string TeamProject { get; set; }
         [Required]
-        public DateTime StartTime { get; set; }
-        public DateTime? FinishTime { get; set; }
+        public int Azure_ProductBuildDefinitionId { get; set; }
         [Required]
         public int Azure_ProductBuildId { get; set; }
         [Required]
@@ -24,6 +23,9 @@ namespace SG.TestRunService.Common.Models
         public string SuiteName { get; set; }
         [Required]
         public string SourceVersion { get; set; }
+        [Required]
+        public DateTime StartTime { get; set; }
+        public DateTime? FinishTime { get; set; }
         public TestSessionOutcome Outcome { get; set; }
         public List<TestRunRequest> TestRuns { get; set; }
 
@@ -32,13 +34,14 @@ namespace SG.TestRunService.Common.Models
             return new TestRunSession()
             {
                 TeamProject = TeamProject,
-                StartTime = StartTime,
-                FinishTime = FinishTime,
+                Azure_ProductBuildDefinitionId = Azure_ProductBuildDefinitionId,
                 Azure_ProductBuildId = Azure_ProductBuildId,
                 Azure_TestBuildId = Azure_TestBuildId,
                 Azure_ProductBuildNumber = Azure_ProductBuildNumber,
                 Azure_TestBuildNumber = Azure_TestBuildNumber,
                 SourceVersion = SourceVersion,
+                StartTime = StartTime,
+                FinishTime = FinishTime,
                 Outcome = Outcome,
                 TestRuns = TestRuns.ConvertAll(thisTestRun => new TestRun()
                 {
