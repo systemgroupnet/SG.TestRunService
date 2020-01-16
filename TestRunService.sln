@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SG.TestRunClientLib", "SG.TestRunClientLib\SG.TestRunClientLib.csproj", "{72E0F7DC-A3E6-4525-8D94-268C99E102F6}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SG.TestRunService.Common", "SG.TestRunService.Common\SG.TestRunService.Common.csproj", "{F0B65ECE-63CF-4BE8-A008-704631CFA5E8}"
 EndProject
 Global
@@ -22,6 +24,10 @@ Global
 		{16546238-B46A-4B38-8885-D0CBD71E37EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16546238-B46A-4B38-8885-D0CBD71E37EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16546238-B46A-4B38-8885-D0CBD71E37EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72E0F7DC-A3E6-4525-8D94-268C99E102F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72E0F7DC-A3E6-4525-8D94-268C99E102F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72E0F7DC-A3E6-4525-8D94-268C99E102F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72E0F7DC-A3E6-4525-8D94-268C99E102F6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F0B65ECE-63CF-4BE8-A008-704631CFA5E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F0B65ECE-63CF-4BE8-A008-704631CFA5E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0B65ECE-63CF-4BE8-A008-704631CFA5E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
