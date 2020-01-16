@@ -10,7 +10,8 @@ namespace SG.TestRunService.Common.Data
         public int Id { get; set; }
         public int TestRunSessionId { get; set; }
         public TestRunSession Session { get; set; }
-        public int TestId { get; set; }
+        public int TestCaseId { get; set; }
+        public TestCase TestCase { get; set; }
         public TestRunOutcome Outcome { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }

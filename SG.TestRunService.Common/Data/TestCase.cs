@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SG.TestRunService.Common.Data
 {
-    public class Test : IEntity
+    public class TestCase : IEntity
     {
         public int Id { get; set; }
         public int Azure_TestCaseId { get; set; }

@@ -9,7 +9,7 @@ namespace SG.TestRunService.Common.Models
     public class TestRunResponse
     {
         public int Id { get; set; }
-        public int TestId { get; set; }
+        public int TestCaseId { get; set; }
         public int TestRunSessionId { get; set; }
         public TestRunOutcome Outcome { get; set; }
         public DateTime? StartTime { get; set; }
@@ -21,7 +21,7 @@ namespace SG.TestRunService.Common.Models
             return new TestRunResponse()
             {
                 Id = testRun.Id,
-                TestId = testRun.TestId,
+                TestCaseId = testRun.TestCaseId,
                 TestRunSessionId = testRun.TestRunSessionId,
                 Outcome = testRun.Outcome,
                 StartTime = testRun.StartTime,
@@ -42,7 +42,7 @@ namespace SG.TestRunService.Common.Models
                 x => new TestRunResponse()
                 {
                     Id = x.Id,
-                    TestId = x.TestId,
+                    TestCaseId = x.TestCaseId,
                     TestRunSessionId = x.TestRunSessionId,
                     Outcome = x.Outcome,
                     StartTime = x.StartTime,

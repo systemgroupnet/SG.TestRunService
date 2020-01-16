@@ -45,7 +45,7 @@ namespace SG.TestRunService.Common.Models
                 Outcome = Outcome,
                 TestRuns = TestRuns.ConvertAll(thisTestRun => new TestRun()
                 {
-                    TestId = thisTestRun.TestId,
+                    TestCaseId = thisTestRun.TestCaseId,
                     Outcome = thisTestRun.Outcome,
                     StartTime = thisTestRun.StartTime,
                     FinishTime = thisTestRun.FinishTime

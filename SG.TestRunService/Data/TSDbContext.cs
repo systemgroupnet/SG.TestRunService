@@ -19,20 +19,20 @@ namespace SG.TestRunService.Data
             modelBuilder.Entity<TestImpactCodeSignature>()
                 .HasIndex(s => s.Signature);
             modelBuilder.Entity<TestImpactCodeSignature>()
-                .HasIndex(s => new { s.TestId, s.Signature })
+                .HasIndex(s => new { s.TestCaseId, s.Signature })
                 .IsUnique();
-            modelBuilder.Entity<Test>()
+            modelBuilder.Entity<TestCase>()
                 .HasIndex(t => new { t.Azure_TestCaseId })
                 .IsUnique();
             modelBuilder.Entity<TestLastState>()
-                .HasIndex(t => t.TestId)
+                .HasIndex(t => t.TestCaseId)
                 .IsUnique();
             modelBuilder.Entity<TestRun>()
-                .HasIndex(t => new { t.TestRunSessionId, t.TestId })
+                .HasIndex(t => new { t.TestRunSessionId, t.TestCaseId })
                 .IsUnique();
         }
 
-        public DbSet<Test> Test { get; set; }
+        public DbSet<TestCase> TestCase { get; set; }
         public DbSet<TestRunSession> TestRunSession { get; set; }
         public DbSet<TestRun> TestRun { get; set; }
         public DbSet<Attachment> Attachment { get; set; }

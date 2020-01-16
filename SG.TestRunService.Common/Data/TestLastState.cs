@@ -8,8 +8,8 @@ namespace SG.TestRunService.Common.Data
     public class TestLastState : IEntity
     {
         public int Id { get; set; }
-        public int TestId { get; set; }
-        public Test Test { get; set; }
+        public int TestCaseId { get; set; }
+        public TestCase TestCase { get; set; }
         public int Azure_TestBuildId { get; set; }
         public int Azure_ProductBuildId { get; set; }
         public int UpdateDate { get; set; }

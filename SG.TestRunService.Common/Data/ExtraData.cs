@@ -7,7 +7,7 @@ namespace SG.TestRunService.Common.Data
     public class ExtraData : IEntity
     {
         public int Id { get; set; }
-        public int? TestId { get; set; }
+        public int? TestCaseId { get; set; }
         public int? TestRunId { get; set; }
         public int? TestRunSessionId { get; set; }
 

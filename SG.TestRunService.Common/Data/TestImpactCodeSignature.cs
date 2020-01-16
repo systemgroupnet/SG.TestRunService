@@ -11,7 +11,7 @@ namespace SG.TestRunService.Common.Data
         [Required]
         public string Signature { get; set; }
         [Required]
-        public int TestId { get; set; }
+        public int TestCaseId { get; set; }
         [Required]
         public DateTime DateAdded { get; set; }
         public DateTime DateRemoved { get; set; }
