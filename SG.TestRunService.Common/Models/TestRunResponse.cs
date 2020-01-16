@@ -14,6 +14,7 @@ namespace SG.TestRunService.Common.Models
         public TestRunOutcome Outcome { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
+        public Dictionary<string, ExtraDataValue> ExtraData { get; set; }
 
         public static TestRunResponse From(TestRun testRun)
         {
@@ -24,7 +25,14 @@ namespace SG.TestRunService.Common.Models
                 TestRunSessionId = testRun.TestRunSessionId,
                 Outcome = testRun.Outcome,
                 StartTime = testRun.StartTime,
-                FinishTime = testRun.FinishTime
+                FinishTime = testRun.FinishTime,
+                ExtraData = testRun.ExtraData.ToDictionary(
+                    e => e.Name,
+                    e => new ExtraDataValue()
+                        {
+                            Value = e.Value,
+                            Url = e.Url
+                        })
             };
         }
 

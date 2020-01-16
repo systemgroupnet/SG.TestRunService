@@ -21,6 +21,7 @@ namespace SG.TestRunService.Common.Data
         public TestSessionOutcome Outcome { get; set; }
         public IList<TestRun> TestRuns { get; set; }
         public IList<Attachment> Attachments { get; set; }
+        public IList<ExtraData> ExtraData { get; set; }
 
         [Timestamp]
         public byte[] Timestamp { get; set; }
