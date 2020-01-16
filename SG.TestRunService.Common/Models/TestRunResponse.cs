@@ -39,14 +39,14 @@ namespace SG.TestRunService.Common.Models
         public static IQueryable<TestRunResponse> Project(IQueryable<TestRun> runs)
         {
             return runs.Select(
-                x => new TestRunResponse()
+                r => new TestRunResponse()
                 {
-                    Id = x.Id,
-                    TestCaseId = x.TestCaseId,
-                    TestRunSessionId = x.TestRunSessionId,
-                    Outcome = x.Outcome,
-                    StartTime = x.StartTime,
-                    FinishTime = x.FinishTime
+                    Id = r.Id,
+                    TestCaseId = r.TestCaseId,
+                    TestRunSessionId = r.TestRunSessionId,
+                    Outcome = r.Outcome,
+                    StartTime = r.StartTime,
+                    FinishTime = r.FinishTime
                 });
         }
     }

@@ -43,12 +43,12 @@ namespace SG.TestRunService.Common.Models
                 StartTime = StartTime,
                 FinishTime = FinishTime,
                 Outcome = Outcome,
-                TestRuns = TestRuns.ConvertAll(thisTestRun => new TestRun()
+                TestRuns = TestRuns.ConvertAll(tr => new TestRun()
                 {
-                    TestCaseId = thisTestRun.TestCaseId,
-                    Outcome = thisTestRun.Outcome,
-                    StartTime = thisTestRun.StartTime,
-                    FinishTime = thisTestRun.FinishTime
+                    TestCaseId = tr.TestCaseId,
+                    Outcome = tr.Outcome,
+                    StartTime = tr.StartTime,
+                    FinishTime = tr.FinishTime
                 })
             };
         }
