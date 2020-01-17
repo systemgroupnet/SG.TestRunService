@@ -31,12 +31,12 @@ namespace SG.TestRunService.Data
                 .IsUnique();
         }
 
-        public DbSet<TestCase> TestCase { get; set; }
-        public DbSet<TestRunSession> TestRunSession { get; set; }
-        public DbSet<TestRun> TestRun { get; set; }
-        public DbSet<Attachment> Attachment { get; set; }
-        public DbSet<TestImpactCodeSignature> TestCaseImpactCodeSignature { get; set; }
-        public DbSet<ExtraData> ExtraData { get; set; }
-        public DbSet<TestLastState> TestLastState { get; set; }
+        public DbSet<TestCase> TestCase { get; }
+        public DbSet<TestRunSession> TestRunSession { get; }
+        public DbSet<TestRun> TestRun { get; }
+        public DbSet<Attachment> Attachment { get; }
+        public DbSet<TestImpactCodeSignature> TestCaseImpactCodeSignature { get; }
+        public DbSet<ExtraData> ExtraData { get; }
+        public DbSet<TestLastState> TestLastState { get; }
     }
 }
