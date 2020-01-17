@@ -1,6 +1,6 @@
-﻿using SG.TestRunService.Common.Data;
+﻿using Microsoft.EntityFrameworkCore;
 using SG.TestRunService.Common.Models;
-using SG.TestRunService.Data.Services;
+using SG.TestRunService.Data;
 using SG.TestRunService.Infrastructure;
 using SG.TestRunService.Services;
 using System;
@@ -12,52 +12,52 @@ namespace SG.TestRunService.ServiceImplementations
 {
     public class TestRunSessionService : ITestRunSessionService
     {
-        private readonly IBaseDbService _baseDbService;
+        private readonly IBaseDbService _dbService;
 
-        public TestRunSessionService(IBaseDbService baseDbService)
+        public TestRunSessionService(IBaseDbService dbService)
         {
-            _baseDbService = baseDbService;
+            _dbService = dbService;
         }
 
         public async Task<TestRunSessionResponse> InsertSessionAsync(TestRunSessionRequest sessionDto)
         {
             var session = sessionDto.ToDataModel();
-            await _baseDbService.InsertAsync(session);
-            return TestRunSessionResponse.FromDataModel(session);
+            await _dbService.InsertAsync(session);
+            return session.ToResponse();
         }
 
         public async Task<TestRunSessionResponse> DeleteSessionAsync(int sessionId)
         {
-            return TestRunSessionResponse.FromDataModel(
-                await _baseDbService.DeleteAsync<TestRunSession>(sessionId));
+            var session = await _dbService.DeleteAsync<TestRunSession>(sessionId);
+            return session.ToResponse();
         }
 
-        public Task<IReadOnlyList<TestRunSessionResponse>> GetAllSessionsAsync()
+        public async Task<IReadOnlyList<TestRunSessionResponse>> GetAllSessionsAsync()
         {
-            return _baseDbService.GetAllAsync<TestRunSession, TestRunSessionResponse>(TestRunSessionResponse.Project);
+            return await _dbService.Query<TestRunSession>().Project().ToListAsync();
         }
 
         public Task<TestRunSessionResponse> GetSessionAsync(int sessionId)
         {
-            return _baseDbService.GetByIdAsync<TestRunSession, TestRunSessionResponse>(sessionId, TestRunSessionResponse.Project);
+            return _dbService.Query<TestRunSession>(sessionId).Project().FirstOrDefaultAsync();
         }
 
         public async Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest)
         {
             var testRun = testRunRequest.ToDataModel(sessionId);
-            await _baseDbService.InsertAsync(testRun);
-            return TestRunResponse.From(testRun);
+            await _dbService.InsertAsync(testRun);
+            return testRun.ToResponse();
         }
 
-        public Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId)
+        public async Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId)
         {
-            return _baseDbService.GetFilteredAsync<TestRun, TestRunResponse>(
-                r => r.TestRunSessionId == sessionId, TestRunResponse.Project);
+            return await _dbService.Query<TestRun>(r => r.TestRunSessionId == sessionId)
+                .Project().ToListAsync();
         }
 
         public Task<TestRunResponse> GetTestRunAsync(int testRunId)
         {
-            return _baseDbService.GetByIdAsync<TestRun, TestRunResponse>(testRunId, TestRunResponse.Project);
+            return _dbService.Query<TestRun>(testRunId).Project().FirstOrDefaultAsync();
         }
     }
 }

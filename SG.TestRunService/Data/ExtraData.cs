@@ -1,8 +1,7 @@
-﻿using SG.TestRunService.Common.Infrastructure;
-using System.Collections.Generic;
+﻿using SG.TestRunService.Infrastructure;
 using System.ComponentModel.DataAnnotations;
 
-namespace SG.TestRunService.Common.Data
+namespace SG.TestRunService.Data
 {
     public class ExtraData : IEntity
     {

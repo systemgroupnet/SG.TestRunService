@@ -1,5 +1,4 @@
-﻿using SG.TestRunService.Common.Infrastructure;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -21,5 +20,9 @@ namespace SG.TestRunService.Infrastructure
         Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
         Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
         Task<TEntity> DeleteAsync<TEntity>(int id) where TEntity : class, IEntity;
+        IQueryable<TEntity> Query<TEntity>() where TEntity : class, IEntity;
+        IQueryable<TEntity> Query<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class, IEntity;
+        IQueryable<TEntity> Query<TEntity>(int id) where TEntity : class, IEntity;
+        IQueryable<TEntity> Query<TEntity>(IEnumerable<int> ids) where TEntity : class, IEntity;
     }
 }

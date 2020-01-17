@@ -1,4 +1,4 @@
-﻿namespace SG.TestRunService.Common.Data
+﻿namespace SG.TestRunService.Common.Models
 {
     public enum TestRunOutcome
     {

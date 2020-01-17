@@ -1,9 +1,10 @@
-﻿using SG.TestRunService.Common.Infrastructure;
+﻿using SG.TestRunService.Common.Models;
+using SG.TestRunService.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace SG.TestRunService.Common.Data
+namespace SG.TestRunService.Data
 {
     public class TestRun : IEntity
     {

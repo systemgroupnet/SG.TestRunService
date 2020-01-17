@@ -1,5 +1,4 @@
-﻿using SG.TestRunService.Common.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -28,29 +27,5 @@ namespace SG.TestRunService.Common.Models
         public DateTime? FinishTime { get; set; }
         public TestSessionOutcome Outcome { get; set; }
         public List<TestRunRequest> TestRuns { get; set; }
-
-        public TestRunSession ToDataModel()
-        {
-            return new TestRunSession()
-            {
-                TeamProject = TeamProject,
-                Azure_ProductBuildDefinitionId = Azure_ProductBuildDefinitionId,
-                Azure_ProductBuildId = Azure_ProductBuildId,
-                Azure_TestBuildId = Azure_TestBuildId,
-                Azure_ProductBuildNumber = Azure_ProductBuildNumber,
-                Azure_TestBuildNumber = Azure_TestBuildNumber,
-                SourceVersion = SourceVersion,
-                StartTime = StartTime,
-                FinishTime = FinishTime,
-                Outcome = Outcome,
-                TestRuns = TestRuns.ConvertAll(tr => new TestRun()
-                {
-                    TestCaseId = tr.TestCaseId,
-                    Outcome = tr.Outcome,
-                    StartTime = tr.StartTime,
-                    FinishTime = tr.FinishTime
-                })
-            };
-        }
     }
 }

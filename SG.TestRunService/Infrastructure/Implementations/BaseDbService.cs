@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SG.TestRunService.Common.Infrastructure;
 using SG.TestRunService.Data;
 using System;
 using System.Collections.Generic;
@@ -92,6 +91,30 @@ namespace SG.TestRunService.Infrastructure.Implementations
             var e = await _db.FindAsync<TEntity>(id);
             await DeleteAsync(e);
             return e;
+        }
+
+        public IQueryable<TEntity> Query<TEntity>()
+            where TEntity : class, IEntity
+        {
+            return _db.Set<TEntity>();
+        }
+
+        public IQueryable<TEntity> Query<TEntity>(Expression<Func<TEntity, bool>> filter)
+            where TEntity : class, IEntity
+        {
+            return _db.Set<TEntity>().Where(filter);
+        }
+
+        public IQueryable<TEntity> Query<TEntity>(int id)
+            where TEntity : class, IEntity
+        {
+            return _db.Set<TEntity>().Where(e => e.Id == id);
+        }
+
+        public IQueryable<TEntity> Query<TEntity>(IEnumerable<int> ids)
+            where TEntity : class, IEntity
+        {
+            return _db.Set<TEntity>().Where(e => ids.Contains(e.Id));
         }
     }
 }

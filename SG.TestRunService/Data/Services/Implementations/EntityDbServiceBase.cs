@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using SG.TestRunService.Common.Infrastructure;
 using SG.TestRunService.Infrastructure;
 
 namespace SG.TestRunService.Data.Services.Implementations

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SG.TestRunService.Common.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;

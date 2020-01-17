@@ -25,7 +25,7 @@ namespace SG.TestRunClientLib
                 SourceVersion = sourceVersion,
                 SuiteName = suiteName,
                 StartTime = DateTime.Now,
-                Outcome = TestRunService.Common.Data.TestSessionOutcome.NotStarted,
+                Outcome = TestSessionOutcome.NotStarted,
             };
 
             return await TestRunSessionAgent.CreateAsync(sessionRequest);
