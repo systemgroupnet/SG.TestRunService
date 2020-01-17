@@ -136,6 +136,19 @@ namespace SG.TestRunService.Common.Models
                     Outcome = session.Outcome
                 });
         }
+
+        public static IQueryable<TestCaseResponse> Project(this IQueryable<TestCase> testCases)
+        {
+            return testCases.Select(
+                testCase => new TestCaseResponse()
+                {
+                    Id = testCase.Id,
+                    AzureTestCaseId = testCase.AzureTestCaseId,
+                    TeamProject = testCase.TeamProject,
+                    Title = testCase.Title,
+                });
+        }
+
         public static IDictionary<string, ExtraDataValue> ToResponse(this IEnumerable<ExtraData> extraData)
         {
             return extraData.ToDictionary(
@@ -145,5 +158,18 @@ namespace SG.TestRunService.Common.Models
                     Value = e.Value,
                     Url = e.Url
                 });
+        }
+
+        public static TestCaseResponse ToResponse(this TestCase testCase)
+        {
+            return new TestCaseResponse()
+            {
+                Id = testCase.Id,
+                AzureTestCaseId = testCase.AzureTestCaseId,
+                TeamProject = testCase.TeamProject,
+                Title = testCase.Title,
+                ExtraData = testCase.ExtraData.ToResponse()
+            };
+        }
     }
 }

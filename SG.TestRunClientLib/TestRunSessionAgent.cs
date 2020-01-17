@@ -1,6 +1,7 @@
 ﻿using SG.TestRunService.Common.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,8 +9,8 @@ namespace SG.TestRunClientLib
 {
     public class TestRunSessionAgent
     {
-        TestRunClient _client;
-        TestRunSessionResponse _session;
+        readonly TestRunClient _client;
+        readonly TestRunSessionResponse _session;
 
         private TestRunSessionAgent(TestRunClient client, TestRunSessionResponse session)
         {
@@ -24,9 +25,14 @@ namespace SG.TestRunClientLib
             return new TestRunSessionAgent(client, response);
         }
 
-        public void SetTests(IEnumerable<TestRequest> tests)
+        public async Task IntorduceTestCases(IEnumerable<TestCaseRequest> tests)
         {
-
+            var azureTestCaseIds = new HashSet<int>(await _client.GetAzureTestCaseIdsAsync(_session.TeamProject));
+            var newTestCases = tests.Where(t => !azureTestCaseIds.Contains(t.AzureTestCaseId));
+            foreach(var tc in newTestCases)
+            {
+                await _client.InsertTestCaseAsync(tc);
+            }
         }
     }
 }
