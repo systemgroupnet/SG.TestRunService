@@ -7,7 +7,7 @@ namespace SG.TestRunService.Data
     public class TestCase : IEntity
     {
         public int Id { get; set; }
-        public int Azure_TestCaseId { get; set; }
+        public int AzureTestCaseId { get; set; }
         [Required]
         public string TeamProject { get; set; }
         [Required]

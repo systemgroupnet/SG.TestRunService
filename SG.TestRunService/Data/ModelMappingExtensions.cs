@@ -25,11 +25,11 @@ namespace SG.TestRunService.Common.Models
             return new TestRunSession()
             {
                 TeamProject = r.TeamProject,
-                Azure_ProductBuildDefinitionId = r.Azure_ProductBuildDefinitionId,
-                Azure_ProductBuildId = r.Azure_ProductBuildId,
-                Azure_TestBuildId = r.Azure_TestBuildId,
-                Azure_ProductBuildNumber = r.Azure_ProductBuildNumber,
-                Azure_TestBuildNumber = r.Azure_TestBuildNumber,
+                AzureProductBuildDefinitionId = r.AzureProductBuildDefinitionId,
+                AzureProductBuildId = r.AzureProductBuildId,
+                AzureTestBuildId = r.AzureTestBuildId,
+                AzureProductBuildNumber = r.AzureProductBuildNumber,
+                AzureTestBuildNumber = r.AzureTestBuildNumber,
                 SourceVersion = r.SourceVersion,
                 StartTime = r.StartTime,
                 FinishTime = r.FinishTime,
@@ -42,7 +42,7 @@ namespace SG.TestRunService.Common.Models
         {
             return new TestCase()
             {
-                Azure_TestCaseId = r.Azure_TestCaseId,
+                AzureTestCaseId = r.AzureTestCaseId,
                 TeamProject = r.TeamProject,
                 Title = r.Title,
                 ExtraData = r.ExtraData.ToDataModel()
@@ -102,11 +102,11 @@ namespace SG.TestRunService.Common.Models
             {
                 Id = session.Id,
                 TeamProject = session.TeamProject,
-                Azure_ProductBuildDefinitionId = session.Azure_ProductBuildDefinitionId,
-                Azure_ProductBuildId = session.Azure_ProductBuildId,
-                Azure_TestBuildId = session.Azure_TestBuildId,
-                Azure_ProductBuildNumber = session.Azure_ProductBuildNumber,
-                Azure_TestBuildNumber = session.Azure_TestBuildNumber,
+                AzureProductBuildDefinitionId = session.AzureProductBuildDefinitionId,
+                AzureProductBuildId = session.AzureProductBuildId,
+                AzureTestBuildId = session.AzureTestBuildId,
+                AzureProductBuildNumber = session.AzureProductBuildNumber,
+                AzureTestBuildNumber = session.AzureTestBuildNumber,
                 SuiteName = session.SuiteName,
                 SourceVersion = session.SourceVersion,
                 StartTime = session.StartTime,
@@ -122,11 +122,11 @@ namespace SG.TestRunService.Common.Models
                 {
                     Id = session.Id,
                     TeamProject = session.TeamProject,
-                    Azure_ProductBuildDefinitionId = session.Azure_ProductBuildDefinitionId,
-                    Azure_ProductBuildId = session.Azure_ProductBuildId,
-                    Azure_TestBuildId = session.Azure_TestBuildId,
-                    Azure_ProductBuildNumber = session.Azure_ProductBuildNumber,
-                    Azure_TestBuildNumber = session.Azure_TestBuildNumber,
+                    AzureProductBuildDefinitionId = session.AzureProductBuildDefinitionId,
+                    AzureProductBuildId = session.AzureProductBuildId,
+                    AzureTestBuildId = session.AzureTestBuildId,
+                    AzureProductBuildNumber = session.AzureProductBuildNumber,
+                    AzureTestBuildNumber = session.AzureTestBuildNumber,
                     SuiteName = session.SuiteName,
                     SourceVersion = session.SourceVersion,
                     StartTime = session.StartTime,

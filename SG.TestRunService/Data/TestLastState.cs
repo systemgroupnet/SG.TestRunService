@@ -11,8 +11,8 @@ namespace SG.TestRunService.Data
         public int Id { get; set; }
         public int TestCaseId { get; set; }
         public TestCase TestCase { get; set; }
-        public int Azure_TestBuildId { get; set; }
-        public int Azure_ProductBuildId { get; set; }
+        public int AzureTestBuildId { get; set; }
+        public int AzureProductBuildId { get; set; }
         public int UpdateDate { get; set; }
         public string SourceVersion { get; set; }
         public TestRunOutcome LastOutcome { get; set; }

@@ -9,15 +9,15 @@ namespace SG.TestRunService.Common.Models
         [Required]
         public string TeamProject { get; set; }
         [Required]
-        public int Azure_ProductBuildDefinitionId { get; set; }
+        public int AzureProductBuildDefinitionId { get; set; }
         [Required]
-        public int Azure_ProductBuildId { get; set; }
+        public int AzureProductBuildId { get; set; }
         [Required]
-        public int Azure_TestBuildId { get; set; }
+        public int AzureTestBuildId { get; set; }
         [Required]
-        public string Azure_ProductBuildNumber { get; set; }
+        public string AzureProductBuildNumber { get; set; }
         [Required]
-        public string Azure_TestBuildNumber { get; set; }
+        public string AzureTestBuildNumber { get; set; }
         [Required]
         public string SuiteName { get; set; }
         [Required]

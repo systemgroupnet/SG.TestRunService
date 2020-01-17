@@ -17,11 +17,11 @@ namespace SG.TestRunClientLib
             TestRunSessionRequest sessionRequest = new TestRunSessionRequest()
             {
                 TeamProject = teamProject,
-                Azure_ProductBuildDefinitionId = productBuildDefinitionId,
-                Azure_ProductBuildId = productBuildId,
-                Azure_ProductBuildNumber = productBuildNumber,
-                Azure_TestBuildId = testBuildId,
-                Azure_TestBuildNumber = testBuildNumber,
+                AzureProductBuildDefinitionId = productBuildDefinitionId,
+                AzureProductBuildId = productBuildId,
+                AzureProductBuildNumber = productBuildNumber,
+                AzureTestBuildId = testBuildId,
+                AzureTestBuildNumber = testBuildNumber,
                 SourceVersion = sourceVersion,
                 SuiteName = suiteName,
                 StartTime = DateTime.Now,

@@ -7,7 +7,7 @@ namespace SG.TestRunService.Common.Models
 {
     public class TestCaseRequest
     {
-        public int Azure_TestCaseId { get; set; }
+        public int AzureTestCaseId { get; set; }
         [Required]
         public string TeamProject { get; set; }
         [Required]
