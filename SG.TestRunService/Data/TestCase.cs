@@ -6,6 +6,11 @@ namespace SG.TestRunService.Data
 {
     public class TestCase : IEntity
     {
+        public TestCase()
+        {
+            ExtraData = new List<ExtraData>();
+        }
+
         public int Id { get; set; }
         public int AzureTestCaseId { get; set; }
         [Required]

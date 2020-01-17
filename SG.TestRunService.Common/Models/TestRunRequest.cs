@@ -6,6 +6,11 @@ namespace SG.TestRunService.Common.Models
 {
     public class TestRunRequest
     {
+        public TestRunRequest()
+        {
+            ExtraData = new Dictionary<string, ExtraDataValue>();
+        }
+
         public int TestCaseId { get; set; }
         public TestRunOutcome Outcome { get; set; }
         public DateTime? StartTime { get; set; }

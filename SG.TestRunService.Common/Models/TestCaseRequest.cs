@@ -14,6 +14,7 @@ namespace SG.TestRunService.Common.Models
             TeamProject = teamProject;
             AzureTestCaseId = azureTestCaseId;
             Title = title;
+            ExtraData = new Dictionary<string, ExtraDataValue>();
         }
 
         public int AzureTestCaseId { get; set; }

@@ -8,6 +8,13 @@ namespace SG.TestRunService.Data
 {
     public class TestRunSession : IEntity
     {
+        public TestRunSession()
+        {
+            TestRuns = new List<TestRun>();
+            Attachments = new List<Attachment>();
+            ExtraData = new List<ExtraData>();
+        }
+
         public int Id { get; set; }
         public string TeamProject { get; set; }
         public int AzureProductBuildDefinitionId { get; set; }

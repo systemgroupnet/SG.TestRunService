@@ -10,6 +10,9 @@ namespace SG.TestRunService.Common.Models
     {
         public static IList<TTarget> ConvertAll<TSource, TTarget>(this IList<TSource> source, Func<TSource, TTarget> converter)
         {
+            if (source == null)
+                return null;
+
             List<TTarget> result = new List<TTarget>(source.Count);
             foreach (var s in source)
                 result.Add(converter(s));
@@ -18,6 +21,9 @@ namespace SG.TestRunService.Common.Models
 
         public static IList<ExtraData> ToDataModel(this IDictionary<string, ExtraDataValue> extraData)
         {
+            if (extraData == null)
+                return null;
+
             return extraData
                 .Select(
                     e => new Data.ExtraData()
@@ -151,6 +157,9 @@ namespace SG.TestRunService.Common.Models
 
         public static IDictionary<string, ExtraDataValue> ToResponse(this IEnumerable<ExtraData> extraData)
         {
+            if (extraData == null)
+                return null;
+
             return extraData.ToDictionary(
                 e => e.Name,
                 e => new ExtraDataValue()

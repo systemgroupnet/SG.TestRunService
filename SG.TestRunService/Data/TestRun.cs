@@ -8,6 +8,12 @@ namespace SG.TestRunService.Data
 {
     public class TestRun : IEntity
     {
+        public TestRun()
+        {
+            Attachments = new List<Attachment>();
+            ExtraData = new List<ExtraData>();
+        }
+
         public int Id { get; set; }
         public int TestRunSessionId { get; set; }
         public TestRunSession Session { get; set; }
