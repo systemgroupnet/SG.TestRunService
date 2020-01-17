@@ -11,6 +11,7 @@ namespace SG.TestRunService.Data
         public int TestCaseId { get; set; }
         public int AzureProductBuildDefinitionId { get; set; }
 
+        [Required]
         public string Signature { get; set; }
 
         public DateTime DateAdded { get; set; }

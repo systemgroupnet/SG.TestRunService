@@ -16,13 +16,18 @@ namespace SG.TestRunService.Data
         }
 
         public int Id { get; set; }
+        [Required]
         public string TeamProject { get; set; }
         public int AzureProductBuildDefinitionId { get; set; }
         public int AzureProductBuildId { get; set; }
         public int AzureTestBuildId { get; set; }
+        [Required]
         public string AzureProductBuildNumber { get; set; }
+        [Required]
         public string AzureTestBuildNumber { get; set; }
+        [Required]
         public string SuiteName { get; set; }
+        [Required]
         public string SourceVersion { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
