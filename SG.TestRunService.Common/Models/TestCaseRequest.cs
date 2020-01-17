@@ -12,6 +12,6 @@ namespace SG.TestRunService.Common.Models
         public string TeamProject { get; set; }
         [Required]
         public string Title { get; set; }
-        public Dictionary<string, ExtraDataValue> ExtraData { get; set; }
+        public IDictionary<string, ExtraDataValue> ExtraData { get; set; }
     }
 }

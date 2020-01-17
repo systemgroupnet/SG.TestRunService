@@ -8,6 +8,14 @@ namespace SG.TestRunService.Common.Models
 {
     public static class ModelMappingExtensions
     {
+        public static IList<TTarget> ConvertAll<TSource, TTarget>(this IList<TSource> source, Func<TSource, TTarget> converter)
+        {
+            List<TTarget> result = new List<TTarget>(source.Count);
+            foreach (var s in source)
+                result.Add(converter(s));
+            return result;
+        }
+
         public static IList<ExtraData> ToDataModel(this IDictionary<string, ExtraDataValue> extraData)
         {
             return extraData
@@ -72,13 +80,7 @@ namespace SG.TestRunService.Common.Models
                 Outcome = testRun.Outcome,
                 StartTime = testRun.StartTime,
                 FinishTime = testRun.FinishTime,
-                ExtraData = testRun.ExtraData.ToDictionary(
-                    e => e.Name,
-                    e => new ExtraDataValue()
-                        {
-                            Value = e.Value,
-                            Url = e.Url
-                        })
+                ExtraData = testRun.ExtraData.ToResponse()
             };
         }
 
@@ -134,5 +136,14 @@ namespace SG.TestRunService.Common.Models
                     Outcome = session.Outcome
                 });
         }
+        public static IDictionary<string, ExtraDataValue> ToResponse(this IEnumerable<ExtraData> extraData)
+        {
+            return extraData.ToDictionary(
+                e => e.Name,
+                e => new ExtraDataValue()
+                {
+                    Value = e.Value,
+                    Url = e.Url
+                });
     }
 }

@@ -26,6 +26,6 @@ namespace SG.TestRunService.Common.Models
         public DateTime StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
         public TestSessionOutcome Outcome { get; set; }
-        public List<TestRunRequest> TestRuns { get; set; }
+        public IList<TestRunRequest> TestRuns { get; set; }
     }
 }

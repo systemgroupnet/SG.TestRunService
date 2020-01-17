@@ -13,7 +13,7 @@ namespace SG.TestRunService.Common.Models
         public TestRunOutcome Outcome { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
-        public Dictionary<string, ExtraDataValue> ExtraData { get; set; }
+        public IDictionary<string, ExtraDataValue> ExtraData { get; set; }
 
     }
 }

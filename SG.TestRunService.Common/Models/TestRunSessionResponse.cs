@@ -20,7 +20,7 @@ namespace SG.TestRunService.Common.Models
         public DateTime? FinishTime { get; set; }
         public TestSessionOutcome Outcome { get; set; }
         public int TestRunCount { get; set; }
-        public List<TestRunStatisticItem> RunStatistics { get; set; }
+        public IList<TestRunStatisticItem> RunStatistics { get; set; }
 
     }
 }
