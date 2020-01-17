@@ -17,6 +17,7 @@ namespace SG.TestRunService.Infrastructure
         Task<TOutput> GetByIdAsync<TEntity, TOutput>(int id, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector) where TEntity : class, IEntity;
         Task<TEntity> GetByIdAsync<TEntity>(int id) where TEntity : class, IEntity;
         Task InsertAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
+        Task InsertAsync<TEntity>(IEnumerable<TEntity> entities) where TEntity : class, IEntity;
         Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
         Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class, IEntity;
         Task<TEntity> DeleteAsync<TEntity>(int id) where TEntity : class, IEntity;

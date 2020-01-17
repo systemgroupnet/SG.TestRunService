@@ -71,6 +71,13 @@ namespace SG.TestRunService.Infrastructure.Implementations
             await _db.SaveChangesAsync();
         }
 
+        public async Task InsertAsync<TEntity>(IEnumerable<TEntity> entities)
+            where TEntity : class, IEntity
+        {
+            _db.AddRange(entities);
+            await _db.SaveChangesAsync();
+        }
+
         public async Task UpdateAsync<TEntity>(TEntity entity)
             where TEntity: class, IEntity
         {
