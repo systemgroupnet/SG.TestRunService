@@ -9,8 +9,10 @@ namespace SG.TestRunService.Data
     public class TestLastState : IEntity
     {
         public int Id { get; set; }
+
         public int TestCaseId { get; set; }
-        public TestCase TestCase { get; set; }
+        public int AzureProductBuildDefinitionId { get; set; }
+
         public int AzureTestBuildId { get; set; }
         public int AzureProductBuildId { get; set; }
         public int UpdateDate { get; set; }
@@ -21,5 +23,7 @@ namespace SG.TestRunService.Data
 
         [Timestamp]
         public byte[] Timestamp { get; set; }
+
+        public TestCase TestCase { get; set; }
     }
 }
