@@ -21,10 +21,10 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TestRunSessionResponse>> Insert(TestRunSessionRequest session)
+        public async Task<ActionResult<TestRunSessionResponse>> Insert(TestRunSessionRequest sessionRequest)
         {
-            await _service.InsertSessionAsync(session);
-            return CreatedAtAction(nameof(GetById), session.ToDataModel());
+            var sessionResponse = await _service.InsertSessionAsync(sessionRequest);
+            return CreatedAtAction(nameof(GetById), new { sessionId = sessionResponse.Id }, sessionResponse);
         }
 
         [HttpDelete]
