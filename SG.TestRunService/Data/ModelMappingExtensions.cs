@@ -44,6 +44,7 @@ namespace SG.TestRunService.Common.Models
                 AzureTestBuildId = r.AzureTestBuildId,
                 AzureProductBuildNumber = r.AzureProductBuildNumber,
                 AzureTestBuildNumber = r.AzureTestBuildNumber,
+                SuiteName = r.SuiteName,
                 SourceVersion = r.SourceVersion,
                 StartTime = r.StartTime,
                 FinishTime = r.FinishTime,
