@@ -15,34 +15,36 @@ namespace SG.TestRunClientLib
         public TestRunClient(string serviceUri)
         {
             _serviceUri = serviceUri;
-            _client = new RestClient(new Uri(new Uri(_serviceUri), "api").AbsoluteUri);
+            var config = new Config().UseRetryHandler();
+            _client = new RestClient(new Uri(new Uri(_serviceUri), "api").AbsoluteUri, config);
         }
 
         public async Task<IReadOnlyList<TestRunSessionResponse>> GetSessionsAsync()
         {
-            return await _client.Sessions.get();
+            return await _client.sessions.Get();
         }
 
         public async Task<TestRunSessionResponse> GetSessionAsync(int id)
         {
-            return await _client.Sessions(id).get();
+            return await _client.sessions(id).Get();
         }
 
         public async Task<TestRunSessionResponse> InsertSessionAsync(TestRunSessionRequest session)
         {
-            return await _client.Session.Post(session);
+            return await _client.sessions.Post(session);
         }
 
         public async Task<IReadOnlyList<int>> GetAzureTestCaseIdsAsync(string teamProject)
         {
-            return await _client.TestCases
+            return await _client.testcases
                 .Query(new { project = teamProject, fields = nameof(TestCaseResponse.AzureTestCaseId) })
                 .Get();
         }
 
         public async Task<TestCaseResponse> InsertTestCaseAsync(TestCaseRequest testCaseRequest)
         {
-            return await _client.TestCases.Post(testCaseRequest);
+            return await _client.testcases.Post(testCaseRequest);
         }
     }
 }
+
