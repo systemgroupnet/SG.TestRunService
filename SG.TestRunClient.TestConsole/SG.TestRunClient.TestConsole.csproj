@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SG.TestRunClientLib\SG.TestRunClientLib.csproj" />
+    <ProjectReference Include="..\SG.TestRunService.Common\SG.TestRunService.Common.csproj" />
+  </ItemGroup>
+
+</Project>
