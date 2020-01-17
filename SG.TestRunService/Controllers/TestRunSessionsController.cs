@@ -49,12 +49,9 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpGet("{sessionId:int}/runs")]
-        public async Task<ActionResult<IReadOnlyList<TestRunResponse>>> GetAllTestRuns(int sessionId)
+        public async Task<IReadOnlyList<TestRunResponse>> GetAllTestRuns(int sessionId)
         {
-            var testRuns = await _service.GetSessionTestRunsAsync(sessionId);
-            if (testRuns.Count == 0)
-                return NotFound();
-            return Ok(testRuns);
+            return await _service.GetSessionTestRunsAsync(sessionId);
         }
 
         [HttpPost("{sessionId:int}/runs")]
