@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SG.TestRunService.Common.Models;
 using SG.TestRunService.Data;
-using SG.TestRunService.Infrastructure;
+using SG.TestRunService.Data.Services;
 using SG.TestRunService.Services;
 using System;
 using System.Collections.Generic;

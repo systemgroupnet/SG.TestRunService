@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.Data
 {
-    public class BuildInfo
+    public class BuildInfo : IEntity
     {
         public int Id { get; set; }
 
