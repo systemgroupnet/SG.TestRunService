@@ -3,6 +3,7 @@ using SG.TestRunService.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SG.TestRunService.Data
 {
@@ -13,7 +14,7 @@ namespace SG.TestRunService.Data
         public int TestCaseId { get; set; }
         public int AzureProductBuildDefinitionId { get; set; }
 
-        public int BuildInfoId { get; set; }
+        public int ProductBuildInfoId { get; set; }
 
         public int UpdateDate { get; set; }
         public TestRunOutcome LastOutcome { get; set; }
@@ -26,7 +27,8 @@ namespace SG.TestRunService.Data
         [OnDelete(DeleteBehavior.Cascade)]
         public TestCase TestCase { get; set; }
 
+        [ForeignKey(nameof(ProductBuildInfoId))]
         [OnDelete(DeleteBehavior.Restrict)]
-        public BuildInfo BuildInfo { get; set; }
+        public BuildInfo ProductBuildInfo { get; set; }
     }
 }
