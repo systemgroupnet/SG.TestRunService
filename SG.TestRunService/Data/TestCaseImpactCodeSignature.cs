@@ -13,6 +13,7 @@ namespace SG.TestRunService.Data
 
         [Required]
         public string Signature { get; set; }
+        public string FilePath { get; set; }
 
         public DateTime DateAdded { get; set; }
         public DateTime? DateRemoved { get; set; }
