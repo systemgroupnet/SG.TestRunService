@@ -27,7 +27,6 @@ namespace SG.TestRunService.Data
         [OnDelete(DeleteBehavior.Cascade)]
         public TestCase TestCase { get; set; }
 
-        [ForeignKey(nameof(ProductBuildInfoId))]
         [OnDelete(DeleteBehavior.Restrict)]
         public BuildInfo ProductBuildInfo { get; set; }
     }

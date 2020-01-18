@@ -17,6 +17,5 @@ namespace SG.TestRunService.Common.Models
         public TestSessionOutcome Outcome { get; set; }
         public int TestRunCount { get; set; }
         public IList<TestRunStatisticItem> RunStatistics { get; set; }
-
     }
 }

@@ -27,7 +27,6 @@ namespace SG.TestRunService.Data
         public DateTime? FinishTime { get; set; }
         public TestSessionOutcome Outcome { get; set; }
 
-        [ForeignKey(nameof(ProductBuildInfoId))]
         [OnDelete(DeleteBehavior.Restrict)]
         public BuildInfo ProductBuildInfo { get; set; }
 
