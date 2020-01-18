@@ -27,7 +27,7 @@ namespace SG.TestRunService.ServiceImplementations
                 .FirstOrDefaultAsync();
             if(build == null)
             {
-                build = new Data.BuildInfo();
+                build = sessionDto.ProductBuild.ToDataModel();
                 _dbService.Add(build);
             }
             var session = sessionDto.ToDataModel();
