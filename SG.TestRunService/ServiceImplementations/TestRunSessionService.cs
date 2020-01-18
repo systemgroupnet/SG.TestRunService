@@ -21,8 +21,19 @@ namespace SG.TestRunService.ServiceImplementations
 
         public async Task<TestRunSessionResponse> InsertSessionAsync(TestRunSessionRequest sessionDto)
         {
+            var build = await _dbService.Query<Data.BuildInfo>(b =>
+                   b.AzureBuildDefinitionId == sessionDto.ProductBuild.AzureBuildDefinitionId &&
+                   b.AzureBuildId == sessionDto.ProductBuild.AzureBuildId)
+                .FirstOrDefaultAsync();
+            if(build == null)
+            {
+                build = new Data.BuildInfo();
+                _dbService.Add(build);
+            }
             var session = sessionDto.ToDataModel();
-            await _dbService.InsertAsync(session);
+            session.ProductBuildInfo = build;
+            _dbService.Add(session);
+            await _dbService.SaveChangesAsync();
             return session.ToResponse();
         }
 
