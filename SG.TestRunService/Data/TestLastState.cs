@@ -13,10 +13,9 @@ namespace SG.TestRunService.Data
         public int TestCaseId { get; set; }
         public int AzureProductBuildDefinitionId { get; set; }
 
-        public int AzureTestBuildId { get; set; }
-        public int AzureProductBuildId { get; set; }
+        public int BuildInfoId { get; set; }
+
         public int UpdateDate { get; set; }
-        public string SourceVersion { get; set; }
         public TestRunOutcome LastOutcome { get; set; }
         public bool ShouldBeRun { get; set; }
         public RunReason? RunReason { get; set; }
@@ -25,5 +24,7 @@ namespace SG.TestRunService.Data
         public byte[] Timestamp { get; set; }
 
         public TestCase TestCase { get; set; }
+
+        public BuildInfo BuildInfo { get; set; }
     }
 }
