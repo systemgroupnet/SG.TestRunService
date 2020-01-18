@@ -8,6 +8,8 @@ namespace SG.TestRunService.Common.Models
 {
     public static class ModelMappingExtensions
     {
+        #region Helpers
+
         public static IList<TTarget> ConvertAll<TSource, TTarget>(this IList<TSource> source, Func<TSource, TTarget> converter)
         {
             if (source == null)
@@ -18,6 +20,9 @@ namespace SG.TestRunService.Common.Models
                 result.Add(converter(s));
             return result;
         }
+
+        #endregion Helpers
+        #region ExtraData
 
         public static IList<ExtraData> ToDataModel(this IDictionary<string, ExtraDataValue> extraData)
         {
@@ -33,6 +38,23 @@ namespace SG.TestRunService.Common.Models
                         Url = e.Value.Url
                     }).ToList();
         }
+
+        public static IDictionary<string, ExtraDataValue> ToResponse(this IEnumerable<ExtraData> extraData)
+        {
+            if (extraData == null)
+                return null;
+
+            return extraData.ToDictionary(
+                e => e.Name,
+                e => new ExtraDataValue()
+                {
+                    Value = e.Value,
+                    Url = e.Url
+                });
+        }
+
+        #endregion ExtraData
+        #region BuildInfo
 
         public static Models.BuildInfo ToResponse(this Data.BuildInfo buildInfo)
         {
@@ -73,6 +95,9 @@ namespace SG.TestRunService.Common.Models
             });
         }
 
+        #endregion BuildInfo
+        #region TestRunSession
+
         public static TestRunSession ToDataModel(this TestRunSessionRequest r)
         {
             return new TestRunSession()
@@ -88,6 +113,48 @@ namespace SG.TestRunService.Common.Models
             };
         }
 
+        public static TestRunSessionResponse ToResponse(this TestRunSession session)
+        {
+            return new TestRunSessionResponse()
+            {
+                Id = session.Id,
+                ProductBuild = session.ProductBuildInfo.ToResponse(),
+                AzureTestBuildId = session.AzureTestBuildId,
+                AzureTestBuildNumber = session.AzureTestBuildNumber,
+                SuiteName = session.SuiteName,
+                StartTime = session.StartTime,
+                FinishTime = session.FinishTime,
+                Outcome = session.Outcome
+            };
+        }
+
+        public static IQueryable<TestRunSessionResponse> Project(this IQueryable<TestRunSession> sessions)
+        {
+            return sessions.Select(
+                session => new TestRunSessionResponse()
+                {
+                    Id = session.Id,
+                    ProductBuild = new BuildInfo()
+                    {
+                        TeamProject = session.ProductBuildInfo.TeamProject,
+                        AzureBuildDefinitionId = session.ProductBuildInfo.AzureBuildDefinitionId,
+                        AzureBuildId = session.ProductBuildInfo.AzureBuildId,
+                        SourceVersion = session.ProductBuildInfo.SourceVersion,
+                        Date = session.ProductBuildInfo.Date,
+                        BuildNumber = session.ProductBuildInfo.BuildNumber,
+                    },
+                    AzureTestBuildId = session.AzureTestBuildId,
+                    AzureTestBuildNumber = session.AzureTestBuildNumber,
+                    SuiteName = session.SuiteName,
+                    StartTime = session.StartTime,
+                    FinishTime = session.FinishTime,
+                    Outcome = session.Outcome
+                });
+        }
+
+        #endregion TestRunSession
+        #region TestCase
+
         public static TestCase ToDataModel(this TestCaseRequest r)
         {
             return new TestCase()
@@ -98,6 +165,33 @@ namespace SG.TestRunService.Common.Models
                 ExtraData = r.ExtraData.ToDataModel()
             };
         }
+
+        public static IQueryable<TestCaseResponse> Project(this IQueryable<TestCase> testCases)
+        {
+            return testCases.Select(
+                testCase => new TestCaseResponse()
+                {
+                    Id = testCase.Id,
+                    AzureTestCaseId = testCase.AzureTestCaseId,
+                    TeamProject = testCase.TeamProject,
+                    Title = testCase.Title,
+                });
+        }
+
+        public static TestCaseResponse ToResponse(this TestCase testCase)
+        {
+            return new TestCaseResponse()
+            {
+                Id = testCase.Id,
+                AzureTestCaseId = testCase.AzureTestCaseId,
+                TeamProject = testCase.TeamProject,
+                Title = testCase.Title,
+                ExtraData = testCase.ExtraData.ToResponse()
+            };
+        }
+
+        #endregion TestCase
+        #region TestRun
 
         public static TestRun ToDataModel(this TestRunRequest r, int? testRunSessionId = null)
         {
@@ -140,81 +234,6 @@ namespace SG.TestRunService.Common.Models
                 });
         }
 
-        public static TestRunSessionResponse ToResponse(this TestRunSession session)
-        {
-            return new TestRunSessionResponse()
-            {
-                Id = session.Id,
-                ProductBuild = session.ProductBuildInfo.ToResponse(),
-                AzureTestBuildId = session.AzureTestBuildId,
-                AzureTestBuildNumber = session.AzureTestBuildNumber,
-                SuiteName = session.SuiteName,
-                StartTime = session.StartTime,
-                FinishTime = session.FinishTime,
-                Outcome = session.Outcome
-            };
-        }
-
-        public static IQueryable<TestRunSessionResponse> Project(this IQueryable<TestRunSession> sessions)
-        {
-            return sessions.Select(
-                session => new TestRunSessionResponse()
-                {
-                    Id = session.Id,
-                    ProductBuild = new BuildInfo()
-                    {
-                        TeamProject = session.ProductBuildInfo.TeamProject,
-                        AzureBuildDefinitionId = session.ProductBuildInfo.AzureBuildDefinitionId,
-                        AzureBuildId = session.ProductBuildInfo.AzureBuildId,
-                        SourceVersion = session.ProductBuildInfo.SourceVersion,
-                        Date = session.ProductBuildInfo.Date,
-                        BuildNumber = session.ProductBuildInfo.BuildNumber,
-                    },
-                    AzureTestBuildId = session.AzureTestBuildId,
-                    AzureTestBuildNumber = session.AzureTestBuildNumber,
-                    SuiteName = session.SuiteName,
-                    StartTime = session.StartTime,
-                    FinishTime = session.FinishTime,
-                    Outcome = session.Outcome
-                });
-        }
-
-        public static IQueryable<TestCaseResponse> Project(this IQueryable<TestCase> testCases)
-        {
-            return testCases.Select(
-                testCase => new TestCaseResponse()
-                {
-                    Id = testCase.Id,
-                    AzureTestCaseId = testCase.AzureTestCaseId,
-                    TeamProject = testCase.TeamProject,
-                    Title = testCase.Title,
-                });
-        }
-
-        public static IDictionary<string, ExtraDataValue> ToResponse(this IEnumerable<ExtraData> extraData)
-        {
-            if (extraData == null)
-                return null;
-
-            return extraData.ToDictionary(
-                e => e.Name,
-                e => new ExtraDataValue()
-                {
-                    Value = e.Value,
-                    Url = e.Url
-                });
-        }
-
-        public static TestCaseResponse ToResponse(this TestCase testCase)
-        {
-            return new TestCaseResponse()
-            {
-                Id = testCase.Id,
-                AzureTestCaseId = testCase.AzureTestCaseId,
-                TeamProject = testCase.TeamProject,
-                Title = testCase.Title,
-                ExtraData = testCase.ExtraData.ToResponse()
-            };
-        }
+        #endregion
     }
 }
