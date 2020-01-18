@@ -28,9 +28,14 @@ namespace SG.TestRunService.Data
         public TestSessionOutcome Outcome { get; set; }
 
         [ForeignKey(nameof(ProductBuildInfoId))]
+        [OnDelete(DeleteBehavior.Restrict)]
         public BuildInfo ProductBuildInfo { get; set; }
+
+        [OnDelete(DeleteBehavior.Restrict)]
         public IList<TestRun> TestRuns { get; set; }
+        [OnDelete(DeleteBehavior.Cascade)]
         public IList<Attachment> Attachments { get; set; }
+        [OnDelete(DeleteBehavior.Cascade)]
         public IList<ExtraData> ExtraData { get; set; }
 
         [Timestamp]

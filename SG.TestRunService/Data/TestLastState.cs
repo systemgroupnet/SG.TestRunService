@@ -23,8 +23,10 @@ namespace SG.TestRunService.Data
         [Timestamp]
         public byte[] Timestamp { get; set; }
 
+        [OnDelete(DeleteBehavior.Cascade)]
         public TestCase TestCase { get; set; }
 
+        [OnDelete(DeleteBehavior.Restrict)]
         public BuildInfo BuildInfo { get; set; }
     }
 }

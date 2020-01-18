@@ -17,6 +17,8 @@ namespace SG.TestRunService.Data
         public string TeamProject { get; set; }
         [Required]
         public string Title { get; set; }
+
+        [OnDelete(DeleteBehavior.Cascade)]
         public IList<ExtraData> ExtraData { get; set; }
 
         [Timestamp]

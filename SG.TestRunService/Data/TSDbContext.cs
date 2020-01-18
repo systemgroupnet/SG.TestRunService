@@ -15,6 +15,8 @@ namespace SG.TestRunService.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            Infrastructure.OnDeleteAttribute.Apply(modelBuilder);
+
             modelBuilder.Entity<TestImpactCodeSignature>()
                 .HasIndex(s => s.Signature);
             modelBuilder.Entity<TestImpactCodeSignature>()
