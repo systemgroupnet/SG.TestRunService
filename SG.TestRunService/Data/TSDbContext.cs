@@ -32,6 +32,7 @@ namespace SG.TestRunService.Data
         }
 
         public DbSet<TestCase> TestCase { get; }
+        public DbSet<BuildInfo> BuildInfo { get; }
         public DbSet<TestRunSession> TestRunSession { get; }
         public DbSet<TestRun> TestRun { get; }
         public DbSet<Attachment> Attachment { get; }

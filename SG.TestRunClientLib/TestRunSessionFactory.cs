@@ -9,20 +9,14 @@ namespace SG.TestRunClientLib
     public static class TestRunSessionFactory
     {
         public static async Task<TestRunSessionAgent> StartAsync(
-            string teamProject, int productBuildDefinitionId,
-            int productBuildId, string productBuildNumber,
-            int testBuildId, string testBuildNumber,
-            string suiteName, string sourceVersion)
+            BuildInfo productBuild, string suiteName,
+            int testBuildId, string testBuildNumber)
         {
             TestRunSessionRequest sessionRequest = new TestRunSessionRequest()
             {
-                TeamProject = teamProject,
-                AzureProductBuildDefinitionId = productBuildDefinitionId,
-                AzureProductBuildId = productBuildId,
-                AzureProductBuildNumber = productBuildNumber,
+                ProductBuild = productBuild,
                 AzureTestBuildId = testBuildId,
                 AzureTestBuildNumber = testBuildNumber,
-                SourceVersion = sourceVersion,
                 SuiteName = suiteName,
                 StartTime = DateTime.Now,
                 Outcome = TestSessionOutcome.NotStarted,

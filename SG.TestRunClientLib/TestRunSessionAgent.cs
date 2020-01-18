@@ -27,9 +27,9 @@ namespace SG.TestRunClientLib
 
         public async Task IntorduceTestCases(IEnumerable<TestCaseRequest> tests)
         {
-            var azureTestCaseIds = new HashSet<int>(await _client.GetAzureTestCaseIdsAsync(_session.TeamProject));
+            var azureTestCaseIds = new HashSet<int>(await _client.GetAzureTestCaseIdsAsync(_session.ProductBuild.TeamProject));
             var newTestCases = tests.Where(t => !azureTestCaseIds.Contains(t.AzureTestCaseId));
-            foreach(var tc in newTestCases)
+            foreach (var tc in newTestCases)
             {
                 await _client.InsertTestCaseAsync(tc);
             }
