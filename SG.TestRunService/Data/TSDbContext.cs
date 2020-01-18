@@ -15,11 +15,15 @@ namespace SG.TestRunService.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            ConfigureIndexes(modelBuilder);
             Infrastructure.OnDeleteAttribute.Apply(modelBuilder);
+        }
 
-            modelBuilder.Entity<TestImpactCodeSignature>()
+        private static void ConfigureIndexes(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<TestCaseImpactCodeSignature>()
                 .HasIndex(s => s.Signature);
-            modelBuilder.Entity<TestImpactCodeSignature>()
+            modelBuilder.Entity<TestCaseImpactCodeSignature>()
                 .HasIndex(s => new { s.TestCaseId, s.AzureProductBuildDefinitionId, s.Signature })
                 .IsUnique();
             modelBuilder.Entity<TestCase>()
@@ -41,7 +45,7 @@ namespace SG.TestRunService.Data
         public DbSet<TestRunSession> TestRunSession { get; }
         public DbSet<TestRun> TestRun { get; }
         public DbSet<Attachment> Attachment { get; }
-        public DbSet<TestImpactCodeSignature> TestCaseImpactCodeSignature { get; }
+        public DbSet<TestCaseImpactCodeSignature> TestCaseImpactCodeSignature { get; }
         public DbSet<ExtraData> ExtraData { get; }
         public DbSet<TestLastState> TestLastState { get; }
     }

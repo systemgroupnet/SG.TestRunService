@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SG.TestRunService.Data
 {
-    public class TestImpactCodeSignature : IEntity
+    public class TestCaseImpactCodeSignature : IEntity
     {
         public int Id { get; set; }
 
