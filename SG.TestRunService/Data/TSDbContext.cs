@@ -29,6 +29,9 @@ namespace SG.TestRunService.Data
             modelBuilder.Entity<TestRun>()
                 .HasIndex(t => new { t.TestRunSessionId, t.TestCaseId })
                 .IsUnique();
+            modelBuilder.Entity<BuildInfo>()
+                .HasIndex(b => new { b.AzureBuildDefinitionId, b.AzureBuildId })
+                .IsUnique();
         }
 
         public DbSet<TestCase> TestCase { get; }
