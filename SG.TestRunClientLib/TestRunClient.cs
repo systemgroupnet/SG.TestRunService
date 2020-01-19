@@ -51,6 +51,11 @@ namespace SG.TestRunClientLib
             return await _client.impact.lastUpdate.Get(azureProductBuildDefId);
         }
 
+        public async Task<PublishImpactChangesResponse> PublishImpactChangesAsync(
+            PublishImpactChangesRequest impactChangeRequest)
+        {
+            return await _client.impact.changes.Post(impactChangeRequest);
+        }
     }
 }
 

@@ -38,6 +38,24 @@ namespace SG.TestRunClient.TestConsole.Sample
             await _agent.IntorduceTestCases(CreateTestCaseRequests(_allTestCases));
         }
 
+        private List<string> GetChangedFiles(int productBuildDefinitionId, int sourceVersion, int baseSourceVersion)
+        {
+            return new List<string> {
+                "$/Sample/Project1/Program.cs",
+                "$/Sample/Project1/TestClass1.cs"
+            };
+        }
+
+        //private async Task<IReadOnlyList<TestCase>> GetTestsToRun()
+        //{
+        //    var baseSourceVersion = int.Parse(await _agent.GetBaseBuildSourceVersionAsync());
+        //    if (baseSourceVersion < sourceVersion)
+        //    {
+        //        var changedFiles = GetChangedFiles(productBuildDefinitionId, sourceVersion, baseSourceVersion);
+
+        //    }
+        //}
+
         public IList<TestCase> GetTestCases()
         {
             return new List<TestCase>()

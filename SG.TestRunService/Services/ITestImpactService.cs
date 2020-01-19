@@ -11,5 +11,6 @@ namespace SG.TestRunService.Services
     {
         Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastImpactUpdateAsync();
         Task<LastImpactUpdateResponse> GetLastImpactUpdateAsync(int azureProductBuildDefId);
+        Task<IReadOnlyList<TestToRunResponse>> PublishImpactChangesAsync(PublishImpactChangesRequest request);
     }
 }

@@ -30,5 +30,16 @@ namespace SG.TestRunService.Controllers
         {
             return _service.GetLastImpactUpdateAsync(azureProductBuildDefId);
         }
+
+        [HttpPost("changes")]
+        public async Task<PublishImpactChangesResponse> PublichChanges(PublishImpactChangesRequest request)
+        {
+            var testsToRun = await _service.PublishImpactChangesAsync(request);
+            return new PublishImpactChangesResponse()
+            {
+                TestsToRun = testsToRun,
+                TestsToRunCount = testsToRun.Count
+            };
+        }
     }
 }
