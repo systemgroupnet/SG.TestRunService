@@ -38,6 +38,9 @@ namespace SG.TestRunService.Data
             modelBuilder.Entity<BuildInfo>()
                 .HasIndex(b => new { b.AzureBuildDefinitionId, b.AzureBuildId })
                 .IsUnique();
+            modelBuilder.Entity<LastImpactUpdate>()
+                .HasIndex(e => e.AzureProductBuildDefinitionId)
+                .IsUnique();
         }
 
         public DbSet<TestCase> TestCase { get; }
@@ -48,5 +51,6 @@ namespace SG.TestRunService.Data
         public DbSet<TestCaseImpactCodeSignature> TestCaseImpactCodeSignature { get; }
         public DbSet<ExtraData> ExtraData { get; }
         public DbSet<TestLastState> TestLastState { get; }
+        public DbSet<LastImpactUpdate> LastImpactUpdate { get; }
     }
 }

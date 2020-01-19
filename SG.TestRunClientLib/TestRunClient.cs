@@ -45,6 +45,12 @@ namespace SG.TestRunClientLib
         {
             return await _client.testcases.Post(testCaseRequest);
         }
+
+        public async Task<LastImpactUpdateResponse> GetLastImpactUpdateAsync(int azureProductBuildDefId)
+        {
+            return await _client.impact.lastUpdate.Get(azureProductBuildDefId);
+        }
+
     }
 }
 

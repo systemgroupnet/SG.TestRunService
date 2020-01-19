@@ -34,5 +34,12 @@ namespace SG.TestRunClientLib
                 await _client.InsertTestCaseAsync(tc);
             }
         }
+
+        public async Task<string> GetBaseBuildSourceVersionAsync()
+        {
+            var lastUpdate = await _client.GetLastImpactUpdateAsync(_session.ProductBuild.AzureBuildDefinitionId);
+            return lastUpdate.ProductBuild.SourceVersion;
+        }
+
     }
 }

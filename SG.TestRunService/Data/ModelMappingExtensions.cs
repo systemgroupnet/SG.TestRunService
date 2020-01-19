@@ -235,5 +235,27 @@ namespace SG.TestRunService.Common.Models
         }
 
         #endregion
+        #region LastImpactUpdate
+
+        public static IQueryable<LastImpactUpdateResponse> Project(this IQueryable<LastImpactUpdate> query)
+        {
+            return query.Select(
+                l => new LastImpactUpdateResponse()
+                {
+                    AzureProductBuildDefinitionId = l.AzureProductBuildDefinitionId,
+                    UpdateDate = l.UpdateDate,
+                    ProductBuild = new BuildInfo()
+                    {
+                        TeamProject = l.ProductBuildInfo.TeamProject,
+                        AzureBuildDefinitionId = l.ProductBuildInfo.AzureBuildDefinitionId,
+                        AzureBuildId = l.ProductBuildInfo.AzureBuildId,
+                        SourceVersion = l.ProductBuildInfo.SourceVersion,
+                        Date = l.ProductBuildInfo.Date,
+                        BuildNumber = l.ProductBuildInfo.BuildNumber,
+                    },
+                });
+        }
+
+        #endregion
     }
 }
