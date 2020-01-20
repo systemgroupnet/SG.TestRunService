@@ -9,6 +9,7 @@ namespace SG.TestRunClientLib
     public static class TestRunSessionFactory
     {
         public static async Task<TestRunSessionAgent> StartAsync(
+            ITestRunClientConfiguration configuration,
             IDevOpsServerHandle devOpsServerHandle,
             BuildInfo productBuild, string suiteName,
             int testBuildId, string testBuildNumber)
@@ -23,7 +24,7 @@ namespace SG.TestRunClientLib
                 Outcome = TestSessionOutcome.NotStarted,
             };
 
-            return await TestRunSessionAgent.CreateAsync(devOpsServerHandle, sessionRequest);
+            return await TestRunSessionAgent.CreateAsync(configuration,devOpsServerHandle, sessionRequest);
         }
     }
 }

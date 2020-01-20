@@ -35,8 +35,9 @@ namespace SG.TestRunClient.TestConsole.Sample
                 SourceVersion = sourceVersion.ToString()
             };
             _agent = await TestRunSessionFactory.StartAsync(
+                new TestRunClientJsonFileConfiguration("appsettings.json"),
                 _devOpsServerHandle,
-                build, suite, testBuildId, testBuildNumber); ;
+                build, suite, testBuildId, testBuildNumber);
 
             _suiteTestCases = GetTestCases();
             await _agent.IntroduceTestCases(CreateTestCaseRequests(_suiteTestCases));

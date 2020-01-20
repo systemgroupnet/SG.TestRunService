@@ -11,27 +11,32 @@ namespace SG.TestRunClientLib
 {
     public class TestRunSessionAgent
     {
-        readonly TestRunClient _client;
-        readonly IDevOpsServerHandle _devOpsServerHandle;
-        readonly TestRunSessionResponse _session;
-        Dictionary<int, TestCaseRequest> _testCases;
+        private readonly TestRunClient _client;
+        private readonly IDevOpsServerHandle _devOpsServerHandle;
+        private readonly ITestRunClientConfiguration _configuration;
+        private readonly TestRunSessionResponse _session;
+        private Dictionary<int, TestCaseRequest> _testCases;
 
         private TestRunSessionAgent(
             TestRunClient client,
+            ITestRunClientConfiguration configuration,
             IDevOpsServerHandle devOpsServerHandle,
             TestRunSessionResponse session)
         {
             _client = client;
+            _configuration = configuration;
             _devOpsServerHandle = devOpsServerHandle;
             _session = session;
         }
 
         public static async Task<TestRunSessionAgent> CreateAsync(
-            IDevOpsServerHandle devOpsServerHandle, TestRunSessionRequest sessionRequest)
+            ITestRunClientConfiguration configuration,
+            IDevOpsServerHandle devOpsServerHandle,
+            TestRunSessionRequest sessionRequest)
         {
-            var client = TestRunClientFactory.CreateClient();
+            var client = new TestRunClient(configuration.TestRunServiceUrl);
             var response = await client.InsertSessionAsync(sessionRequest);
-            return new TestRunSessionAgent(client, devOpsServerHandle, response);
+            return new TestRunSessionAgent(client, configuration, devOpsServerHandle, response);
         }
 
         public async Task IntroduceTestCases(IEnumerable<TestCaseRequest> tests)
@@ -60,30 +65,32 @@ namespace SG.TestRunClientLib
             var baseSourceVersion = await GetBaseBuildSourceVersionAsync();
             if (baseSourceVersion == currentSourceVersion)
             {
+                // issue a warning
             }
-            else if (_devOpsServerHandle.IsChronologicallyAfter(currentSourceVersion, baseSourceVersion))
+            else if (!_devOpsServerHandle.IsChronologicallyAfter(currentSourceVersion, baseSourceVersion))
             {
-            }
-            else
-            {
-
+                switch (_configuration.RunForOlderVersionBeahvior)
+                {
+                    case TestOlderVersionBehavior.Fail:
+                        throw new Exception($"Source version used for this test (${currentSourceVersion})is older than the last test ran on this build definition (${baseSourceVersion}).");
+                    case TestOlderVersionBehavior.RunNotSuccessfulTests:
+                        return await PublishChangesAndGetTestsToRun(Enumerable.Empty<string>());
+                    case TestOlderVersionBehavior.RunImpactedAndNotSuccessfulTests:
+                        break;
+                    case TestOlderVersionBehavior.RunAllTests:
+                        return _testCases.Values.ToList();
+                    default:
+                        throw new NotSupportedException($"The value '{_configuration.RunForOlderVersionBeahvior}' for configuration '{nameof(_configuration.RunForOlderVersionBeahvior)}' is not valid.");
+                }
             }
             var changedFiles = _devOpsServerHandle.GetChangedFiles(
                 _session.ProductBuild.TeamProject,
                 _session.ProductBuild.AzureBuildDefinitionId,
                 baseSourceVersion, currentSourceVersion);
-
-            var testsToRun = await PublishChangesAndGetTestsToRun(changedFiles);
-            var testCasesToRun = new List<TestCaseRequest>();
-            foreach (var tr in testsToRun)
-            {
-                if (_testCases.TryGetValue(tr.AzureTestCaseId, out var tcToRun))
-                    testCasesToRun.Add(tcToRun);
-            }
-            return testCasesToRun;
+            return await PublishChangesAndGetTestsToRun(changedFiles);
         }
 
-        private async Task<IReadOnlyList<TestToRunResponse>> PublishChangesAndGetTestsToRun(IEnumerable<string> changedFiles)
+        private async Task<IReadOnlyList<TestCaseRequest>> PublishChangesAndGetTestsToRun(IEnumerable<string> changedFiles)
         {
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
@@ -92,7 +99,13 @@ namespace SG.TestRunClientLib
                 Changes = changedFiles.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
             };
             var response = await _client.PublishImpactChangesAsync(req);
-            return response.TestsToRun;
+            var testCasesToRun = new List<TestCaseRequest>();
+            foreach (var tr in response.TestsToRun)
+            {
+                if (_testCases.TryGetValue(tr.AzureTestCaseId, out var tcToRun))
+                    testCasesToRun.Add(tcToRun);
+            }
+            return testCasesToRun;
         }
 
         private string CalculateSignature(string value)

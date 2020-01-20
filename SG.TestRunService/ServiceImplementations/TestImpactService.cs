@@ -81,7 +81,5 @@ namespace SG.TestRunService.ServiceImplementations
                 .ToList();
             return response;
         }
-
-
     }
 }
