@@ -41,6 +41,13 @@ namespace SG.TestRunClientLib
                 .Get();
         }
 
+        public async Task<IReadOnlyList<TestCaseResponse>> GetTestCases(string teamProject, IEnumerable<string> fieldNames)
+        {
+            return await _client.testcases
+                .Query(new { project = teamProject, fields = string.Join(",", fieldNames) })
+                .Get();
+        }
+
         public async Task<TestCaseResponse> InsertTestCaseAsync(TestCaseRequest testCaseRequest)
         {
             return await _client.testcases.Post(testCaseRequest);

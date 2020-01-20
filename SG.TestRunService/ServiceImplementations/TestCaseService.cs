@@ -54,5 +54,24 @@ namespace SG.TestRunService.ServiceImplementations
                 .Select(tc => tc.AzureTestCaseId)
                 .ToListAsync();
         }
+
+        public async Task<IReadOnlyList<TestCaseResponse>> GetAllAsync(string teamProject, IEnumerable<string> fieldNames)
+        {
+            var names = fieldNames.ToList();
+            if (names.Count == 2 &&
+                names.Contains(nameof(TestCaseResponse.Id)) &&
+                names.Contains(nameof(TestCaseResponse.AzureTestCaseId)))
+            {
+                return await _dbService.Query<TestCase>()
+                        .Where(tc => tc.TeamProject == teamProject)
+                        .Select(tc => new TestCaseResponse()
+                        {
+                            Id = tc.Id,
+                            AzureTestCaseId = tc.AzureTestCaseId
+                        })
+                        .ToListAsync();
+            }
+            throw new NotSupportedException("Currently only selecting `Id` and `AzureTestCaseId` is supported!");
+        }
     }
 }

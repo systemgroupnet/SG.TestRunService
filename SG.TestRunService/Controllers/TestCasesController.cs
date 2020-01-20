@@ -31,10 +31,16 @@ namespace SG.TestRunService.Controllers
                 return Ok(await _service.GetAllAsync(project));
 
             var fieldNames = fields.Split(',');
-            if (fieldNames.Length != 1 || fieldNames[0] != nameof(TestCaseResponse.AzureTestCaseId))
-                return StatusCode(StatusCodes.Status501NotImplemented);
+            if (fieldNames.Length == 1 && fieldNames[0] == nameof(TestCaseResponse.AzureTestCaseId))
+                return Ok(await _service.GetAzureTestCaseIdsAsync(project));
+            if(fieldNames.Length == 2 &&
+                fieldNames.Contains(nameof(TestCaseResponse.Id)) &&
+                fieldNames.Contains(nameof(TestCaseResponse.AzureTestCaseId)))
+            {
+                return Ok(await _service.GetAllAsync(project, fieldNames));
+            }
 
-            return Ok(await _service.GetAzureTestCaseIdsAsync(project));
+            return StatusCode(StatusCodes.Status501NotImplemented);
         }
 
         [HttpGet("{id:int}")]

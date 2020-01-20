@@ -42,12 +42,6 @@ namespace SG.TestRunClient.TestConsole.Sample
             _suiteTestCases = GetTestCases();
             await _agent.IntroduceTestCases(CreateTestCaseRequests(_suiteTestCases));
             var testsToRun = await _agent.GetTestsToRun();
-            RunTests(testsToRun);
-        }
-
-        public void RunTests(IEnumerable<TestCaseRequest> tests)
-        {
-
         }
 
         public static IList<TestCase> GetTestCases()

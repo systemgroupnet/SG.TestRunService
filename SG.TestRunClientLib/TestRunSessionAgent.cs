@@ -15,7 +15,9 @@ namespace SG.TestRunClientLib
         private readonly IDevOpsServerHandle _devOpsServerHandle;
         private readonly ITestRunClientConfiguration _configuration;
         private readonly TestRunSessionResponse _session;
-        private Dictionary<int, TestCaseRequest> _testCases;
+        private readonly string _project;
+        private IReadOnlyList<TestCaseRequest> _testCaseRequests;
+        private IReadOnlyList<TestCaseInfo> _testsToRun;
 
         private TestRunSessionAgent(
             TestRunClient client,
@@ -27,6 +29,7 @@ namespace SG.TestRunClientLib
             _configuration = configuration;
             _devOpsServerHandle = devOpsServerHandle;
             _session = session;
+            _project = session.ProductBuild.TeamProject;
         }
 
         public static async Task<TestRunSessionAgent> CreateAsync(
@@ -41,9 +44,9 @@ namespace SG.TestRunClientLib
 
         public async Task IntroduceTestCases(IEnumerable<TestCaseRequest> tests)
         {
-            _testCases = tests.ToDictionary(t => t.AzureTestCaseId);
-            var azureTestCaseIds = new HashSet<int>(await _client.GetAzureTestCaseIdsAsync(_session.ProductBuild.TeamProject));
-            var newTestCases = tests.Where(t => !azureTestCaseIds.Contains(t.AzureTestCaseId));
+            _testCaseRequests = tests.ToList();
+            var azureTestCaseIds = new HashSet<int>(await _client.GetAzureTestCaseIdsAsync(_project));
+            var newTestCases = _testCaseRequests.Where(t => !azureTestCaseIds.Contains(t.AzureTestCaseId));
             foreach (var tc in newTestCases)
             {
                 await _client.InsertTestCaseAsync(tc);
@@ -56,9 +59,9 @@ namespace SG.TestRunClientLib
             return lastUpdate.ProductBuild.SourceVersion;
         }
 
-        public async Task<IReadOnlyList<TestCaseRequest>> GetTestsToRun()
+        public async Task<IReadOnlyList<TestCaseInfo>> GetTestsToRun()
         {
-            if (_testCases == null)
+            if (_testCaseRequests == null)
                 throw new InvalidOperationException($"Test cases are not available. Call `{nameof(IntroduceTestCases)}` first.");
 
             var currentSourceVersion = _session.ProductBuild.SourceVersion;
@@ -78,19 +81,44 @@ namespace SG.TestRunClientLib
                     case TestOlderVersionBehavior.RunImpactedAndNotSuccessfulTests:
                         break;
                     case TestOlderVersionBehavior.RunAllTests:
-                        return _testCases.Values.ToList();
+                        return await GetAllTestCaseInfos();
                     default:
                         throw new NotSupportedException($"The value '{_configuration.RunForOlderVersionBeahvior}' for configuration '{nameof(_configuration.RunForOlderVersionBeahvior)}' is not valid.");
                 }
             }
             var changedFiles = _devOpsServerHandle.GetChangedFiles(
-                _session.ProductBuild.TeamProject,
+                _project,
                 _session.ProductBuild.AzureBuildDefinitionId,
                 baseSourceVersion, currentSourceVersion);
             return await PublishChangesAndGetTestsToRun(changedFiles);
         }
 
-        private async Task<IReadOnlyList<TestCaseRequest>> PublishChangesAndGetTestsToRun(IEnumerable<string> changedFiles)
+        private async Task<IReadOnlyList<TestCaseInfo>> GetAllTestCaseInfos()
+        {
+            if (_testsToRun != null)
+                return _testsToRun;
+            if (_testCaseRequests == null || _testCaseRequests.Count == 0)
+                return new List<TestCaseInfo>();
+            var testCaseResponses = await _client.GetTestCases(_project,
+                new[]
+                {
+                    nameof(TestCaseResponse.Id),
+                    nameof(TestCaseResponse.AzureTestCaseId)
+                });
+
+            var testCaseAzureIdsToServiceIds = testCaseResponses.ToDictionary(t => t.AzureTestCaseId, t => t.Id);
+
+            List<TestCaseInfo> result = new List<TestCaseInfo>();
+            foreach (var tc in _testCaseRequests)
+                result.Add(
+                    new TestCaseInfo(
+                        testCaseAzureIdsToServiceIds[tc.AzureTestCaseId],
+                        tc.AzureTestCaseId, tc.Title, null));
+            _testsToRun = result;
+            return _testsToRun;
+        }
+
+        private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRun(IEnumerable<string> changedFiles)
         {
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
@@ -99,13 +127,20 @@ namespace SG.TestRunClientLib
                 Changes = changedFiles.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
             };
             var response = await _client.PublishImpactChangesAsync(req);
-            var testCasesToRun = new List<TestCaseRequest>();
+            var testsToRun = new List<TestCaseInfo>();
+            var azureIdToTestCases = _testCaseRequests.ToDictionary(t => t.AzureTestCaseId);
             foreach (var tr in response.TestsToRun)
             {
-                if (_testCases.TryGetValue(tr.AzureTestCaseId, out var tcToRun))
-                    testCasesToRun.Add(tcToRun);
+                if (azureIdToTestCases.TryGetValue(tr.AzureTestCaseId, out var testCase))
+                {
+                    testsToRun.Add(
+                        new TestCaseInfo(
+                            tr.Id, tr.AzureTestCaseId,
+                            testCase.Title, tr.RunReason));
+                }
             }
-            return testCasesToRun;
+            _testsToRun = testsToRun;
+            return _testsToRun;
         }
 
         private string CalculateSignature(string value)
