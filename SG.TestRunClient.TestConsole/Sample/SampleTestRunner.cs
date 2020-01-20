@@ -10,17 +10,18 @@ namespace SG.TestRunClient.TestConsole.Sample
 {
     public class SampleTestRunner
     {
-        string project = "Sample";
-        int productBuildDefinitionId = 10;
-        int productBuildId = 1;
-        string productBuildNumber = "SampleBuild.Dvp_1";
-        int testBuildId = 1;
-        string testBuildNumber = "SampleTest.Dvp_1";
-        string suite = "Dvp";
-        int sourceVersion = 130;
+        readonly string project = "Sample";
+        readonly int productBuildDefinitionId = 10;
+        readonly int productBuildId = 1;
+        readonly string productBuildNumber = "SampleBuild.Dvp_1";
+        readonly int testBuildId = 1;
+        readonly string testBuildNumber = "SampleTest.Dvp_1";
+        readonly string suite = "Dvp";
+        readonly int sourceVersion = 130;
 
         TestRunSessionAgent _agent;
-        IList<TestCase> _allTestCases;
+        IList<TestCase> _suiteTestCases;
+        readonly SampleAzureDevopsHandle _devOpsServerHandle = new SampleAzureDevopsHandle();
 
         public async Task RunAsync()
         {
@@ -33,43 +34,35 @@ namespace SG.TestRunClient.TestConsole.Sample
                 Date = new DateTime(2010, 1, 1),
                 SourceVersion = sourceVersion.ToString()
             };
-            _agent = await TestRunSessionFactory.StartAsync(build, suite, testBuildId, testBuildNumber);
-            _allTestCases = GetTestCases();
-            await _agent.IntorduceTestCases(CreateTestCaseRequests(_allTestCases));
+            _agent = await TestRunSessionFactory.StartAsync(
+                _devOpsServerHandle,
+                build, suite, testBuildId, testBuildNumber); ;
+
+            _suiteTestCases = GetTestCases();
+            await _agent.IntroduceTestCases(CreateTestCaseRequests(_suiteTestCases));
+            var testsToRun = await _agent.GetTestsToRun();
+            RunTests(testsToRun);
         }
 
-        private List<string> GetChangedFiles(int productBuildDefinitionId, int sourceVersion, int baseSourceVersion)
+        public void RunTests(IEnumerable<TestCaseRequest> tests)
         {
-            return new List<string> {
-                "$/Sample/Project1/Program.cs",
-                "$/Sample/Project1/TestClass1.cs"
-            };
+
         }
 
-        //private async Task<IReadOnlyList<TestCase>> GetTestsToRun()
-        //{
-        //    var baseSourceVersion = int.Parse(await _agent.GetBaseBuildSourceVersionAsync());
-        //    if (baseSourceVersion < sourceVersion)
-        //    {
-        //        var changedFiles = GetChangedFiles(productBuildDefinitionId, sourceVersion, baseSourceVersion);
-
-        //    }
-        //}
-
-        public IList<TestCase> GetTestCases()
+        public static IList<TestCase> GetTestCases()
         {
             return new List<TestCase>()
             {
-                new TestCase(project, 200, "بررسی 1", "/Tests/1.sgts"),
-                new TestCase(project, 201, "تست بررسی 2", "/Tests/2.sgts"),
+                new TestCase(200, "بررسی 1", "/Tests/1.sgts"),
+                new TestCase(201, "تست بررسی 2", "/Tests/2.sgts"),
             };
         }
 
-        public IList<TestCaseRequest> CreateTestCaseRequests(IEnumerable<TestCase> testCases)
+        private IList<TestCaseRequest> CreateTestCaseRequests(IEnumerable<TestCase> testCases)
         {
             return testCases
                 .Select(tc =>
-                    new TestCaseRequest(tc.TeamProject, tc.AzureId, tc.Title)
+                    new TestCaseRequest(project, tc.AzureId, tc.Title)
                     {
                         ExtraData = { ["scriptPath"] = new ExtraDataValue(tc.ScriptPath) }
                     })

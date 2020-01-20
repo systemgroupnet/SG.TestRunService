@@ -12,23 +12,31 @@ namespace SG.TestRunClientLib
     public class TestRunSessionAgent
     {
         readonly TestRunClient _client;
+        readonly IDevOpsServerHandle _devOpsServerHandle;
         readonly TestRunSessionResponse _session;
+        Dictionary<int, TestCaseRequest> _testCases;
 
-        private TestRunSessionAgent(TestRunClient client, TestRunSessionResponse session)
+        private TestRunSessionAgent(
+            TestRunClient client,
+            IDevOpsServerHandle devOpsServerHandle,
+            TestRunSessionResponse session)
         {
             _client = client;
+            _devOpsServerHandle = devOpsServerHandle;
             _session = session;
         }
 
-        public static async Task<TestRunSessionAgent> CreateAsync(TestRunSessionRequest sessionRequest)
+        public static async Task<TestRunSessionAgent> CreateAsync(
+            IDevOpsServerHandle devOpsServerHandle, TestRunSessionRequest sessionRequest)
         {
             var client = TestRunClientFactory.CreateClient();
             var response = await client.InsertSessionAsync(sessionRequest);
-            return new TestRunSessionAgent(client, response);
+            return new TestRunSessionAgent(client, devOpsServerHandle, response);
         }
 
-        public async Task IntorduceTestCases(IEnumerable<TestCaseRequest> tests)
+        public async Task IntroduceTestCases(IEnumerable<TestCaseRequest> tests)
         {
+            _testCases = tests.ToDictionary(t => t.AzureTestCaseId);
             var azureTestCaseIds = new HashSet<int>(await _client.GetAzureTestCaseIdsAsync(_session.ProductBuild.TeamProject));
             var newTestCases = tests.Where(t => !azureTestCaseIds.Contains(t.AzureTestCaseId));
             foreach (var tc in newTestCases)
@@ -37,13 +45,45 @@ namespace SG.TestRunClientLib
             }
         }
 
-        public async Task<string> GetBaseBuildSourceVersionAsync()
+        private async Task<string> GetBaseBuildSourceVersionAsync()
         {
             var lastUpdate = await _client.GetLastImpactUpdateAsync(_session.ProductBuild.AzureBuildDefinitionId);
             return lastUpdate.ProductBuild.SourceVersion;
         }
 
-        public async Task PublishChangesAndGetTestsToRun(IEnumerable<string> changedFiles)
+        public async Task<IReadOnlyList<TestCaseRequest>> GetTestsToRun()
+        {
+            if (_testCases == null)
+                throw new InvalidOperationException($"Test cases are not available. Call `{nameof(IntroduceTestCases)}` first.");
+
+            var currentSourceVersion = _session.ProductBuild.SourceVersion;
+            var baseSourceVersion = await GetBaseBuildSourceVersionAsync();
+            if (baseSourceVersion == currentSourceVersion)
+            {
+            }
+            else if (_devOpsServerHandle.IsChronologicallyAfter(currentSourceVersion, baseSourceVersion))
+            {
+            }
+            else
+            {
+
+            }
+            var changedFiles = _devOpsServerHandle.GetChangedFiles(
+                _session.ProductBuild.TeamProject,
+                _session.ProductBuild.AzureBuildDefinitionId,
+                baseSourceVersion, currentSourceVersion);
+
+            var testsToRun = await PublishChangesAndGetTestsToRun(changedFiles);
+            var testCasesToRun = new List<TestCaseRequest>();
+            foreach (var tr in testsToRun)
+            {
+                if (_testCases.TryGetValue(tr.AzureTestCaseId, out var tcToRun))
+                    testCasesToRun.Add(tcToRun);
+            }
+            return testCasesToRun;
+        }
+
+        private async Task<IReadOnlyList<TestToRunResponse>> PublishChangesAndGetTestsToRun(IEnumerable<string> changedFiles)
         {
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
@@ -51,6 +91,8 @@ namespace SG.TestRunClientLib
                 TestRunSessionId = _session.Id,
                 Changes = changedFiles.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
             };
+            var response = await _client.PublishImpactChangesAsync(req);
+            return response.TestsToRun;
         }
 
         private string CalculateSignature(string value)

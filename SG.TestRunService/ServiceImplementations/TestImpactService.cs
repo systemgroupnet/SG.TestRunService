@@ -15,7 +15,7 @@ namespace SG.TestRunService.ServiceImplementations
     public class TestImpactService : ITestImpactService
     {
         private readonly IBaseDbService _dbService;
-        IConfiguration _configuration;
+        readonly IConfiguration _configuration;
 
         public TestImpactService(IBaseDbService dbService, IConfiguration configuration)
         {
