@@ -1,4 +1,5 @@
 ﻿using SG.TestRunService.Common.Models;
+using SG.TestRunService.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,7 @@ namespace SG.TestRunService.Services
         Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest);
         Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId);
         Task<TestRunResponse> GetTestRunAsync(int testRunId);
+        Task<TestRunSessionResponse> UpdateSessionAsync(int sessionId, Action<TestRunSession> sessionUpdater);
+        Task<(TestRunResponse, ServiceError)> UpdateTestRunAsync(int sessionId, int testRunId, Action<TestRun> testRunUpdater);
     }
 }

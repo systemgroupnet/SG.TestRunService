@@ -53,6 +53,16 @@ namespace SG.TestRunService.ServiceImplementations
             return _dbService.Query<TestRunSession>(sessionId).Project().FirstOrDefaultAsync();
         }
 
+        public async Task<TestRunSessionResponse> UpdateSessionAsync(int sessionId, Action<TestRunSession> sessionUpdater)
+        {
+            var session = _dbService.Query<TestRunSession>(sessionId).FirstOrDefault();
+            if (session == null)
+                return null;
+            sessionUpdater(session);
+            await _dbService.SaveChangesAsync();
+            return session.ToResponse();
+        }
+
         public async Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest)
         {
             var testRun = testRunRequest.ToDataModel(sessionId);
@@ -70,6 +80,21 @@ namespace SG.TestRunService.ServiceImplementations
         {
             return _dbService.Query<TestRun>(testRunId).Project().FirstOrDefaultAsync();
         }
+
+        public async Task<(TestRunResponse, ServiceError)> UpdateTestRunAsync(int sessionId, int testRunId, Action<TestRun> testRunUpdater)
+        {
+            var testRun = _dbService.Query<TestRun>(testRunId).FirstOrDefault();
+            if (testRun == null)
+                return (null, ServiceError.NotFound($"No TestRun with Id of {testRunId} found."));
+            if(testRun.TestRunSessionId != sessionId)
+            {
+                return (null, ServiceError.NotFound($"TestRun with Id of {testRunId} does not belong to session {sessionId}."));
+            }
+            testRunUpdater(testRun);
+            await _dbService.SaveChangesAsync();
+            return (testRun.ToResponse(), null);
+        }
+
     }
 }
 

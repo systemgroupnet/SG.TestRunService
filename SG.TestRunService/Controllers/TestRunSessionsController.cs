@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using SG.TestRunService.Common.Models;
 using SG.TestRunService.Services;
@@ -55,10 +56,19 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpPost("{sessionId:int}/runs")]
-        public async Task<ActionResult> InsertTestRun(int sessionId, TestRunRequest testRunRequest)
+        public async Task<IActionResult> InsertTestRun(int sessionId, TestRunRequest testRunRequest)
         {
             var testRun = await _service.InsertTestRunAsync(sessionId, testRunRequest);
             return CreatedAtAction(nameof(TestRunsController.GetById), nameof(TestRunsController), new { id = testRun.Id }, testRun);
+        }
+
+        [HttpPatch("{sessionId:int}/runs/{id:int}")]
+        public async Task<IActionResult> UpdateTestRun(int sessionId, int id, [FromBody]JsonPatchDocument patchDocument)
+        {
+            var (response, errorCategory) = await _service.UpdateTestRunAsync(sessionId, id, r => patchDocument.ApplyTo(r));
+            if (!errorCategory.IsSuccessful())
+                return errorCategory.ToActionResult();
+            return Ok(response);
         }
     }
 }

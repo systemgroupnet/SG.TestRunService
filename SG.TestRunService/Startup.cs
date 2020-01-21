@@ -9,8 +9,6 @@ using SG.TestRunService.Data.Services;
 using SG.TestRunService.Data.Services.Implementations;
 using SG.TestRunService.ServiceImplementations;
 using SG.TestRunService.Services;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace SG.TestRunService
 {
@@ -26,12 +24,12 @@ namespace SG.TestRunService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddJsonOptions(options =>
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
                 {
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase));
-                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                    options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 });
-
 
             services.AddDbContext<TSDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("db")));
