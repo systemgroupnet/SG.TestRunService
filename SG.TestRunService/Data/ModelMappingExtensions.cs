@@ -53,6 +53,32 @@ namespace SG.TestRunService.Common.Models
                 });
         }
 
+        public static void UpdateFrom(this IList<ExtraData> extraData, IDictionary<string, ExtraDataValue> extraDataRequest)
+        {
+            var extraDataDict = extraData.ToDictionary(e => e.Value);
+            foreach(var requestItem in extraDataRequest)
+            {
+                if(extraDataDict.TryGetValue(requestItem.Key, out var dataItem))
+                {
+                    dataItem.Value = requestItem.Value.Value;
+                    dataItem.Url = requestItem.Value.Url;
+                }
+                else
+                {
+                    extraData.Add(
+                        new ExtraData()
+                        {
+                            Name = requestItem.Key,
+                            Value = requestItem.Value.Value,
+                            Url = requestItem.Value.Url
+                        });
+                }
+            }
+            var toRemove = extraData.Where(d => !extraDataRequest.ContainsKey(d.Name));
+            foreach (var d in toRemove)
+                extraData.Remove(d);
+        }
+
         #endregion ExtraData
         #region BuildInfo
 
@@ -220,6 +246,17 @@ namespace SG.TestRunService.Common.Models
             };
         }
 
+        public static TestRunRequest ToRequest(this TestRun testRun)
+        {
+            return new TestRunRequest()
+            {
+                TestCaseId = testRun.TestCaseId,
+                Outcome = testRun.Outcome,
+                StartTime = testRun.StartTime,
+                FinishTime = testRun.FinishTime,
+            };
+        }
+
         public static IQueryable<TestRunResponse> Project(this IQueryable<TestRun> runs)
         {
             return runs.Select(
@@ -232,6 +269,15 @@ namespace SG.TestRunService.Common.Models
                     StartTime = r.StartTime,
                     FinishTime = r.FinishTime
                 });
+        }
+
+        public static void Update(this TestRunRequest testRunRequest, TestRun testRun)
+        {
+            testRun.TestCaseId = testRunRequest.TestCaseId;
+            testRun.Outcome = testRunRequest.Outcome;
+            testRun.StartTime = testRunRequest.StartTime;
+            testRun.FinishTime = testRunRequest.FinishTime;
+            testRun.ExtraData.UpdateFrom(testRunRequest.ExtraData);
         }
 
         #endregion

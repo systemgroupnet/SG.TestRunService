@@ -63,7 +63,8 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpPatch("{sessionId:int}/runs/{id:int}")]
-        public async Task<IActionResult> UpdateTestRun(int sessionId, int id, [FromBody]JsonPatchDocument patchDocument)
+        public async Task<IActionResult> UpdateTestRun(int sessionId, int id,
+            [FromBody]JsonPatchDocument<TestRunRequest> patchDocument)
         {
             var (response, errorCategory) = await _service.UpdateTestRunAsync(sessionId, id, r => patchDocument.ApplyTo(r));
             if (!errorCategory.IsSuccessful())

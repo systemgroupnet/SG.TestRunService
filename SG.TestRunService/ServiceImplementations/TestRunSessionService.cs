@@ -81,7 +81,8 @@ namespace SG.TestRunService.ServiceImplementations
             return _dbService.Query<TestRun>(testRunId).Project().FirstOrDefaultAsync();
         }
 
-        public async Task<(TestRunResponse, ServiceError)> UpdateTestRunAsync(int sessionId, int testRunId, Action<TestRun> testRunUpdater)
+        public async Task<(TestRunResponse, ServiceError)> UpdateTestRunAsync(
+            int sessionId, int testRunId, Action<TestRunRequest> testRunUpdater)
         {
             var testRun = _dbService.Query<TestRun>(testRunId).FirstOrDefault();
             if (testRun == null)
@@ -90,7 +91,9 @@ namespace SG.TestRunService.ServiceImplementations
             {
                 return (null, ServiceError.NotFound($"TestRun with Id of {testRunId} does not belong to session {sessionId}."));
             }
-            testRunUpdater(testRun);
+            var testRunRequest = testRun.ToRequest();
+            testRunUpdater(testRunRequest);
+            testRunRequest.Update(testRun);
             await _dbService.SaveChangesAsync();
             return (testRun.ToResponse(), null);
         }

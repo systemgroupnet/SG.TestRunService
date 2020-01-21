@@ -17,6 +17,6 @@ namespace SG.TestRunService.Services
         Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId);
         Task<TestRunResponse> GetTestRunAsync(int testRunId);
         Task<TestRunSessionResponse> UpdateSessionAsync(int sessionId, Action<TestRunSession> sessionUpdater);
-        Task<(TestRunResponse, ServiceError)> UpdateTestRunAsync(int sessionId, int testRunId, Action<TestRun> testRunUpdater);
+        Task<(TestRunResponse, ServiceError)> UpdateTestRunAsync(int sessionId, int testRunId, Action<TestRunRequest> testRunUpdater);
     }
 }
