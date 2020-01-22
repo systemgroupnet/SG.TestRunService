@@ -14,7 +14,7 @@ namespace SG.TestRunService.Common.Models
         public string SuiteName { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
-        public TestSessionOutcome Outcome { get; set; }
+        public TestRunSessionState State { get; set; }
         public int TestRunCount { get; set; }
         public IList<TestRunStatisticItem> RunStatistics { get; set; }
     }

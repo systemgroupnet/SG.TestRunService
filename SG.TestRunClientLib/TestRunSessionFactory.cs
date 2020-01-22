@@ -21,7 +21,7 @@ namespace SG.TestRunClientLib
                 AzureTestBuildNumber = testBuildNumber,
                 SuiteName = suiteName,
                 StartTime = DateTime.Now,
-                Outcome = TestSessionOutcome.NotStarted,
+                State = TestRunSessionState.NotStarted,
             };
 
             return await TestRunSessionAgent.CreateAsync(configuration,devOpsServerHandle, sessionRequest);

@@ -17,9 +17,10 @@ namespace SG.TestRunService.Data
         public int Id { get; set; }
         public int TestRunSessionId { get; set; }
         public int TestCaseId { get; set; }
-        public TestRunOutcome Outcome { get; set; }
+        public TestRunState State { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
+        public TestRunOutcome Outcome { get; set; }
 
         [OnDelete(DeleteBehavior.Restrict)]
         public TestRunSession TestRunSession { get; set; }

@@ -25,7 +25,7 @@ namespace SG.TestRunService.Data
         public string SuiteName { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
-        public TestSessionOutcome Outcome { get; set; }
+        public TestRunSessionState State { get; set; }
 
         [OnDelete(DeleteBehavior.Restrict)]
         public BuildInfo ProductBuildInfo { get; set; }

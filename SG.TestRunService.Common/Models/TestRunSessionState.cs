@@ -1,11 +1,12 @@
 ﻿namespace SG.TestRunService.Common.Models
 {
-    public enum TestSessionOutcome
+    public enum TestRunSessionState
     {
         NotStarted = 0,
         Running = 1,
-        Succeeded = 16,
-        Failed = 17,
+        RanToEnd = 2,
+        Cancelled = 3,
+        FatalError = 4,
         Unknown = 128
     }
 }

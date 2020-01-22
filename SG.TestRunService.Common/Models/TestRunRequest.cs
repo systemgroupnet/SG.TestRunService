@@ -12,9 +12,10 @@ namespace SG.TestRunService.Common.Models
         }
 
         public int TestCaseId { get; set; }
-        public TestRunOutcome Outcome { get; set; }
+        public TestRunState State { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
+        public TestRunOutcome Outcome { get; set; }
         public IDictionary<string, ExtraDataValue> ExtraData { get; set; }
     }
 }

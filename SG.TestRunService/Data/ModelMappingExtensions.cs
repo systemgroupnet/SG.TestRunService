@@ -134,7 +134,7 @@ namespace SG.TestRunService.Common.Models
                 SuiteName = r.SuiteName,
                 StartTime = r.StartTime,
                 FinishTime = r.FinishTime,
-                Outcome = r.Outcome,
+                State = r.State,
                 TestRuns = r.TestRuns.ConvertAll(tr => tr.ToDataModel())
             };
         }
@@ -150,7 +150,7 @@ namespace SG.TestRunService.Common.Models
                 SuiteName = session.SuiteName,
                 StartTime = session.StartTime,
                 FinishTime = session.FinishTime,
-                Outcome = session.Outcome
+                State = session.State
             };
         }
 
@@ -163,7 +163,7 @@ namespace SG.TestRunService.Common.Models
                 SuiteName = session.SuiteName,
                 StartTime = session.StartTime,
                 FinishTime = session.FinishTime,
-                Outcome = session.Outcome,
+                State = session.State,
                 TestRuns = session.TestRuns.Select(ToRequest).ToList()
             };
         }
@@ -175,7 +175,7 @@ namespace SG.TestRunService.Common.Models
             session.SuiteName = request.SuiteName;
             session.StartTime = request.StartTime;
             session.FinishTime = request.FinishTime;
-            session.Outcome = request.Outcome;
+            session.State = request.State;
         }
 
         public static IQueryable<TestRunSessionResponse> Project(this IQueryable<TestRunSession> sessions)
@@ -198,7 +198,7 @@ namespace SG.TestRunService.Common.Models
                     SuiteName = session.SuiteName,
                     StartTime = session.StartTime,
                     FinishTime = session.FinishTime,
-                    Outcome = session.Outcome
+                    State = session.State
                 });
         }
 
@@ -249,9 +249,10 @@ namespace SG.TestRunService.Common.Models
             {
                 TestRunSessionId = testRunSessionId ?? 0,
                 TestCaseId = r.TestCaseId,
-                Outcome = r.Outcome,
+                State = r.State,
                 StartTime = r.StartTime,
                 FinishTime = r.FinishTime,
+                Outcome = r.Outcome,
                 ExtraData = r.ExtraData.ToDataModel()
             };
         }
@@ -263,9 +264,10 @@ namespace SG.TestRunService.Common.Models
                 Id = testRun.Id,
                 TestCaseId = testRun.TestCaseId,
                 TestRunSessionId = testRun.TestRunSessionId,
-                Outcome = testRun.Outcome,
+                State = testRun.State,
                 StartTime = testRun.StartTime,
                 FinishTime = testRun.FinishTime,
+                Outcome = testRun.Outcome,
                 ExtraData = testRun.ExtraData.ToResponse()
             };
         }
@@ -275,9 +277,10 @@ namespace SG.TestRunService.Common.Models
             return new TestRunRequest()
             {
                 TestCaseId = testRun.TestCaseId,
-                Outcome = testRun.Outcome,
+                State = testRun.State,
                 StartTime = testRun.StartTime,
                 FinishTime = testRun.FinishTime,
+                Outcome = testRun.Outcome,
             };
         }
 

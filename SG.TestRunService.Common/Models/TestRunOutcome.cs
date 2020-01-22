@@ -2,12 +2,11 @@
 {
     public enum TestRunOutcome
     {
-        NotStarted = 0,
-        FixtureQueued = 1,
-        WaitingForWeb = 2,
-        Running = 3,
-        Succeeded = 16,
-        Failed = 17,
+        None = 0,
+        Successful = 1,
+        Failed = 2,
+        Aborted = 3,
+        FatalError = 10,
         Unknown = 128
     }
 }
