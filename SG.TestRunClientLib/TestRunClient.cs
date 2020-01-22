@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DalSoft.RestClient;
+using Microsoft.AspNetCore.JsonPatch;
 using SG.TestRunService;
 using SG.TestRunService.Common.Models;
 
@@ -62,6 +63,21 @@ namespace SG.TestRunClientLib
             PublishImpactChangesRequest impactChangeRequest)
         {
             return await _client.impact.changes.Post(impactChangeRequest);
+        }
+
+        public async Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest)
+        {
+            return await _client.sessions(sessionId).runs(testRunRequest);
+        }
+
+        public async Task<TestRunResponse> PatchTestRunSession(int sessionId, JsonPatchDocument<TestRunRequest> patch)
+        {
+            return await _client.sessions(sessionId).Patch(patch);
+        }
+
+        public async Task<TestRunResponse> PatchTestRun(int sessionId, int testRunId, JsonPatchDocument<TestRunRequest> patch)
+        {
+            return await _client.sessions(sessionId).runs(testRunId).Patch(patch);
         }
     }
 }
