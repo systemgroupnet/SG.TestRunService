@@ -39,7 +39,7 @@ namespace SG.TestRunService.Common.Models
                     }).ToList();
         }
 
-        public static IDictionary<string, ExtraDataValue> ToResponse(this IEnumerable<ExtraData> extraData)
+        public static IDictionary<string, ExtraDataValue> ToDto(this IEnumerable<ExtraData> extraData)
         {
             if (extraData == null)
                 return null;
@@ -236,7 +236,7 @@ namespace SG.TestRunService.Common.Models
                 AzureTestCaseId = testCase.AzureTestCaseId,
                 TeamProject = testCase.TeamProject,
                 Title = testCase.Title,
-                ExtraData = testCase.ExtraData.ToResponse()
+                ExtraData = testCase.ExtraData.ToDto()
             };
         }
 
@@ -268,7 +268,7 @@ namespace SG.TestRunService.Common.Models
                 StartTime = testRun.StartTime,
                 FinishTime = testRun.FinishTime,
                 Outcome = testRun.Outcome,
-                ExtraData = testRun.ExtraData.ToResponse()
+                ExtraData = testRun.ExtraData.ToDto()
             };
         }
 
@@ -281,6 +281,7 @@ namespace SG.TestRunService.Common.Models
                 StartTime = testRun.StartTime,
                 FinishTime = testRun.FinishTime,
                 Outcome = testRun.Outcome,
+                ExtraData = testRun.ExtraData.ToDto()
             };
         }
 
