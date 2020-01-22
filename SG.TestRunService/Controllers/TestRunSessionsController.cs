@@ -52,7 +52,9 @@ namespace SG.TestRunService.Controllers
         [HttpPatch("{sessionId:int}")]
         public async Task<IActionResult> UpdateSession(int sessionId, JsonPatchDocument<TestRunSessionRequest> patchDocument)
         {
-            var (response, error) = await _service.UpdateSessionAsync(sessionId, s => patchDocument.ApplyTo(s));
+            var (response, error) = await _service.UpdateSessionAsync(sessionId, s => patchDocument.ApplyTo(s, ModelState));
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             if (!error.IsSuccessful())
                 return error.ToActionResult();
             return Ok(response);
@@ -75,7 +77,9 @@ namespace SG.TestRunService.Controllers
         public async Task<IActionResult> UpdateTestRun(int sessionId, int id,
             [FromBody]JsonPatchDocument<TestRunRequest> patchDocument)
         {
-            var (response, error) = await _service.UpdateTestRunAsync(sessionId, id, r => patchDocument.ApplyTo(r));
+            var (response, error) = await _service.UpdateTestRunAsync(sessionId, id, r => patchDocument.ApplyTo(r, ModelState));
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             if (!error.IsSuccessful())
                 return error.ToActionResult();
             return Ok(response);
