@@ -49,6 +49,15 @@ namespace SG.TestRunService.Controllers
             return session;
         }
 
+        [HttpPatch("{sessionId:int}")]
+        public async Task<IActionResult> UpdateSession(int sessionId, JsonPatchDocument<TestRunSessionRequest> patchDocument)
+        {
+            var (response, error) = await _service.UpdateSessionAsync(sessionId, s => patchDocument.ApplyTo(s));
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
+            return Ok(response);
+        }
+
         [HttpGet("{sessionId:int}/runs")]
         public async Task<IReadOnlyList<TestRunResponse>> GetAllTestRuns(int sessionId)
         {
@@ -66,9 +75,9 @@ namespace SG.TestRunService.Controllers
         public async Task<IActionResult> UpdateTestRun(int sessionId, int id,
             [FromBody]JsonPatchDocument<TestRunRequest> patchDocument)
         {
-            var (response, errorCategory) = await _service.UpdateTestRunAsync(sessionId, id, r => patchDocument.ApplyTo(r));
-            if (!errorCategory.IsSuccessful())
-                return errorCategory.ToActionResult();
+            var (response, error) = await _service.UpdateTestRunAsync(sessionId, id, r => patchDocument.ApplyTo(r));
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
             return Ok(response);
         }
     }

@@ -154,6 +154,30 @@ namespace SG.TestRunService.Common.Models
             };
         }
 
+        public static TestRunSessionRequest ToRequest(this TestRunSession session)
+        {
+            return new TestRunSessionRequest()
+            {
+                AzureTestBuildId = session.AzureTestBuildId,
+                AzureTestBuildNumber = session.AzureTestBuildNumber,
+                SuiteName = session.SuiteName,
+                StartTime = session.StartTime,
+                FinishTime = session.FinishTime,
+                Outcome = session.Outcome,
+                TestRuns = session.TestRuns.Select(ToRequest).ToList()
+            };
+        }
+
+        public static void Update(this TestRunSessionRequest request, TestRunSession session)
+        {
+            session.AzureTestBuildId = request.AzureTestBuildId;
+            session.AzureTestBuildNumber = request.AzureTestBuildNumber;
+            session.SuiteName = request.SuiteName;
+            session.StartTime = request.StartTime;
+            session.FinishTime = request.FinishTime;
+            session.Outcome = request.Outcome;
+        }
+
         public static IQueryable<TestRunSessionResponse> Project(this IQueryable<TestRunSession> sessions)
         {
             return sessions.Select(

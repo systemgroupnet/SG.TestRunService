@@ -53,14 +53,15 @@ namespace SG.TestRunService.ServiceImplementations
             return _dbService.Query<TestRunSession>(sessionId).Project().FirstOrDefaultAsync();
         }
 
-        public async Task<TestRunSessionResponse> UpdateSessionAsync(int sessionId, Action<TestRunSession> sessionUpdater)
+        public async Task<(TestRunSessionResponse, ServiceError)> UpdateSessionAsync(int sessionId, Action<TestRunSessionRequest> sessionUpdater)
         {
             var session = _dbService.Query<TestRunSession>(sessionId).FirstOrDefault();
             if (session == null)
-                return null;
-            sessionUpdater(session);
+                return (null, ServiceError.NotFound($"No TestRunSession with Id of {sessionId} found."));
+            var sessionRequest = session.ToRequest();
+            sessionUpdater(sessionRequest);
             await _dbService.SaveChangesAsync();
-            return session.ToResponse();
+            return (session.ToResponse(), null);
         }
 
         public async Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest)
