@@ -10,7 +10,7 @@ using SG.TestRunService.Services;
 
 namespace SG.TestRunService.Controllers
 {
-    [Route("api/sessions")]
+    [Route(RoutConstants.Sessions)]
     [ApiController]
     public class TestRunSessionsController : ControllerBase
     {
@@ -70,7 +70,7 @@ namespace SG.TestRunService.Controllers
         public async Task<IActionResult> InsertTestRun(int sessionId, TestRunRequest testRunRequest)
         {
             var testRun = await _service.InsertTestRunAsync(sessionId, testRunRequest);
-            return CreatedAt(sessionId, testRun);
+            return CreatedAt(testRun);
         }
 
         [HttpPatch("{sessionId:int}/runs/{id:int}")]
@@ -92,16 +92,13 @@ namespace SG.TestRunService.Controllers
             if (!error.IsSuccessful())
                 return error.ToActionResult();
             if (isNew)
-                return CreatedAt(sessionId, testRunResponse);
+                return CreatedAt(testRunResponse);
             else
                 return Ok(testRunResponse);
         }
 
-        public CreatedAtActionResult CreatedAt(int sessionId, TestRunResponse testRunResponse)
-            => CreatedAtAction(
-                    nameof(TestRunsController.GetById),
-                    nameof(TestRunsController),
-                    new { id = testRunResponse.Id }, testRunResponse);
+        public CreatedResult CreatedAt(TestRunResponse testRunResponse)
+            => Created($"{RoutConstants.TestRuns}/{testRunResponse.Id}", testRunResponse);
     }
 }
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.Controllers
 {
-    [Route("api/testcases")]
+    [Route(RoutConstants.TestCases)]
     [ApiController]
     public class TestCasesController : ControllerBase
     {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.Controllers
 {
-    [Route("api/runs")]
+    [Route(RoutConstants.TestRuns)]
     [ApiController]
     public class TestRunsController : ControllerBase
     {
