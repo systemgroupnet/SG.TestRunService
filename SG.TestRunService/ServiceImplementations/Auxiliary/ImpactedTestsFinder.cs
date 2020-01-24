@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.ServiceImplementations.Auxiliary
 {
-    internal class TestLastStateUpdater
+    internal class ImpactedTestsFinder
     {
         private readonly IBaseDbService _dbService;
         private readonly Data.BuildInfo _buildInfo;
@@ -19,7 +19,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         private readonly string _project;
         private readonly int _azureBuildDefId;
 
-        public TestLastStateUpdater(IBaseDbService dbService, IConfiguration configuration, Data.BuildInfo testRunSessionBuildInfo)
+        public ImpactedTestsFinder(IBaseDbService dbService, IConfiguration configuration, Data.BuildInfo testRunSessionBuildInfo)
         {
             _dbService = dbService;
             _configuration = configuration;
