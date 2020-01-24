@@ -30,7 +30,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
 
         public async Task<List<TestToRun>> UpdateAndGetTestsToRun(IReadOnlyList<string> changedCodeSignatures)
         {
-            var allTestLastStatesQuery =
+            var testLastStatesForBuildDefQuery =
                 _dbService.Query<TestLastState>(tl =>
                   tl.AzureProductBuildDefinitionId == _azureBuildDefId);
 
@@ -39,8 +39,8 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
 
             var impactedOrAlreadyShouldRun =
                 runInMemory
-                    ? await FetchToMemeoryAndFindTestsToRun(changedCodeSignatures, allTestLastStatesQuery)
-                    : await UseDbQueryToFindTestsToRun(changedCodeSignatures, allTestLastStatesQuery);
+                    ? await FetchToMemeoryAndFindTestsToRun(changedCodeSignatures, testLastStatesForBuildDefQuery)
+                    : await UseDbQueryToFindTestsToRun(changedCodeSignatures, testLastStatesForBuildDefQuery);
 
             var impactedTestsLastStates = impactedOrAlreadyShouldRun
                 .Select(t => t.TestLastState)
@@ -48,7 +48,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                 .ToList();
             UpdateLastStateToImpacted(impactedTestsLastStates);
 
-            List<TestCase> newTests = await GetNewTestCases(_project, allTestLastStatesQuery);
+            List<TestCase> newTests = await GetNewTestCases(_project, testLastStatesForBuildDefQuery);
             var newTestsToRun = AddNewTestsLastStates(newTests);
 
             return impactedOrAlreadyShouldRun
@@ -57,7 +57,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         }
 
         private async Task<List<TestToRun>> UseDbQueryToFindTestsToRun(
-                IReadOnlyList<string> changedCodeSignatures, IQueryable<TestLastState> allTestLastStatesQuery)
+                IReadOnlyList<string> changedCodeSignatures, IQueryable<TestLastState> testLastStatesForBuildDefQuery)
         {
             var impactedTestCases =
                 from tc in _dbService.Query<TestCase>()
@@ -65,12 +65,13 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                     tc.TeamProject == _buildInfo.TeamProject &&
                     _dbService.Query<TestCaseImpactCodeSignature>().Any(tci =>
                        tci.TestCaseId == tc.Id &&
-                       (tci.AzureProductBuildDefinitionId == _azureBuildDefId ||
-                       changedCodeSignatures.Contains(tci.Signature)))
+                       tci.AzureProductBuildDefinitionId == _azureBuildDefId &&
+                       !tci.IsDelelted &&
+                       changedCodeSignatures.Contains(tci.Signature))
                 select tc;
 
             var impactedOrAlreadyShouldRun =
-                await (from tls in allTestLastStatesQuery
+                await (from tls in testLastStatesForBuildDefQuery
                        join it in impactedTestCases on tls.TestCaseId equals it.Id
                        into jit
                        from it in jit.DefaultIfEmpty()
@@ -85,13 +86,14 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         }
 
         private async Task<List<TestToRun>> FetchToMemeoryAndFindTestsToRun(
-                IReadOnlyList<string> changedCodeSignatures, IQueryable<TestLastState> allTestLastStatesQuery)
+                IReadOnlyList<string> changedCodeSignatures, IQueryable<TestLastState> testLastStatesForBuildDefQuery)
         {
             var impactedTestsLastStates = new List<TestLastState>();
 
             var allSignatures = await _dbService
                 .Query<TestCaseImpactCodeSignature>(tis =>
-                    tis.AzureProductBuildDefinitionId == _azureBuildDefId)
+                    tis.AzureProductBuildDefinitionId == _azureBuildDefId &&
+                    !tis.IsDelelted)
                 .Select(tis => new { tis.TestCaseId, tis.Signature })
                 .ToListAsync();
             var changeSignaturesSet = new HashSet<string>(changedCodeSignatures);
@@ -101,7 +103,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                 if (changeSignaturesSet.Contains(sig.Signature))
                     impactedTestCaseIds.Add(sig.TestCaseId);
 
-            var allTestLastStates = await allTestLastStatesQuery
+            var allTestLastStates = await testLastStatesForBuildDefQuery
                 .Select(tls =>
                     new TestToRun()
                     {
