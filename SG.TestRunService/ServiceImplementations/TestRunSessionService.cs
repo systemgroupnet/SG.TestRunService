@@ -71,6 +71,14 @@ namespace SG.TestRunService.ServiceImplementations
             return testRun.ToResponse();
         }
 
+        public async Task<IReadOnlyCollection<TestRunResponse>> InsertTestRunsAsync(
+            int sessionId, IEnumerable<TestRunRequest> testRunRequests)
+        {
+            var testRuns = testRunRequests.Select(t => t.ToDataModel(sessionId)).ToList();
+            await _dbService.InsertAsync(testRuns);
+            return testRuns.Select(t => t.ToResponse()).ToList();
+        }
+
         public async Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId)
         {
             return await _dbService.Query<TestRun>(r => r.TestRunSessionId == sessionId)

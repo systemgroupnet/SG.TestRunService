@@ -73,6 +73,13 @@ namespace SG.TestRunService.Controllers
             return CreatedAt(sessionId, testRun);
         }
 
+        [HttpPost("{sessionId:int}/runs")]
+        public async Task<IActionResult> InsertTestRuns(int sessionId, IEnumerable<TestRunRequest> testRunRequests)
+        {
+            var testRuns = await _service.InsertTestRunsAsync(sessionId, testRunRequests);
+            return CreatedAtAction(nameof(GetAllTestRuns), new { sessionId = sessionId }, testRuns);
+        }
+
         [HttpPatch("{sessionId:int}/runs/{id:int}")]
         public async Task<IActionResult> UpdateTestRun(int sessionId, int id,
             [FromBody]JsonPatchDocument<TestRunRequest> patchDocument)
