@@ -56,6 +56,8 @@ namespace SG.TestRunClientLib
         private async Task<string> GetBaseBuildSourceVersionAsync()
         {
             var lastUpdate = await _client.GetLastImpactUpdateAsync(_session.ProductBuild.AzureBuildDefinitionId);
+            if (lastUpdate == null)
+                return null;
             return lastUpdate.ProductBuild.SourceVersion;
         }
 
@@ -66,6 +68,8 @@ namespace SG.TestRunClientLib
 
             var currentSourceVersion = _session.ProductBuild.SourceVersion;
             var baseSourceVersion = await GetBaseBuildSourceVersionAsync();
+            if (baseSourceVersion == null)
+                return await GetAllTestCaseInfos();
             if (baseSourceVersion == currentSourceVersion)
             {
                 // issue a warning
