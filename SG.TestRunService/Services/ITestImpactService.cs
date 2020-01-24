@@ -9,7 +9,7 @@ namespace SG.TestRunService.Services
 {
     public interface ITestImpactService
     {
-        Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastImpactUpdateAsync();
+        Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastImpactUpdatesAsync();
         Task<LastImpactUpdateResponse> GetLastImpactUpdateAsync(int azureProductBuildDefId);
         Task<IReadOnlyList<TestToRunResponse>> PublishImpactChangesAsync(PublishImpactChangesRequest request);
     }

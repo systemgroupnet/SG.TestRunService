@@ -20,9 +20,9 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpGet("lastUpdate")]
-        public Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastUpdate()
+        public Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastUpdates()
         {
-            return _service.GetLastImpactUpdateAsync();
+            return _service.GetLastImpactUpdatesAsync();
         }
 
         [HttpGet("lastUpdate/{azureProductBuildDefId:int}")]

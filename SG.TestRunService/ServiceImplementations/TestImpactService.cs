@@ -23,7 +23,7 @@ namespace SG.TestRunService.ServiceImplementations
             _configuration = configuration;
         }
 
-        public async Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastImpactUpdateAsync()
+        public async Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastImpactUpdatesAsync()
         {
             return await _dbService.Query<LastImpactUpdate>().Project().ToListAsync();
         }
