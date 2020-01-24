@@ -99,6 +99,27 @@ namespace SG.TestRunService.ServiceImplementations
             return (testRun.ToResponse(), null);
         }
 
+        public async Task<(TestRunResponse, bool isNew, ServiceError)> ReplaceTestRun(
+            int sessionId, int testRunId, TestRunRequest testRunRequest)
+        {
+            var testRun = _dbService.Query<TestRun>(testRunId).FirstOrDefault();
+            bool isNew;
+            if (testRun == null)
+            {
+                isNew = true;
+                testRun = testRunRequest.ToDataModel(sessionId);
+                _dbService.Add(testRun);
+            }
+            else
+            {
+                isNew = false;
+                if (testRun.TestRunSessionId != sessionId)
+                    return (null, false, ServiceError.NotFound($"TestRun with Id of {testRunId} does not belong to session {sessionId}."));
+                testRunRequest.Update(testRun);
+            }
+            await _dbService.SaveChangesAsync();
+            return (testRun.ToResponse(), isNew, null);
+        }
     }
 }
 

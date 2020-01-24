@@ -70,7 +70,7 @@ namespace SG.TestRunService.Controllers
         public async Task<IActionResult> InsertTestRun(int sessionId, TestRunRequest testRunRequest)
         {
             var testRun = await _service.InsertTestRunAsync(sessionId, testRunRequest);
-            return CreatedAtAction(nameof(TestRunsController.GetById), nameof(TestRunsController), new { id = testRun.Id }, testRun);
+            return CreatedAt(sessionId, testRun);
         }
 
         [HttpPatch("{sessionId:int}/runs/{id:int}")]
@@ -84,6 +84,24 @@ namespace SG.TestRunService.Controllers
                 return error.ToActionResult();
             return Ok(response);
         }
+
+        [HttpPut("{sessionId:int}/runs/{id:int}")]
+        public async Task<IActionResult> ReplaceTestRun(int sessionId, int id, TestRunRequest testRunRequest)
+        {
+            var (testRunResponse, isNew, error) = await _service.ReplaceTestRun(sessionId, id, testRunRequest);
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
+            if (isNew)
+                return CreatedAt(sessionId, testRunResponse);
+            else
+                return Ok(testRunResponse);
+        }
+
+        public CreatedAtActionResult CreatedAt(int sessionId, TestRunResponse testRunResponse)
+            => CreatedAtAction(
+                    nameof(TestRunsController.GetById),
+                    nameof(TestRunsController),
+                    new { id = testRunResponse.Id }, testRunResponse);
     }
 }
 
