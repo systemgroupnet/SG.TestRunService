@@ -62,6 +62,7 @@ namespace SG.TestRunService.ServiceImplementations
                 return (null, ServiceError.NotFound($"No TestRunSession with Id of {sessionId} found."));
             var sessionRequest = session.ToRequest();
             sessionUpdater(sessionRequest);
+            sessionRequest.Update(session);
             await _dbService.SaveChangesAsync();
             return (session.ToResponse(), null);
         }
