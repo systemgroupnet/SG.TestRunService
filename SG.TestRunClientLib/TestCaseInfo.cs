@@ -20,6 +20,7 @@ namespace SG.TestRunClientLib
         public int AzureTestCaseId { get; }
         public string Title { get; }
         public RunReason? RunReason { get; }
+        public int TestRunId { get; set; }
         public IDictionary<string, ExtraDataValue> ExtraData { get; }
     }
 }

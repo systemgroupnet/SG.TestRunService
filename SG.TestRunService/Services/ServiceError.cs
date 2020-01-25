@@ -19,9 +19,19 @@ namespace SG.TestRunService.Services
         public ServiceErrorCategory Category { get; }
         public string Message { get; }
 
+        public static ServiceError NoError()
+        {
+            return new ServiceError(ServiceErrorCategory.NoError, null);
+        }
+
         public static ServiceError NotFound(string message)
         {
             return new ServiceError(ServiceErrorCategory.NotFound, message);
+        }
+
+        public static ServiceError UnprocessableEntity(string message)
+        {
+            return new ServiceError(ServiceErrorCategory.UnprocessableEntity, message);
         }
     }
 
@@ -33,6 +43,7 @@ namespace SG.TestRunService.Services
         NotFound = 404,
         Conflict = 409,
         Gone = 410,
+        UnprocessableEntity = 422
     }
 
     public static class ServiceErrorExtensions
@@ -63,6 +74,7 @@ namespace SG.TestRunService.Services
                 ServiceErrorCategory.NotFound => StatusCodes.Status404NotFound,
                 ServiceErrorCategory.Conflict => StatusCodes.Status409Conflict,
                 ServiceErrorCategory.Gone => StatusCodes.Status410Gone,
+                ServiceErrorCategory.UnprocessableEntity => StatusCodes.Status422UnprocessableEntity,
                 _ => throw new NotImplementedException()
             };
         }

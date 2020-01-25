@@ -81,5 +81,107 @@ namespace SG.TestRunService.ServiceImplementations
                 .ToList();
             return response;
         }
+
+        public async Task UpdateTestCaseImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request)
+        {
+            var originalCodeSignatures = (await _dbService
+                .GetFilteredAsync<TestCaseImpactCodeSignature>(cs =>
+                    cs.TestCaseId == testCaseId &&
+                    cs.AzureProductBuildDefinitionId == request.AzureProductBuildDefinitionId))
+                .ToDictionary(cs => cs.Signature, cs => (ImpactCodeSignatureEntity: cs, Present: false));
+            foreach (var rcs in request.CodeSignatures)
+            {
+                if (originalCodeSignatures.TryGetValue(rcs.Signature, out var testImpactCodeSignature))
+                {
+                    testImpactCodeSignature.Present = true;
+                    var entity = testImpactCodeSignature.ImpactCodeSignatureEntity;
+                    if(entity.IsDelelted)
+                    {
+                        entity.IsDelelted = false;
+                        entity.DateAdded = DateTime.Now;
+                    }
+                }
+                else
+                {
+                    _dbService.Add(
+                        new TestCaseImpactCodeSignature()
+                        {
+                            AzureProductBuildDefinitionId = request.AzureProductBuildDefinitionId,
+                            DateAdded = DateTime.Now,
+                            Signature = rcs.Signature,
+                            FilePath = rcs.FileName,
+                            TestCaseId = testCaseId
+                        });
+                }
+            }
+            foreach(var (impactCodeSignatureEntity, present) in originalCodeSignatures.Values)
+                if(!present)
+                {
+                    impactCodeSignatureEntity.IsDelelted = true;
+                    impactCodeSignatureEntity.DateRemoved = DateTime.Now;
+                }
+            await _dbService.SaveChangesAsync();
+        }
+
+        public async Task<ServiceError> UpdateTestLastStateAsync(int testCaseId, TestLastStateUpdateRequest lastStateUpdateRequest)
+        {
+            var testLastState = await _dbService.Query<TestLastState>(tls =>
+                    tls.TestCaseId == testCaseId &&
+                    tls.AzureProductBuildDefinitionId == lastStateUpdateRequest.AzureProductBuildDefinitionId)
+                .FirstOrDefaultAsync();
+            if (testLastState == null)
+            {
+                testLastState = new TestLastState()
+                {
+                    TestCaseId = testCaseId,
+                    AzureProductBuildDefinitionId = lastStateUpdateRequest.AzureProductBuildDefinitionId
+                };
+                _dbService.Add(testLastState);
+            }
+
+            var productBuildInfoId = await _dbService.Query<TestRunSession>(s => s.Id == lastStateUpdateRequest.TestRunSessionId)
+                .Select(s => s.ProductBuildInfoId)
+                .FirstOrDefaultAsync();
+            if (productBuildInfoId == default)
+            {
+                return ServiceError.NotFound("Requested test run session (or related build info) not found. Id: " + lastStateUpdateRequest.TestRunSessionId);
+            }
+            var outcome = lastStateUpdateRequest.Outcome; ;
+            testLastState.LastOutcome = outcome;
+            switch (outcome)
+            {
+                case TestRunOutcome.Successful:
+                    testLastState.ShouldBeRun = false;
+                    testLastState.RunReason = null;
+                    break;
+                case TestRunOutcome.Failed:
+                    testLastState.ShouldBeRun = true;
+                    testLastState.RunReason = RunReason.Failed;
+                    break;
+                case TestRunOutcome.Aborted:
+                    testLastState.ShouldBeRun = true;
+                    testLastState.RunReason = RunReason.NotRan;
+                    break;
+                case TestRunOutcome.FatalError:
+                    testLastState.ShouldBeRun = true;
+                    testLastState.RunReason = RunReason.Failed;
+                    break;
+                default:
+                    return ServiceError.UnprocessableEntity("Invalid outcome: " + outcome);
+            }
+            testLastState.UpdateDate = DateTime.Now;
+            testLastState.ProductBuildInfoId = productBuildInfoId;
+
+            await _dbService.SaveChangesAsync();
+            return ServiceError.NoError();
+        }
+
+        public async Task<IReadOnlyList<TestLastStateResponse>> GetTestLastStatesAsync(int testCaseId)
+        {
+            return await _dbService
+                .Query<TestLastState>(t => t.TestCaseId == testCaseId)
+                .Project()
+                .ToListAsync();
+        }
     }
 }

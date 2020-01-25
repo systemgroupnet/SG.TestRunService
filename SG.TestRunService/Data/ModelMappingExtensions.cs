@@ -331,5 +331,30 @@ namespace SG.TestRunService.Common.Models
         }
 
         #endregion
+        #region TestLastState
+
+        public static IQueryable<TestLastStateResponse> Project(this IQueryable<TestLastState> lastStates)
+        {
+            return lastStates.Select(l => new TestLastStateResponse()
+            {
+                TestCaseId = l.TestCaseId,
+                AzureProductBuildDefinitionId = l.AzureProductBuildDefinitionId,
+                ProductBuildInfo = new BuildInfo()
+                {
+                    TeamProject = l.ProductBuildInfo.TeamProject,
+                    AzureBuildDefinitionId = l.ProductBuildInfo.AzureBuildDefinitionId,
+                    AzureBuildId = l.ProductBuildInfo.AzureBuildId,
+                    SourceVersion = l.ProductBuildInfo.SourceVersion,
+                    Date = l.ProductBuildInfo.Date,
+                    BuildNumber = l.ProductBuildInfo.BuildNumber
+                },
+                UpdateDate = l.UpdateDate,
+                LastOutcome = l.LastOutcome,
+                ShouldBeRun = l.ShouldBeRun,
+                RunReason = l.RunReason
+            });
+        }
+
+        #endregion
     }
 }

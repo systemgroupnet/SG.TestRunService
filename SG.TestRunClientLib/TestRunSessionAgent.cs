@@ -1,4 +1,5 @@
-﻿using SG.TestRunService.Common.Models;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using SG.TestRunService.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -42,7 +43,7 @@ namespace SG.TestRunClientLib
             return new TestRunSessionAgent(client, configuration, devOpsServerHandle, response);
         }
 
-        public async Task IntroduceTestCases(IEnumerable<TestCaseRequest> tests)
+        public async Task IntroduceTestCasesAsync(IEnumerable<TestCaseRequest> tests)
         {
             _testCaseRequests = tests.ToList();
             var azureTestCaseIds = new HashSet<int>(await _client.GetAzureTestCaseIdsAsync(_project));
@@ -61,15 +62,15 @@ namespace SG.TestRunClientLib
             return lastUpdate.ProductBuild.SourceVersion;
         }
 
-        public async Task<IReadOnlyList<TestCaseInfo>> GetTestsToRun()
+        public async Task<IReadOnlyList<TestCaseInfo>> GetTestsToRunAsync()
         {
             if (_testCaseRequests == null)
-                throw new InvalidOperationException($"Test cases are not available. Call `{nameof(IntroduceTestCases)}` first.");
+                throw new InvalidOperationException($"Test cases are not available. Call `{nameof(IntroduceTestCasesAsync)}` first.");
 
             var currentSourceVersion = _session.ProductBuild.SourceVersion;
             var baseSourceVersion = await GetBaseBuildSourceVersionAsync();
             if (baseSourceVersion == null)
-                return await GetAllTestCaseInfos();
+                return await GetAllTestCaseInfosAsync();
             if (baseSourceVersion == currentSourceVersion)
             {
                 // issue a warning
@@ -81,11 +82,11 @@ namespace SG.TestRunClientLib
                     case TestOlderVersionBehavior.Fail:
                         throw new Exception($"Source version used for this test (${currentSourceVersion})is older than the last test ran on this build definition (${baseSourceVersion}).");
                     case TestOlderVersionBehavior.RunNotSuccessfulTests:
-                        return await PublishChangesAndGetTestsToRun(Enumerable.Empty<string>());
+                        return await PublishChangesAndGetTestsToRunAsync(Enumerable.Empty<string>());
                     case TestOlderVersionBehavior.RunImpactedAndNotSuccessfulTests:
                         break;
                     case TestOlderVersionBehavior.RunAllTests:
-                        return await GetAllTestCaseInfos();
+                        return await GetAllTestCaseInfosAsync();
                     default:
                         throw new NotSupportedException($"The value '{_configuration.RunForOlderVersionBeahvior}' for configuration '{nameof(_configuration.RunForOlderVersionBeahvior)}' is not valid.");
                 }
@@ -94,16 +95,97 @@ namespace SG.TestRunClientLib
                 _project,
                 _session.ProductBuild.AzureBuildDefinitionId,
                 baseSourceVersion, currentSourceVersion);
-            return await PublishChangesAndGetTestsToRun(changedFiles);
+            return await PublishChangesAndGetTestsToRunAsync(changedFiles);
         }
 
-        private async Task<IReadOnlyList<TestCaseInfo>> GetAllTestCaseInfos()
+        public async Task<IReadOnlyList<TestRunResponse>> RecordSessionTestsAsync(IEnumerable<TestCaseInfo> testCases)
+        {
+            var responses = new List<TestRunResponse>();
+            foreach (var testCase in testCases)
+            {
+                var testRunResponse = await _client.InsertTestRunAsync(
+                        _session.Id,
+                        new TestRunRequest()
+                        {
+                            TestCaseId = testCase.Id,
+                            State = TestRunState.NotStarted
+                        });
+                responses.Add(testRunResponse);
+                testCase.TestRunId = testRunResponse.Id;
+            }
+            return responses;
+        }
+
+        public async Task<TestRunResponse> StartTestRunAsync(TestCaseInfo testCase, TestRunState state)
+        {
+            if (_session.State == TestRunSessionState.NotStarted)
+            {
+                await SetSessionStateAsync(TestRunSessionState.Running);
+            }
+            var patch = new JsonPatchDocument<TestRunRequest>();
+            patch.Add(r => r.StartTime, DateTime.Now);
+            patch.Add(r => r.State, state);
+            return await _client.PatchTestRunAsync(_session.Id, testCase.TestRunId, patch);
+        }
+
+        public Task<TestRunResponse> AdvanceTestRunStateAsync(TestCaseInfo testCase, TestRunState state)
+        {
+            if (state == TestRunState.NotStarted)
+                throw new ArgumentException($"Test run should have already been started. State cannot be {state}.");
+            if (state == TestRunState.Finished)
+                throw new ArgumentException($"Finishing test run should be recorded with `{nameof(RecordTestRunEndAsync)}`.");
+            return SetTestRunStateAsync(testCase, state);
+        }
+
+        public async Task<TestRunResponse> RecordTestRunEndAsync(TestCaseInfo testCase, TestRunOutcome outcome, IEnumerable<string> impactFiles)
+        {
+            var patch = new JsonPatchDocument<TestRunRequest>();
+            patch.Add(r => r.State, TestRunState.Finished);
+            patch.Add(r => r.Outcome, outcome);
+            var runResponse = await _client.PatchTestRunAsync(_session.Id, testCase.TestRunId, patch);
+            await _client.UpdateTestImpactAsync(testCase.Id, new TestCaseImpactUpdateRequest()
+            {
+                AzureProductBuildDefinitionId = _session.ProductBuild.AzureBuildDefinitionId,
+                CodeSignatures = impactFiles.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
+            });
+            await _client.UpdateTestLastStateAsync(testCase.Id, new TestLastStateUpdateRequest()
+            {
+                AzureProductBuildDefinitionId = _session.ProductBuild.AzureBuildDefinitionId,
+                TestRunSessionId = _session.Id,
+                Outcome = outcome
+            });
+            return runResponse;
+        }
+
+        public Task<TestRunSessionResponse> RecordTestEndAsync(TestRunSessionState state)
+        {
+            var sessionPatch = new JsonPatchDocument<TestRunSessionRequest>();
+            sessionPatch.Add(s => s.State, state);
+            sessionPatch.Add(s => s.FinishTime, DateTime.Now);
+            return _client.PatchTestRunSessionAsync(_session.Id, sessionPatch);
+        }
+
+        private Task<TestRunResponse> SetTestRunStateAsync(TestCaseInfo testCase, TestRunState state)
+        {
+            var patch = new JsonPatchDocument<TestRunRequest>();
+            patch.Add(r => r.State, state);
+            return _client.PatchTestRunAsync(_session.Id, testCase.TestRunId, patch);
+        }
+
+        private Task<TestRunSessionResponse> SetSessionStateAsync(TestRunSessionState state)
+        {
+            var sessionPatch = new JsonPatchDocument<TestRunSessionRequest>();
+            sessionPatch.Add(s => s.State, TestRunSessionState.Running);
+            return _client.PatchTestRunSessionAsync(_session.Id, sessionPatch);
+        }
+
+        private async Task<IReadOnlyList<TestCaseInfo>> GetAllTestCaseInfosAsync()
         {
             if (_testsToRun != null)
                 return _testsToRun;
             if (_testCaseRequests == null || _testCaseRequests.Count == 0)
                 return new List<TestCaseInfo>();
-            var testCaseResponses = await _client.GetTestCases(_project,
+            var testCaseResponses = await _client.GetTestCasesAsync(_project,
                 new[]
                 {
                     nameof(TestCaseResponse.Id),
@@ -122,7 +204,7 @@ namespace SG.TestRunClientLib
             return _testsToRun;
         }
 
-        private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRun(IEnumerable<string> changedFiles)
+        private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRunAsync(IEnumerable<string> changedFiles)
         {
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {

@@ -42,7 +42,7 @@ namespace SG.TestRunClientLib
                 .Get();
         }
 
-        public async Task<IReadOnlyList<TestCaseResponse>> GetTestCases(string teamProject, IEnumerable<string> fieldNames)
+        public async Task<IReadOnlyList<TestCaseResponse>> GetTestCasesAsync(string teamProject, IEnumerable<string> fieldNames)
         {
             return await _client.testcases
                 .Query(new { project = teamProject, fields = string.Join(",", fieldNames) })
@@ -70,14 +70,29 @@ namespace SG.TestRunClientLib
             return await _client.sessions(sessionId).runs(testRunRequest);
         }
 
-        public async Task<TestRunResponse> PatchTestRunSession(int sessionId, JsonPatchDocument<TestRunRequest> patch)
+        public async Task<TestRunSessionResponse> PatchTestRunSessionAsync(int sessionId, JsonPatchDocument<TestRunSessionRequest> patch)
         {
             return await _client.sessions(sessionId).Patch(patch);
         }
 
-        public async Task<TestRunResponse> PatchTestRun(int sessionId, int testRunId, JsonPatchDocument<TestRunRequest> patch)
+        public async Task<TestRunResponse> PatchTestRunAsync(int sessionId, int testRunId, JsonPatchDocument<TestRunRequest> patch)
         {
             return await _client.sessions(sessionId).runs(testRunId).Patch(patch);
+        }
+
+        public async Task UpdateTestImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request)
+        {
+            await _client.impact.testrun(testCaseId).Post(request);
+        }
+
+        public async Task<IReadOnlyCollection<TestLastStateResponse>> GetTestLastStatesAsync(int testCaseId)
+        {
+            return await _client.impact.lastState(testCaseId).Get();
+        }
+
+        public async Task UpdateTestLastStateAsync(int testCaseId, TestLastStateUpdateRequest request)
+        {
+            await _client.impact.lastState(testCaseId).Post(request);
         }
     }
 }

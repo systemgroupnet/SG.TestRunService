@@ -41,5 +41,30 @@ namespace SG.TestRunService.Controllers
                 TestsToRunCount = testsToRun.Count
             };
         }
+
+        [HttpPost("testrun/{testCaseId:int}")]
+        public async Task<ActionResult> UpdateTestCaseImpact(int testCaseId, TestCaseImpactUpdateRequest request)
+        {
+            await _service.UpdateTestCaseImpactAsync(testCaseId, request);
+            return Ok();
+        }
+
+        [HttpGet("lastState/{testCaseId:int}")]
+        public async Task<ActionResult<IReadOnlyCollection<TestLastStateResponse>>> GetTestLastStates(int testCaseId)
+        {
+            var result = await _service.GetTestLastStatesAsync(testCaseId);
+            if (result.Count == 0)
+                return NotFound();
+            return Ok(result);
+        }
+
+        [HttpPost("lastState/{testCaseId:int}")]
+        public async Task<IActionResult> UpdateTestLastState(int testCaseId, TestLastStateUpdateRequest request)
+        {
+            var error = await _service.UpdateTestLastStateAsync(testCaseId, request);
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
+            return Ok();
+        }
     }
 }
