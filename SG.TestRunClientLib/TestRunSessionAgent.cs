@@ -160,12 +160,14 @@ namespace SG.TestRunClientLib
             return runResponse;
         }
 
-        public Task<TestRunSessionResponse> RecordTestEndAsync(TestRunSessionState state)
+        public async Task RecordTestSessionEndAsync(TestRunSessionState state)
         {
             var sessionPatch = new JsonPatchDocument<TestRunSessionRequest>();
             sessionPatch.Add(s => s.State, state);
             sessionPatch.Add(s => s.FinishTime, DateTime.Now);
-            return _client.PatchTestRunSessionAsync(_session.Id, sessionPatch);
+            var response = await _client.PatchTestRunSessionAsync(_session.Id, sessionPatch);
+            _session.State = response.State;
+            _session.FinishTime = response.FinishTime;
         }
 
         private Task<TestRunResponse> SetTestRunStateAsync(TestCaseInfo testCase, TestRunState state)
@@ -175,11 +177,12 @@ namespace SG.TestRunClientLib
             return _client.PatchTestRunAsync(_session.Id, testCase.TestRunId, patch);
         }
 
-        private Task<TestRunSessionResponse> SetSessionStateAsync(TestRunSessionState state)
+        private async Task SetSessionStateAsync(TestRunSessionState state)
         {
             var sessionPatch = new JsonPatchDocument<TestRunSessionRequest>();
             sessionPatch.Add(s => s.State, state);
-            return _client.PatchTestRunSessionAsync(_session.Id, sessionPatch);
+            var newSession = await _client.PatchTestRunSessionAsync(_session.Id, sessionPatch);
+            _session.State = newSession.State;
         }
 
         private async Task<IReadOnlyList<TestCaseInfo>> GetAllTestCaseInfosAsync()
