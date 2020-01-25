@@ -67,7 +67,7 @@ namespace SG.TestRunClientLib
 
         public async Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest)
         {
-            return await _client.sessions(sessionId).runs(testRunRequest);
+            return await _client.sessions(sessionId).runs.Post(testRunRequest);
         }
 
         public async Task<TestRunSessionResponse> PatchTestRunSessionAsync(int sessionId, JsonPatchDocument<TestRunSessionRequest> patch)
