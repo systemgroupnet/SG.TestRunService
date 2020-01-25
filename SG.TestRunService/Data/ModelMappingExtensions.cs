@@ -303,9 +303,10 @@ namespace SG.TestRunService.Common.Models
         public static void Update(this TestRunRequest testRunRequest, TestRun testRun)
         {
             testRun.TestCaseId = testRunRequest.TestCaseId;
-            testRun.Outcome = testRunRequest.Outcome;
+            testRun.State = testRunRequest.State;
             testRun.StartTime = testRunRequest.StartTime;
             testRun.FinishTime = testRunRequest.FinishTime;
+            testRun.Outcome = testRunRequest.Outcome;
             testRun.ExtraData.UpdateFrom(testRunRequest.ExtraData);
         }
 
