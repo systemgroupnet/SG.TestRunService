@@ -31,6 +31,15 @@ namespace SG.TestRunService.Controllers
             return _service.GetLastImpactUpdateAsync(azureProductBuildDefId);
         }
 
+        [HttpDelete("lastUpdate/{azureProductBuildDefId:int}")]
+        public async Task<IActionResult> DeleteLastUpdate(int azureProductBuildDefId)
+        {
+            var response = await _service.DeleteLastImpactUpdateAsync(azureProductBuildDefId);
+            if (response == null)
+                return NotFound();
+            return Ok(response);
+        }
+
         [HttpPost("changes")]
         public async Task<PublishImpactChangesResponse> PublichChanges(PublishImpactChangesRequest request)
         {
@@ -65,6 +74,15 @@ namespace SG.TestRunService.Controllers
             if (!error.IsSuccessful())
                 return error.ToActionResult();
             return Ok();
+        }
+
+        [HttpDelete("lastState/{testCaseId:int}")]
+        public async Task<IActionResult> DeleteTestLastState(int testCaseId, int azureProductBuildDefId)
+        {
+            var response = await _service.DeleteTestLastStateAsync(testCaseId, azureProductBuildDefId);
+            if (response == null)
+                return NotFound();
+            return Ok(response);
         }
     }
 }

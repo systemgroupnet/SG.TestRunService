@@ -15,5 +15,7 @@ namespace SG.TestRunService.Services
         Task UpdateTestCaseImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request);
         Task<ServiceError> UpdateTestLastStateAsync(int testCaseId, TestLastStateUpdateRequest lastStateUpdateRequest);
         Task<IReadOnlyList<TestLastStateResponse>> GetTestLastStatesAsync(int testCaseId);
+        Task<LastImpactUpdateResponse> DeleteLastImpactUpdateAsync(int azureProductBuildDefId);
+        Task<TestLastStateResponse> DeleteTestLastStateAsync(int testCaseId, int azureProductBuildDefId);
     }
 }

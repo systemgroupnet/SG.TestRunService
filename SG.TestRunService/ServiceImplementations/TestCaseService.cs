@@ -73,5 +73,13 @@ namespace SG.TestRunService.ServiceImplementations
             }
             throw new NotSupportedException("Currently only selecting `Id` and `AzureTestCaseId` is supported!");
         }
+
+        public async Task<TestCaseResponse> DeleteAsync(int testCaseId)
+        {
+            var testCase = await _dbService.DeleteAsync<TestCase>(testCaseId);
+            if (testCase == null)
+                return null;
+            return testCase.ToResponse();
+        }
     }
 }

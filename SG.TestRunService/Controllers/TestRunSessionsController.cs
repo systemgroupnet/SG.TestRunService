@@ -97,6 +97,24 @@ namespace SG.TestRunService.Controllers
                 return Ok(testRunResponse);
         }
 
+        [HttpDelete("{sessionId:int}/runs/{id:int}")]
+        public async Task<IActionResult> DeleteTestRun(int sessionId, int id)
+        {
+            var (testRun, error) = await _service.DeleteTestRunAsync(sessionId, id);
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
+            return Ok(testRun);
+        }
+
+        [HttpDelete("{sessionId:int}/runs")]
+        public async Task<IActionResult> DeleteTestRuns(int sessionId)
+        {
+            var testRuns = await _service.DeleteTestRunsAsync(sessionId);
+            if (testRuns.Count == 0)
+                return NotFound();
+            return Ok(testRuns);
+        }
+
         public CreatedResult CreatedAt(TestRunResponse testRunResponse)
             => Created($"{RoutConstants.TestRuns}/{testRunResponse.Id}", testRunResponse);
     }

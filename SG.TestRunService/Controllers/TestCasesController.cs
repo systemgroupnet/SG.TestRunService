@@ -58,5 +58,14 @@ namespace SG.TestRunService.Controllers
             var tc = await _service.InsertAsync(testCaseRequest);
             return CreatedAtAction(nameof(Get), new { id = tc.Id }, tc);
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<TestCaseResponse>> Delete(int id)
+        {
+            var response = await _service.DeleteAsync(id);
+            if (response == null)
+                return NotFound();
+            return Ok(response);
+        }
     }
 }

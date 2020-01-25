@@ -20,5 +20,7 @@ namespace SG.TestRunService.Services
         Task<(TestRunSessionResponse, ServiceError)> UpdateSessionAsync(int sessionId, Action<TestRunSessionRequest> sessionUpdater);
         Task<(TestRunResponse, ServiceError)> UpdateTestRunAsync(int sessionId, int testRunId, Action<TestRunRequest> testRunUpdater);
         Task<(TestRunResponse, bool isNew, ServiceError)> ReplaceTestRun(int sessionId, int testRunId, TestRunRequest testRunRequest);
+        Task<(TestRunResponse, ServiceError)> DeleteTestRunAsync(int sessionId, int testRunId);
+        Task<IReadOnlyCollection<TestRunResponse>> DeleteTestRunsAsync(int sessionId);
     }
 }

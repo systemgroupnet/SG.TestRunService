@@ -43,6 +43,17 @@ namespace SG.TestRunService.ServiceImplementations
             return GetLastImpactUpdateInternal(azureProductBuildDefId, ModelMappingExtensions.Project);
         }
 
+        public async Task<LastImpactUpdateResponse> DeleteLastImpactUpdateAsync(int azureProductBuildDefId)
+        {
+            var lastImpactUpdate = await _dbService
+                .Query<LastImpactUpdate>(l => l.AzureProductBuildDefinitionId == azureProductBuildDefId)
+                .FirstOrDefaultAsync();
+            if (lastImpactUpdate == null)
+                return null;
+            await _dbService.DeleteAsync(lastImpactUpdate);
+            return lastImpactUpdate.ToResponse();
+        }
+
         public async Task<IReadOnlyList<TestToRunResponse>> PublishImpactChangesAsync(PublishImpactChangesRequest request)
         {
             var lastUpdate = await GetLastImpactUpdateInternal(request.AzureProductBuildDefinitionId, e => e);
@@ -182,6 +193,19 @@ namespace SG.TestRunService.ServiceImplementations
                 .Query<TestLastState>(t => t.TestCaseId == testCaseId)
                 .Project()
                 .ToListAsync();
+        }
+
+        public async Task<TestLastStateResponse> DeleteTestLastStateAsync(int testCaseId, int azureProductBuildDefId)
+        {
+            var lastState = await _dbService
+                .Query<TestLastState>(t =>
+                   t.TestCaseId == testCaseId &&
+                   t.AzureProductBuildDefinitionId == azureProductBuildDefId)
+                .FirstOrDefaultAsync();
+            if (lastState == null)
+                return null;
+            await _dbService.DeleteAsync(lastState);
+            return lastState.ToResponse();
         }
     }
 }

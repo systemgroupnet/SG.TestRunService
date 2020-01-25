@@ -144,7 +144,7 @@ namespace SG.TestRunService.Common.Models
             return new TestRunSessionResponse()
             {
                 Id = session.Id,
-                ProductBuild = session.ProductBuildInfo.ToResponse(),
+                ProductBuild = session.ProductBuildInfo?.ToResponse(),
                 AzureTestBuildId = session.AzureTestBuildId,
                 AzureTestBuildNumber = session.AzureTestBuildNumber,
                 SuiteName = session.SuiteName,
@@ -330,6 +330,23 @@ namespace SG.TestRunService.Common.Models
                 });
         }
 
+        public static LastImpactUpdateResponse ToResponse(this LastImpactUpdate lastImpactUpdate)
+        {
+            var response = new LastImpactUpdateResponse()
+            {
+                AzureProductBuildDefinitionId = lastImpactUpdate.AzureProductBuildDefinitionId,
+                UpdateDate = lastImpactUpdate.UpdateDate,
+                TestRunSession = lastImpactUpdate.TestRunSession?.ToResponse(),
+                ProductBuild = lastImpactUpdate.ProductBuildInfo?.ToResponse()
+            };
+            if (response.TestRunSession == null && lastImpactUpdate.TestRunSessionId.HasValue)
+                response.TestRunSession = new TestRunSessionResponse()
+                {
+                    Id = lastImpactUpdate.TestRunSessionId.Value
+                };
+            return response;
+        }
+
         #endregion
         #region TestLastState
 
@@ -353,6 +370,20 @@ namespace SG.TestRunService.Common.Models
                 ShouldBeRun = l.ShouldBeRun,
                 RunReason = l.RunReason
             });
+        }
+
+        public static TestLastStateResponse ToResponse(this TestLastState testLastState)
+        {
+            return new TestLastStateResponse()
+            {
+                TestCaseId = testLastState.TestCaseId,
+                AzureProductBuildDefinitionId = testLastState.AzureProductBuildDefinitionId,
+                UpdateDate = testLastState.UpdateDate,
+                LastOutcome = testLastState.LastOutcome,
+                ShouldBeRun = testLastState.ShouldBeRun,
+                RunReason = testLastState.RunReason,
+                ProductBuildInfo = testLastState.ProductBuildInfo?.ToResponse()
+            };
         }
 
         #endregion

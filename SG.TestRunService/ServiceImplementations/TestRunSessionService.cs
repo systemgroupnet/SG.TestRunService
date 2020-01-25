@@ -25,7 +25,7 @@ namespace SG.TestRunService.ServiceImplementations
                    b.AzureBuildDefinitionId == sessionDto.ProductBuild.AzureBuildDefinitionId &&
                    b.AzureBuildId == sessionDto.ProductBuild.AzureBuildId)
                 .FirstOrDefaultAsync();
-            if(build == null)
+            if (build == null)
             {
                 build = sessionDto.ProductBuild.ToDataModel();
                 _dbService.Add(build);
@@ -96,7 +96,7 @@ namespace SG.TestRunService.ServiceImplementations
             var testRun = _dbService.Query<TestRun>(testRunId).FirstOrDefault();
             if (testRun == null)
                 return (null, ServiceError.NotFound($"No TestRun with Id of {testRunId} found."));
-            if(testRun.TestRunSessionId != sessionId)
+            if (testRun.TestRunSessionId != sessionId)
             {
                 return (null, ServiceError.NotFound($"TestRun with Id of {testRunId} does not belong to session {sessionId}."));
             }
@@ -127,6 +127,28 @@ namespace SG.TestRunService.ServiceImplementations
             }
             await _dbService.SaveChangesAsync();
             return (testRun.ToResponse(), isNew, null);
+        }
+
+        public async Task<(TestRunResponse, ServiceError)> DeleteTestRunAsync(int sessionId, int testRunId)
+        {
+            var testRun = await _dbService.Query<TestRun>(testRunId).FirstOrDefaultAsync();
+            if (testRun == null)
+                return (null, ServiceError.NotFound(null));
+            if (testRun.TestRunSessionId != sessionId)
+                return (null, ServiceError.NotFound($"TestRun with Id of {testRunId} does not belong to session {sessionId}."));
+            await _dbService.DeleteAsync(testRun);
+            return (testRun.ToResponse(), ServiceError.NoError());
+        }
+
+        public async Task<IReadOnlyCollection<TestRunResponse>> DeleteTestRunsAsync(int sessionId)
+        {
+            var testRuns = await _dbService
+                .Query<TestRun>(tr => tr.TestRunSessionId == sessionId)
+                .ToListAsync();
+            foreach (var tr in testRuns)
+                _dbService.Remove(tr);
+            await _dbService.SaveChangesAsync();
+            return testRuns.Select(tr => tr.ToResponse()).ToList();
         }
     }
 }

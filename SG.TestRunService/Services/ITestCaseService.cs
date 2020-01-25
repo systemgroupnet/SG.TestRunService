@@ -15,5 +15,6 @@ namespace SG.TestRunService.Services
         Task<IReadOnlyList<TestCaseResponse>> GetAllAsync(string teamProject, IEnumerable<string> fieldNames);
         Task<TestCaseResponse> GetAsync(int id);
         Task<IReadOnlyList<int>> GetAzureTestCaseIdsAsync(string teamProject);
+        Task<TestCaseResponse> DeleteAsync(int testCaseId);
     }
 }
