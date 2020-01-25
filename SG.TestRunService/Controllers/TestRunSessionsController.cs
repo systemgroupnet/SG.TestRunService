@@ -21,14 +21,14 @@ namespace SG.TestRunService.Controllers
             _service = service;
         }
 
-        [HttpPost]
+        [HttpPost("")]
         public async Task<ActionResult<TestRunSessionResponse>> Insert(TestRunSessionRequest sessionRequest)
         {
             var sessionResponse = await _service.InsertSessionAsync(sessionRequest);
             return CreatedAtAction(nameof(GetById), new { sessionId = sessionResponse.Id }, sessionResponse);
         }
 
-        [HttpDelete]
+        [HttpDelete("{sessionId:int}")]
         public async Task<ActionResult<TestRunSessionResponse>> Delete(int sessionId)
         {
             return Ok(await _service.DeleteSessionAsync(sessionId));
