@@ -66,7 +66,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                     _dbService.Query<TestCaseImpactCodeSignature>().Any(tci =>
                        tci.TestCaseId == tc.Id &&
                        tci.AzureProductBuildDefinitionId == _azureBuildDefId &&
-                       !tci.IsDelelted &&
+                       !tci.IsDeleted &&
                        changedCodeSignatures.Contains(tci.Signature))
                 select tc;
 
@@ -93,7 +93,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             var allSignatures = await _dbService
                 .Query<TestCaseImpactCodeSignature>(tis =>
                     tis.AzureProductBuildDefinitionId == _azureBuildDefId &&
-                    !tis.IsDelelted)
+                    !tis.IsDeleted)
                 .Select(tis => new { tis.TestCaseId, tis.Signature })
                 .ToListAsync();
             var changeSignaturesSet = new HashSet<string>(changedCodeSignatures);

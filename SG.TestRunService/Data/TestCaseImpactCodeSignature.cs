@@ -17,7 +17,7 @@ namespace SG.TestRunService.Data
 
         public DateTime DateAdded { get; set; }
         public DateTime? DateRemoved { get; set; }
-        public bool IsDelelted { get; set; } = false;
+        public bool IsDeleted { get; set; } = false;
 
         [OnDelete(DeleteBehavior.Cascade)]
         public TestCase TestCase { get; set; }

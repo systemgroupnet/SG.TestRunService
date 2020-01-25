@@ -95,9 +95,9 @@ namespace SG.TestRunService.ServiceImplementations
                 {
                     testImpactCodeSignature.Present = true;
                     var entity = testImpactCodeSignature.ImpactCodeSignatureEntity;
-                    if(entity.IsDelelted)
+                    if(entity.IsDeleted)
                     {
-                        entity.IsDelelted = false;
+                        entity.IsDeleted = false;
                         entity.DateAdded = DateTime.Now;
                     }
                 }
@@ -117,7 +117,7 @@ namespace SG.TestRunService.ServiceImplementations
             foreach(var (impactCodeSignatureEntity, present) in originalCodeSignatures.Values)
                 if(!present)
                 {
-                    impactCodeSignatureEntity.IsDelelted = true;
+                    impactCodeSignatureEntity.IsDeleted = true;
                     impactCodeSignatureEntity.DateRemoved = DateTime.Now;
                 }
             await _dbService.SaveChangesAsync();
