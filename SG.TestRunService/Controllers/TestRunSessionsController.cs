@@ -31,7 +31,10 @@ namespace SG.TestRunService.Controllers
         [HttpDelete("{sessionId:int}")]
         public async Task<ActionResult<TestRunSessionResponse>> Delete(int sessionId)
         {
-            return Ok(await _service.DeleteSessionAsync(sessionId));
+            var response = await _service.DeleteSessionAsync(sessionId);
+            if (response == null)
+                return NotFound();
+            return Ok(response);
         }
 
         [HttpGet("")]

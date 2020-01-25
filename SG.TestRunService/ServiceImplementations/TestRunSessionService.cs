@@ -40,6 +40,8 @@ namespace SG.TestRunService.ServiceImplementations
         public async Task<TestRunSessionResponse> DeleteSessionAsync(int sessionId)
         {
             var session = await _dbService.DeleteAsync<TestRunSession>(sessionId);
+            if (session == null)
+                return null;
             return session.ToResponse();
         }
 
