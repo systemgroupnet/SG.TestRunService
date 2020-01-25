@@ -205,7 +205,7 @@ namespace SG.TestRunClientLib
                 result.Add(
                     new TestCaseInfo(
                         testCaseAzureIdsToServiceIds[tc.AzureTestCaseId],
-                        tc.AzureTestCaseId, tc.Title, null));
+                        tc.AzureTestCaseId, tc.Title, RunReason.NotRan));
             _testsToRun = result;
             return _testsToRun;
         }

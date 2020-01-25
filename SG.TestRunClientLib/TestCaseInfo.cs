@@ -7,7 +7,7 @@ namespace SG.TestRunClientLib
 {
     public class TestCaseInfo
     {
-        public TestCaseInfo(int id, int azureTestCaseId, string title, RunReason? runReason)
+        public TestCaseInfo(int id, int azureTestCaseId, string title, RunReason runReason)
         {
             Id = id;
             AzureTestCaseId = azureTestCaseId;
@@ -19,7 +19,7 @@ namespace SG.TestRunClientLib
         public int Id { get; }
         public int AzureTestCaseId { get; }
         public string Title { get; }
-        public RunReason? RunReason { get; }
+        public RunReason RunReason { get; }
         public int TestRunId { get; set; }
         public IDictionary<string, ExtraDataValue> ExtraData { get; }
     }
