@@ -118,7 +118,7 @@ namespace SG.TestRunService.Controllers
             return Ok(testRuns);
         }
 
-        public CreatedResult CreatedAt(TestRunResponse testRunResponse)
+        private CreatedResult CreatedAt(TestRunResponse testRunResponse)
             => Created($"{RoutConstants.TestRuns}/{testRunResponse.Id}", testRunResponse);
     }
 }
