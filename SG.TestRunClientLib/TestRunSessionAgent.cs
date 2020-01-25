@@ -178,7 +178,7 @@ namespace SG.TestRunClientLib
         private Task<TestRunSessionResponse> SetSessionStateAsync(TestRunSessionState state)
         {
             var sessionPatch = new JsonPatchDocument<TestRunSessionRequest>();
-            sessionPatch.Add(s => s.State, TestRunSessionState.Running);
+            sessionPatch.Add(s => s.State, state);
             return _client.PatchTestRunSessionAsync(_session.Id, sessionPatch);
         }
 
