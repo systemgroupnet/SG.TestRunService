@@ -67,6 +67,9 @@ namespace SG.TestRunClientLib
             if (_testCaseRequests == null)
                 throw new InvalidOperationException($"Test cases are not available. Call `{nameof(IntroduceTestCasesAsync)}` first.");
 
+            if (_testsToRun != null)
+                return _testsToRun;
+
             var currentSourceVersion = _session.ProductBuild.SourceVersion;
             var baseSourceVersion = await GetBaseBuildSourceVersionAsync();
             if (baseSourceVersion == null)
