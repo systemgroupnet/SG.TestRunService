@@ -114,6 +114,8 @@ namespace SG.TestRunService.Data.Services.Implementations
             where TEntity : class, IEntity
         {
             var e = await _db.FindAsync<TEntity>(id);
+            if (e == null)
+                return null;
             await DeleteAsync(e);
             return e;
         }
