@@ -164,6 +164,7 @@ namespace SG.TestRunService.Common.Models
                 StartTime = session.StartTime,
                 FinishTime = session.FinishTime,
                 State = session.State,
+                ProductBuild = session.ProductBuildInfo?.ToDto(),
                 TestRuns = session.TestRuns?.Select(ToRequest).ToList()
             };
         }
