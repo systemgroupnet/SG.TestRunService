@@ -16,5 +16,16 @@ namespace SG.TestRunService.Common.Models
         public DateTime Date { get; set; }
         public string BuildNumber { get; set; }
         public IDictionary<string, ExtraDataValue> ExtraData { get; set; }
+
+        public override string ToString()
+        {
+            return
+                $"Team Project: {TeamProject}\r\n" +
+                $"Azure Build Definition Id: {AzureBuildDefinitionId}\r\n" +
+                $"Azure Build Id: {AzureBuildId}\r\n" +
+                $"Build Number: {BuildNumber}\r\n" +
+                $"Source Version: {SourceVersion}\r\n" +
+                $"Date: {Date.ToString(Helpers.DTFormat)}\r\n";
+        }
     }
 }

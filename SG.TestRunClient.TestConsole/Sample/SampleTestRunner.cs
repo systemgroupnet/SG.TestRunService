@@ -38,16 +38,44 @@ namespace SG.TestRunClient.TestConsole.Sample
                 new TestRunClientJsonFileConfiguration("appsettings.json"),
                 _devOpsServerHandle,
                 build, suite, testBuildId, testBuildNumber);
-
+            Log("* Creating test session.");
+            Log(build.ToString());
             _suiteTestCases = GetTestCases();
+            Log("Total test cases: " + _suiteTestCases.Count);
             await _agent.IntroduceTestCasesAsync(CreateTestCaseRequests(_suiteTestCases));
             var testsToRun = await _agent.GetTestsToRunAsync();
-            RunTests(testsToRun);
+            LogTestsToRun(testsToRun);
+            await _agent.RecordSessionTestsAsync(testsToRun);
+            await RunTests(testsToRun);
+            await _agent.RecordTestSessionEndAsync(TestRunSessionState.RanToEnd);
         }
 
-        public void RunTests(IEnumerable<TestCaseInfo> tests)
+        private void LogTestsToRun(IReadOnlyList<TestCaseInfo> tests)
         {
 
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Tests to run :" + tests.Count);
+            foreach (var t in tests)
+            {
+                sb.AppendLine($"{t.AzureTestCaseId} ({t.RunReason}) - {t.Title}");
+            }
+            Log(sb.ToString());
+        }
+
+        public async Task RunTests(IReadOnlyList<TestCaseInfo> tests)
+        {
+            for (int i = 0; i < tests.Count; i++)
+            {
+                var test = tests[i];
+                Log($"## Running test {i + 1} of {tests.Count}: {test.AzureTestCaseId}");
+                await _agent.StartTestRunAsync(test, TestRunState.FixtureQueued);
+                await Task.Delay(2000);
+                await _agent.AdvanceTestRunStateAsync(test, TestRunState.WaitingForWeb);
+                await Task.Delay(1000);
+                await _agent.AdvanceTestRunStateAsync(test, TestRunState.Running);
+                await Task.Delay(3000);
+                await _agent.RecordTestRunEndAsync(test, TestRunOutcome.Successful, GetTestImpactFiles(test, productBuildDefinitionId));
+            }
         }
 
         public static IList<TestCase> GetTestCases()
@@ -68,6 +96,38 @@ namespace SG.TestRunClient.TestConsole.Sample
                         ExtraData = { ["scriptPath"] = new ExtraDataValue(tc.ScriptPath) }
                     })
                 .ToList();
+        }
+
+        private void Log(string text)
+        {
+            Console.WriteLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - " + text);
+        }
+
+        private IEnumerable<string> GetTestImpactFiles(TestCaseInfo testCase, int azureBuildDefId)
+        {
+            string[] files = new[]
+            {
+                "$/Dvp/General/Program.cs",
+                "$/Dvp/General/Test/Test.cs",
+                "$/Dvp/Sales/OrderService.cs",
+                "$/Dvp/Sales/IOrderService.cs",
+                "$/Dvp/General/Party/PartyService.cs",
+            };
+            if (azureBuildDefId == 10)
+            {
+                if (testCase.AzureTestCaseId == 200)
+                    return new[] { files[0], files[1], files[4] };
+                else if(testCase.AzureTestCaseId == 201)
+                    return new []{ files[0], files[4] };
+            }
+            else if (azureBuildDefId == 11)
+            {
+                if (testCase.AzureTestCaseId == 200)
+                    return new[] { files[2], files[3] };
+                else if(testCase.AzureTestCaseId == 201)
+                    return new []{ files[3], files[4] };
+            }
+            throw new InvalidOperationException();
         }
     }
 }
