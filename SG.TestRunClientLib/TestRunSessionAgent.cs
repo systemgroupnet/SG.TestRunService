@@ -145,6 +145,7 @@ namespace SG.TestRunClientLib
             var patch = new JsonPatchDocument<TestRunRequest>();
             patch.Add(r => r.State, TestRunState.Finished);
             patch.Add(r => r.Outcome, outcome);
+            patch.Add(r => r.FinishTime, DateTime.Now);
             var runResponse = await _client.PatchTestRunAsync(_session.Id, testCase.TestRunId, patch);
             await _client.UpdateTestImpactAsync(testCase.Id, new TestCaseImpactUpdateRequest()
             {
