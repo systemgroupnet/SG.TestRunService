@@ -107,17 +107,17 @@ namespace SG.TestRunService.ServiceImplementations
                 .GetFilteredAsync<TestCaseImpactCodeSignature>(cs =>
                     cs.TestCaseId == testCaseId &&
                     cs.AzureProductBuildDefinitionId == request.AzureProductBuildDefinitionId))
-                .ToDictionary(cs => cs.Signature, cs => (ImpactCodeSignatureEntity: cs, Present: false));
+                .ToDictionary(cs => cs.Signature);
+            var present = new HashSet<TestCaseImpactCodeSignature>();
             foreach (var rcs in request.CodeSignatures)
             {
                 if (originalCodeSignatures.TryGetValue(rcs.Signature, out var testImpactCodeSignature))
                 {
-                    testImpactCodeSignature.Present = true;
-                    var entity = testImpactCodeSignature.ImpactCodeSignatureEntity;
-                    if (entity.IsDeleted)
+                    present.Add(testImpactCodeSignature);
+                    if (testImpactCodeSignature.IsDeleted)
                     {
-                        entity.IsDeleted = false;
-                        entity.DateAdded = DateTime.Now;
+                        testImpactCodeSignature.IsDeleted = false;
+                        testImpactCodeSignature.DateAdded = DateTime.Now;
                     }
                 }
                 else
@@ -133,8 +133,8 @@ namespace SG.TestRunService.ServiceImplementations
                         });
                 }
             }
-            foreach (var (impactCodeSignatureEntity, present) in originalCodeSignatures.Values)
-                if (!present)
+            foreach (var impactCodeSignatureEntity in originalCodeSignatures.Values)
+                if (!present.Contains(impactCodeSignatureEntity))
                 {
                     impactCodeSignatureEntity.IsDeleted = true;
                     impactCodeSignatureEntity.DateRemoved = DateTime.Now;
