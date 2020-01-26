@@ -79,17 +79,25 @@ namespace SG.TestRunService.ServiceImplementations
             int azureBuildDefId = testRunSessionBuildInfo.AzureBuildDefinitionId;
 
             var tlsUpdater = new ImpactedTestsFinder(_dbService, _configuration, testRunSessionBuildInfo);
-            var testLastStatesToRun = await tlsUpdater.UpdateAndGetTestsToRun(request.Changes.Select(c => c.Signature).ToList());
-
-            var response = testLastStatesToRun
+            IReadOnlyCollection<TestToRun> testsToRun;
+            if (request.RunAllTests)
+            {
+                testsToRun = await tlsUpdater.UpdateAndGetAllTestsToRun();
+            }
+            else
+            {
+                testsToRun = await tlsUpdater.UpdateAndGetTestsToRun(request.Changes.Select(c => c.Signature).ToList());
+            }
+            var response = testsToRun
                 .Select(t =>
                     new TestToRunResponse()
                     {
                         Id = t.TestLastState.TestCaseId,
                         AzureTestCaseId = t.AzureTestCaseId,
-                        RunReason = t.TestLastState.RunReason.Value
+                        RunReason = t.RunReason
                     })
                 .ToList();
+            await _dbService.SaveChangesAsync();
             return response;
         }
 
@@ -106,7 +114,7 @@ namespace SG.TestRunService.ServiceImplementations
                 {
                     testImpactCodeSignature.Present = true;
                     var entity = testImpactCodeSignature.ImpactCodeSignatureEntity;
-                    if(entity.IsDeleted)
+                    if (entity.IsDeleted)
                     {
                         entity.IsDeleted = false;
                         entity.DateAdded = DateTime.Now;
@@ -125,8 +133,8 @@ namespace SG.TestRunService.ServiceImplementations
                         });
                 }
             }
-            foreach(var (impactCodeSignatureEntity, present) in originalCodeSignatures.Values)
-                if(!present)
+            foreach (var (impactCodeSignatureEntity, present) in originalCodeSignatures.Values)
+                if (!present)
                 {
                     impactCodeSignatureEntity.IsDeleted = true;
                     impactCodeSignatureEntity.DateRemoved = DateTime.Now;

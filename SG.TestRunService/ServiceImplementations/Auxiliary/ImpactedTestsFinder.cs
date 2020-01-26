@@ -28,19 +28,15 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             _azureBuildDefId = _buildInfo.AzureBuildDefinitionId;
         }
 
-        public async Task<List<TestToRun>> UpdateAndGetTestsToRun(IReadOnlyList<string> changedCodeSignatures)
+        public async Task<IReadOnlyList<TestToRun>> UpdateAndGetTestsToRun(IReadOnlyList<string> changedCodeSignatures)
         {
-            var testLastStatesForBuildDefQuery =
-                _dbService.Query<TestLastState>(tl =>
-                  tl.AzureProductBuildDefinitionId == _azureBuildDefId);
-
             var testImpactQueryMethodConfig = _configuration["testImpact.query"];
             bool runInMemory = testImpactQueryMethodConfig.Contains("memory", StringComparison.OrdinalIgnoreCase);
 
             var impactedOrAlreadyShouldRun =
                 runInMemory
-                    ? await FetchToMemeoryAndFindTestsToRun(changedCodeSignatures, testLastStatesForBuildDefQuery)
-                    : await UseDbQueryToFindTestsToRun(changedCodeSignatures, testLastStatesForBuildDefQuery);
+                    ? await FetchToMemeoryAndFindTestsToRun(changedCodeSignatures)
+                    : await UseDbQueryToFindTestsToRun(changedCodeSignatures);
 
             var impactedTestsLastStates = impactedOrAlreadyShouldRun
                 .Select(t => t.TestLastState)
@@ -48,7 +44,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                 .ToList();
             UpdateLastStateToImpacted(impactedTestsLastStates);
 
-            List<TestCase> newTests = await GetNewTestCases(_project, testLastStatesForBuildDefQuery);
+            List<TestCase> newTests = await GetNewTestCases(_project);
             var newTestsToRun = AddNewTestsLastStates(newTests);
 
             return impactedOrAlreadyShouldRun
@@ -56,8 +52,24 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                 .ToList();
         }
 
+        public async Task<IReadOnlyList<TestToRun>> UpdateAndGetAllTestsToRun()
+        {
+            var currentLastStates = await GetTestLastStatesAsTestToRun();
+            foreach (var l in currentLastStates)
+                l.RunReason = RunReason.ForceRun;
+            List<TestCase> newTests = await GetNewTestCases(_project);
+            var newTestsToRun = AddNewTestsLastStates(newTests);
+            return currentLastStates.Concat(newTestsToRun).ToList();
+        }
+
+        private IQueryable<TestLastState> GetTestLastStates()
+        {
+            return _dbService.Query<TestLastState>(tl =>
+                  tl.AzureProductBuildDefinitionId == _azureBuildDefId);
+        }
+
         private async Task<List<TestToRun>> UseDbQueryToFindTestsToRun(
-                IReadOnlyList<string> changedCodeSignatures, IQueryable<TestLastState> testLastStatesForBuildDefQuery)
+                IReadOnlyList<string> changedCodeSignatures)
         {
             var impactedTestCases =
                 from tc in _dbService.Query<TestCase>()
@@ -71,7 +83,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                 select tc;
 
             var impactedOrAlreadyShouldRun =
-                await (from tls in testLastStatesForBuildDefQuery
+                await (from tls in GetTestLastStates()
                        join it in impactedTestCases on tls.TestCaseId equals it.Id
                        into jit
                        from it in jit.DefaultIfEmpty()
@@ -86,7 +98,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         }
 
         private async Task<List<TestToRun>> FetchToMemeoryAndFindTestsToRun(
-                IReadOnlyList<string> changedCodeSignatures, IQueryable<TestLastState> testLastStatesForBuildDefQuery)
+                IReadOnlyList<string> changedCodeSignatures)
         {
             var impactedTestsLastStates = new List<TestLastState>();
 
@@ -103,14 +115,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                 if (changeSignaturesSet.Contains(sig.Signature))
                     impactedTestCaseIds.Add(sig.TestCaseId);
 
-            var allTestLastStates = await testLastStatesForBuildDefQuery
-                .Select(tls =>
-                    new TestToRun()
-                    {
-                        TestLastState = tls,
-                        AzureTestCaseId = tls.TestCase.AzureTestCaseId
-                    })
-                .ToListAsync();
+            List<TestToRun> allTestLastStates = await GetTestLastStatesAsTestToRun();
 
             var allTestsToRun = allTestLastStates
                 .Where(tls => impactedTestCaseIds.Contains(tls.TestLastState.TestCaseId) || tls.TestLastState.ShouldBeRun)
@@ -119,8 +124,21 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             return allTestsToRun;
         }
 
-        private async Task<List<TestCase>> GetNewTestCases(string project, IQueryable<TestLastState> allTestLastStates)
+        private async Task<List<TestToRun>> GetTestLastStatesAsTestToRun()
         {
+            return await GetTestLastStates()
+                .Select(tls =>
+                    new TestToRun()
+                    {
+                        TestLastState = tls,
+                        AzureTestCaseId = tls.TestCase.AzureTestCaseId
+                    })
+                .ToListAsync();
+        }
+
+        private async Task<List<TestCase>> GetNewTestCases(string project)
+        {
+            var allTestLastStates = GetTestLastStates();
             return await (from tc in _dbService.Query<TestCase>(tc => tc.TeamProject == project)
                           where !allTestLastStates.Any(lt => lt.TestCaseId == tc.Id)
                           select tc).ToListAsync();
@@ -153,14 +171,19 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             return lastStates;
         }
 
-        private void UpdateLastStateToImpacted(List<TestLastState> testLastStates)
+        private void UpdateLastStateToImpacted(IReadOnlyCollection<TestLastState> testLastStates)
+        {
+            UpdateLastStates(testLastStates, RunReason.Impacted);
+        }
+
+        private void UpdateLastStates(IReadOnlyCollection<TestLastState> testLastStates, RunReason runReason)
         {
             foreach (var state in testLastStates)
             {
                 state.UpdateDate = DateTime.Now;
                 state.ProductBuildInfo = _buildInfo;
                 state.ShouldBeRun = true;
-                state.RunReason = RunReason.Impacted;
+                state.RunReason = runReason;
             }
         }
     }

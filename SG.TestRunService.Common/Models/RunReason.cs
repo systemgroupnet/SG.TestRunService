@@ -4,6 +4,7 @@
     {
         Impacted = 1,
         Failed = 2,
-        NotRan = 3
+        ForceRun = 3,
+        NotRan = 10
     }
 }

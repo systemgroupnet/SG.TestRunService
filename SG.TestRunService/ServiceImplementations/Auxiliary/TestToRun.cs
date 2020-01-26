@@ -1,4 +1,5 @@
-﻿using SG.TestRunService.Data;
+﻿using SG.TestRunService.Common.Models;
+using SG.TestRunService.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,20 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
     {
         public TestLastState TestLastState { get; set; }
         public int AzureTestCaseId { get; set; }
+
+        private RunReason? _runReason;
+        public RunReason RunReason
+        {
+            get
+            {
+                if (_runReason.HasValue)
+                    return _runReason.Value;
+                return TestLastState?.RunReason ?? 0;
+            }
+            set
+            {
+                _runReason = value;
+            }
+        }
     }
 }

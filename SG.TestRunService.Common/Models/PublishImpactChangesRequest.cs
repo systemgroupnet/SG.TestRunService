@@ -8,6 +8,7 @@ namespace SG.TestRunService.Common.Models
     {
         public int AzureProductBuildDefinitionId { get; set; }
         public IList<CodeSignature> Changes { get; set; }
+        public bool RunAllTests { get; set; }
         public int TestRunSessionId { get; set; }
     }
 }
