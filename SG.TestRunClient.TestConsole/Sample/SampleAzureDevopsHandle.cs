@@ -15,10 +15,16 @@ namespace SG.TestRunClient.TestConsole.Sample
             string project, int azureProductBuildDefinitionId,
             string fromSourceVersion, string toSourceVersion)
         {
-            return new List<string> {
-                "$/Sample/Project1/Program.cs",
-                "$/Sample/Project1/TestClass1.cs"
-            };
+            int start = int.Parse(fromSourceVersion);
+            int end = int.Parse(toSourceVersion);
+            if (131 > start && 131 <= end)
+                return new[]
+                {
+                    SampleTestRunner.files[0],
+                    SampleTestRunner.files[1],
+                    SampleTestRunner.files[2],
+                };
+            return Array.Empty<string>();
         }
 
         public bool IsChronologicallyAfter(string currentSourceVersion, string baseSourceVersion)

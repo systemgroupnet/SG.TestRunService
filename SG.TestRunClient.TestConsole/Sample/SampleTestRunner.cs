@@ -12,12 +12,12 @@ namespace SG.TestRunClient.TestConsole.Sample
     {
         readonly string project = "Sample";
         readonly int productBuildDefinitionId = 10;
-        readonly int productBuildId = 1;
-        readonly string productBuildNumber = "SampleBuild.Dvp_1";
-        readonly int testBuildId = 1;
-        readonly string testBuildNumber = "SampleTest.Dvp_1";
+        readonly int productBuildId = 2;
+        readonly string productBuildNumber = "SampleBuild.Dvp_2";
+        readonly int testBuildId = 12;
+        readonly string testBuildNumber = "SampleTest.Dvp_2";
         readonly string suite = "Dvp";
-        readonly int sourceVersion = 130;
+        readonly int sourceVersion = 131;
 
         TestRunSessionAgent _agent;
         IList<TestCase> _suiteTestCases;
@@ -103,29 +103,30 @@ namespace SG.TestRunClient.TestConsole.Sample
             Console.WriteLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - " + text);
         }
 
+        public static string[] files = new[]
+        {
+            "$/Dvp/General/Program.cs",
+            "$/Dvp/General/Test/Test.cs",
+            "$/Dvp/Sales/OrderService.cs",
+            "$/Dvp/Sales/IOrderService.cs",
+            "$/Dvp/General/Party/PartyService.cs",
+        };
+
         private IEnumerable<string> GetTestImpactFiles(TestCaseInfo testCase, int azureBuildDefId)
         {
-            string[] files = new[]
-            {
-                "$/Dvp/General/Program.cs",
-                "$/Dvp/General/Test/Test.cs",
-                "$/Dvp/Sales/OrderService.cs",
-                "$/Dvp/Sales/IOrderService.cs",
-                "$/Dvp/General/Party/PartyService.cs",
-            };
             if (azureBuildDefId == 10)
             {
                 if (testCase.AzureTestCaseId == 200)
                     return new[] { files[0], files[1], files[4] };
-                else if(testCase.AzureTestCaseId == 201)
-                    return new []{ files[0], files[4] };
+                else if (testCase.AzureTestCaseId == 201)
+                    return new[] { files[0], files[4] };
             }
             else if (azureBuildDefId == 11)
             {
                 if (testCase.AzureTestCaseId == 200)
                     return new[] { files[2], files[3] };
-                else if(testCase.AzureTestCaseId == 201)
-                    return new []{ files[3], files[4] };
+                else if (testCase.AzureTestCaseId == 201)
+                    return new[] { files[3], files[4] };
             }
             throw new InvalidOperationException();
         }

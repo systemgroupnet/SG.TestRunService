@@ -8,6 +8,7 @@ namespace SG.TestRunClient.TestConsole
         static void Main(string[] args)
         {
             new SampleTestRunner().RunAsync().Wait();
+            Console.ReadKey();
         }
     }
 }
