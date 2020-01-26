@@ -30,8 +30,8 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
 
         public async Task<IReadOnlyList<TestToRun>> UpdateAndGetTestsToRun(IReadOnlyList<string> changedCodeSignatures)
         {
-            var testImpactQueryMethodConfig = _configuration["testImpact.query"];
-            bool runInMemory = testImpactQueryMethodConfig.Contains("memory", StringComparison.OrdinalIgnoreCase);
+            var testImpactQueryMethodConfig = _configuration["testImpact:query"];
+            bool runInMemory = testImpactQueryMethodConfig?.Contains("memory", StringComparison.OrdinalIgnoreCase) ?? false;
 
             var impactedOrAlreadyShouldRun =
                 runInMemory
