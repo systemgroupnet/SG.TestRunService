@@ -24,6 +24,14 @@ namespace SG.TestRunClient.TestConsole.Sample
                     SampleTestRunner.files[1],
                     SampleTestRunner.files[2],
                 };
+            else if (132 > start && 132 <= end)
+                return new[]
+                {
+
+                    SampleTestRunner.files[1],
+                    SampleTestRunner.files[2],
+                };
+
             return Array.Empty<string>();
         }
 

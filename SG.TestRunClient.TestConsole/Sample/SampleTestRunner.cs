@@ -12,12 +12,12 @@ namespace SG.TestRunClient.TestConsole.Sample
     {
         readonly string project = "Sample";
         readonly int productBuildDefinitionId = 10;
-        readonly int productBuildId = 2;
-        readonly string productBuildNumber = "SampleBuild.Dvp_2";
-        readonly int testBuildId = 12;
-        readonly string testBuildNumber = "SampleTest.Dvp_2";
+        readonly int productBuildId = 3;
+        readonly string productBuildNumber = "SampleBuild.Dvp_3";
+        readonly int testBuildId = 13;
+        readonly string testBuildNumber = "SampleTest.Dvp_3";
         readonly string suite = "Dvp";
-        readonly int sourceVersion = 131;
+        readonly int sourceVersion = 132;
 
         TestRunSessionAgent _agent;
         IList<TestCase> _suiteTestCases;
@@ -117,7 +117,7 @@ namespace SG.TestRunClient.TestConsole.Sample
             if (azureBuildDefId == 10)
             {
                 if (testCase.AzureTestCaseId == 200)
-                    return new[] { files[0], files[1], files[4] };
+                    return new[] { files[1], files[4] };
                 else if (testCase.AzureTestCaseId == 201)
                     return new[] { files[0], files[4] };
             }
