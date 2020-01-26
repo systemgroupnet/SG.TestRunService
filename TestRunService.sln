@@ -14,7 +14,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SG.TestRunClientLib", "SG.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SG.TestRunService.Common", "SG.TestRunService.Common\SG.TestRunService.Common.csproj", "{F0B65ECE-63CF-4BE8-A008-704631CFA5E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SG.TestRunClient.TestConsole", "SG.TestRunClient.TestConsole\SG.TestRunClient.TestConsole.csproj", "{4E8FEAC2-FF65-4866-9060-B7E94DF9DE5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SG.TestRunClient.TestConsole", "SG.TestRunClient.TestConsole\SG.TestRunClient.TestConsole.csproj", "{4E8FEAC2-FF65-4866-9060-B7E94DF9DE5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SG.TestRunClientLib.NetFx", "SG.TestRunClientLib.NetFx\SG.TestRunClientLib.NetFx.csproj", "{D117292D-F2A3-4449-8315-61AB15C2B51D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SG.TestRunClient.TestConsole.NetFx", "SG.TestRunClient.TestConsole.NetFx\SG.TestRunClient.TestConsole.NetFx.csproj", "{D97B1830-3165-4252-99D4-D9F5032EDB8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +42,14 @@ Global
 		{4E8FEAC2-FF65-4866-9060-B7E94DF9DE5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E8FEAC2-FF65-4866-9060-B7E94DF9DE5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E8FEAC2-FF65-4866-9060-B7E94DF9DE5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D117292D-F2A3-4449-8315-61AB15C2B51D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D117292D-F2A3-4449-8315-61AB15C2B51D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D117292D-F2A3-4449-8315-61AB15C2B51D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D117292D-F2A3-4449-8315-61AB15C2B51D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D97B1830-3165-4252-99D4-D9F5032EDB8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D97B1830-3165-4252-99D4-D9F5032EDB8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D97B1830-3165-4252-99D4-D9F5032EDB8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D97B1830-3165-4252-99D4-D9F5032EDB8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
