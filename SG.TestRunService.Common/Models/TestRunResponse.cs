@@ -14,6 +14,7 @@ namespace SG.TestRunService.Common.Models
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
         public TestRunOutcome Outcome { get; set; }
+        public string ErrorMessage { get; set; }
         public IDictionary<string, ExtraDataValue> ExtraData { get; set; }
     }
 }

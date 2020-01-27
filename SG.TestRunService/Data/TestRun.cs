@@ -21,6 +21,7 @@ namespace SG.TestRunService.Data
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
         public TestRunOutcome Outcome { get; set; }
+        public string ErrorMessage { get; set; }
 
         [OnDelete(DeleteBehavior.Restrict)]
         public TestRunSession TestRunSession { get; set; }

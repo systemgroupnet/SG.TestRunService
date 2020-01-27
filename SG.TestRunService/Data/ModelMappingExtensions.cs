@@ -254,6 +254,7 @@ namespace SG.TestRunService.Common.Models
                 StartTime = r.StartTime,
                 FinishTime = r.FinishTime,
                 Outcome = r.Outcome,
+                ErrorMessage = r.ErrorMessage,
                 ExtraData = r.ExtraData.ToDataModel()
             };
         }
@@ -269,6 +270,7 @@ namespace SG.TestRunService.Common.Models
                 StartTime = testRun.StartTime,
                 FinishTime = testRun.FinishTime,
                 Outcome = testRun.Outcome,
+                ErrorMessage = testRun.ErrorMessage,
                 ExtraData = testRun.ExtraData.ToDto()
             };
         }
@@ -282,6 +284,7 @@ namespace SG.TestRunService.Common.Models
                 StartTime = testRun.StartTime,
                 FinishTime = testRun.FinishTime,
                 Outcome = testRun.Outcome,
+                ErrorMessage = testRun.ErrorMessage,
                 ExtraData = testRun.ExtraData.ToDto()
             };
         }
@@ -297,7 +300,8 @@ namespace SG.TestRunService.Common.Models
                     State = r.State,
                     Outcome = r.Outcome,
                     StartTime = r.StartTime,
-                    FinishTime = r.FinishTime
+                    FinishTime = r.FinishTime,
+                    ErrorMessage = r.ErrorMessage
                 });
         }
 
@@ -308,6 +312,7 @@ namespace SG.TestRunService.Common.Models
             testRun.StartTime = testRunRequest.StartTime;
             testRun.FinishTime = testRunRequest.FinishTime;
             testRun.Outcome = testRunRequest.Outcome;
+            testRun.ErrorMessage = testRunRequest.ErrorMessage;
             testRun.ExtraData.UpdateFrom(testRunRequest.ExtraData);
         }
 
