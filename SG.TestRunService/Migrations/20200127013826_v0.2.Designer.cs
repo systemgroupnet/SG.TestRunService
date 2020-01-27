@@ -10,7 +10,7 @@ using SG.TestRunService.Data;
 namespace SG.TestRunService.Migrations
 {
     [DbContext(typeof(TSDbContext))]
-    [Migration("20200127010358_v0.2")]
+    [Migration("20200127013826_v0.2")]
     partial class v02
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
