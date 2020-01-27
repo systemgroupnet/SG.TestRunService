@@ -152,7 +152,7 @@ namespace SG.TestRunClientLib
             await _client.UpdateTestImpactAsync(testCase.Id, new TestCaseImpactUpdateRequest()
             {
                 AzureProductBuildDefinitionId = _session.ProductBuild.AzureBuildDefinitionId,
-                CodeSignatures = impactFiles.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
+                CodeSignatures = impactFiles?.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
             });
             await _client.UpdateTestLastStateAsync(testCase.Id, new TestLastStateUpdateRequest()
             {

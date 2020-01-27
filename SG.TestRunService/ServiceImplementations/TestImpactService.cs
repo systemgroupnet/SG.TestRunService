@@ -109,28 +109,31 @@ namespace SG.TestRunService.ServiceImplementations
                     cs.AzureProductBuildDefinitionId == request.AzureProductBuildDefinitionId))
                 .ToDictionary(cs => cs.Signature);
             var present = new HashSet<TestCaseImpactCodeSignature>();
-            foreach (var rcs in request.CodeSignatures)
+            if (request.CodeSignatures != null)
             {
-                if (originalCodeSignatures.TryGetValue(rcs.Signature, out var testImpactCodeSignature))
+                foreach (var rcs in request.CodeSignatures)
                 {
-                    present.Add(testImpactCodeSignature);
-                    if (testImpactCodeSignature.IsDeleted)
+                    if (originalCodeSignatures.TryGetValue(rcs.Signature, out var testImpactCodeSignature))
                     {
-                        testImpactCodeSignature.IsDeleted = false;
-                        testImpactCodeSignature.DateAdded = DateTime.Now;
-                    }
-                }
-                else
-                {
-                    _dbService.Add(
-                        new TestCaseImpactCodeSignature()
+                        present.Add(testImpactCodeSignature);
+                        if (testImpactCodeSignature.IsDeleted)
                         {
-                            AzureProductBuildDefinitionId = request.AzureProductBuildDefinitionId,
-                            DateAdded = DateTime.Now,
-                            Signature = rcs.Signature,
-                            FilePath = rcs.FileName,
-                            TestCaseId = testCaseId
-                        });
+                            testImpactCodeSignature.IsDeleted = false;
+                            testImpactCodeSignature.DateAdded = DateTime.Now;
+                        }
+                    }
+                    else
+                    {
+                        _dbService.Add(
+                            new TestCaseImpactCodeSignature()
+                            {
+                                AzureProductBuildDefinitionId = request.AzureProductBuildDefinitionId,
+                                DateAdded = DateTime.Now,
+                                Signature = rcs.Signature,
+                                FilePath = rcs.FileName,
+                                TestCaseId = testCaseId
+                            });
+                    }
                 }
             }
             foreach (var impactCodeSignatureEntity in originalCodeSignatures.Values)
