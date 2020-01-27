@@ -294,6 +294,7 @@ namespace SG.TestRunService.Common.Models
                     Id = r.Id,
                     TestCaseId = r.TestCaseId,
                     TestRunSessionId = r.TestRunSessionId,
+                    State = r.State,
                     Outcome = r.Outcome,
                     StartTime = r.StartTime,
                     FinishTime = r.FinishTime
