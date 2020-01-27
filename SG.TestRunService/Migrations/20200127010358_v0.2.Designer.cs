@@ -10,8 +10,8 @@ using SG.TestRunService.Data;
 namespace SG.TestRunService.Migrations
 {
     [DbContext(typeof(TSDbContext))]
-    [Migration("20200126135904_v0.1")]
-    partial class v01
+    [Migration("20200127010358_v0.2")]
+    partial class v02
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -290,6 +290,9 @@ namespace SG.TestRunService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("FinishTime")
                         .HasColumnType("datetime2");

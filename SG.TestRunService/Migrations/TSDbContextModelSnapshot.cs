@@ -289,6 +289,9 @@ namespace SG.TestRunService.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("FinishTime")
                         .HasColumnType("datetime2");
 
