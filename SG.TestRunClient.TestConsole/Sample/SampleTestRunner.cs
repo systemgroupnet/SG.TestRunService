@@ -74,7 +74,7 @@ namespace SG.TestRunClient.TestConsole.Sample
                 await Task.Delay(1000);
                 await _agent.AdvanceTestRunStateAsync(test, TestRunState.Running);
                 await Task.Delay(3000);
-                await _agent.RecordTestRunEndAsync(test, TestRunOutcome.Successful, GetTestImpactFiles(test, productBuildDefinitionId));
+                await _agent.RecordTestRunEndAsync(test, TestRunOutcome.Successful, null, GetTestImpactFiles(test, productBuildDefinitionId));
             }
         }
 
