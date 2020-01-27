@@ -140,12 +140,14 @@ namespace SG.TestRunClientLib
             return SetTestRunStateAsync(testCase, state);
         }
 
-        public async Task<TestRunResponse> RecordTestRunEndAsync(TestCaseInfo testCase, TestRunOutcome outcome, IEnumerable<string> impactFiles)
+        public async Task<TestRunResponse> RecordTestRunEndAsync(TestCaseInfo testCase, TestRunOutcome outcome,
+            string errorMessage, IEnumerable<string> impactFiles)
         {
             var patch = new JsonPatchDocument<TestRunRequest>();
             patch.Add(r => r.State, TestRunState.Finished);
             patch.Add(r => r.Outcome, outcome);
             patch.Add(r => r.FinishTime, DateTime.Now);
+            patch.Add(r => r.ErrorMessage, errorMessage);
             var runResponse = await _client.PatchTestRunAsync(_session.Id, testCase.TestRunId, patch);
             await _client.UpdateTestImpactAsync(testCase.Id, new TestCaseImpactUpdateRequest()
             {
