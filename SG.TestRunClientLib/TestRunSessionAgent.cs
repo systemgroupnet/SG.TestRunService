@@ -73,7 +73,7 @@ namespace SG.TestRunClientLib
             var currentSourceVersion = _session.ProductBuild.SourceVersion;
             var baseSourceVersion = await GetBaseBuildSourceVersionAsync();
             if (baseSourceVersion == null)
-                return await PublishNoChangeAndGetAllTestsAsnc();
+                return await PublishNoChangeAndGetAllTestsAsync();
             if (baseSourceVersion == currentSourceVersion)
             {
                 // issue a warning
@@ -89,7 +89,7 @@ namespace SG.TestRunClientLib
                     case TestOlderVersionBehavior.RunImpactedAndNotSuccessfulTests:
                         break;
                     case TestOlderVersionBehavior.RunAllTests:
-                        return await PublishNoChangeAndGetAllTestsAsnc();
+                        return await PublishNoChangeAndGetAllTestsAsync();
                     default:
                         throw new NotSupportedException($"The value '{_configuration.RunForOlderVersionBeahvior}' for configuration '{nameof(_configuration.RunForOlderVersionBeahvior)}' is not valid.");
                 }
@@ -199,7 +199,7 @@ namespace SG.TestRunClientLib
             return await PublishChangesAndGetTestsToRunAsync(req);
         }
 
-        private async Task<IReadOnlyList<TestCaseInfo>> PublishNoChangeAndGetAllTestsAsnc()
+        public async Task<IReadOnlyList<TestCaseInfo>> PublishNoChangeAndGetAllTestsAsync()
         {
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
