@@ -168,13 +168,28 @@ namespace SG.TestRunService.ServiceImplementations
             {
                 return ServiceError.NotFound("Requested test run session (or related build info) not found. Id: " + lastStateUpdateRequest.TestRunSessionId);
             }
+
+            bool hasImpactData = _dbService
+                .Query<TestCaseImpactCodeSignature>(t =>
+                    t.TestCaseId == testCaseId &&
+                    t.AzureProductBuildDefinitionId == lastStateUpdateRequest.AzureProductBuildDefinitionId &&
+                    !t.IsDeleted)
+                .Any();
             var outcome = lastStateUpdateRequest.Outcome; ;
             testLastState.LastOutcome = outcome;
             switch (outcome)
             {
                 case TestRunOutcome.Successful:
-                    testLastState.ShouldBeRun = false;
-                    testLastState.RunReason = null;
+                    if (hasImpactData)
+                    {
+                        testLastState.ShouldBeRun = false;
+                        testLastState.RunReason = null;
+                    }
+                    else
+                    {
+                        testLastState.ShouldBeRun = true;
+                        testLastState.RunReason = RunReason.ImpactDataNotAvailable;
+                    }
                     break;
                 case TestRunOutcome.Failed:
                     testLastState.ShouldBeRun = true;
