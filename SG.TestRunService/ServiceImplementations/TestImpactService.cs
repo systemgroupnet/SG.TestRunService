@@ -103,6 +103,7 @@ namespace SG.TestRunService.ServiceImplementations
 
         public async Task UpdateTestCaseImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request)
         {
+            var now = DateTime.Now;
             var originalCodeSignatures = (await _dbService
                 .GetFilteredAsync<TestCaseImpactCodeSignature>(cs =>
                     cs.TestCaseId == testCaseId &&
@@ -119,7 +120,7 @@ namespace SG.TestRunService.ServiceImplementations
                         if (testImpactCodeSignature.IsDeleted)
                         {
                             testImpactCodeSignature.IsDeleted = false;
-                            testImpactCodeSignature.DateAdded = DateTime.Now;
+                            testImpactCodeSignature.DateAdded = now;
                         }
                     }
                     else
@@ -128,7 +129,7 @@ namespace SG.TestRunService.ServiceImplementations
                             new TestCaseImpactCodeSignature()
                             {
                                 AzureProductBuildDefinitionId = request.AzureProductBuildDefinitionId,
-                                DateAdded = DateTime.Now,
+                                DateAdded = now,
                                 Signature = rcs.Signature,
                                 FilePath = rcs.FileName,
                                 TestCaseId = testCaseId
@@ -140,7 +141,7 @@ namespace SG.TestRunService.ServiceImplementations
                 if (!present.Contains(impactCodeSignatureEntity))
                 {
                     impactCodeSignatureEntity.IsDeleted = true;
-                    impactCodeSignatureEntity.DateRemoved = DateTime.Now;
+                    impactCodeSignatureEntity.DateRemoved = now;
                 }
             await _dbService.SaveChangesAsync();
         }
@@ -168,13 +169,28 @@ namespace SG.TestRunService.ServiceImplementations
             {
                 return ServiceError.NotFound("Requested test run session (or related build info) not found. Id: " + lastStateUpdateRequest.TestRunSessionId);
             }
+
+            bool hasImpactData = _dbService
+                .Query<TestCaseImpactCodeSignature>(t =>
+                    t.TestCaseId == testCaseId &&
+                    t.AzureProductBuildDefinitionId == lastStateUpdateRequest.AzureProductBuildDefinitionId &&
+                    !t.IsDeleted)
+                .Any();
             var outcome = lastStateUpdateRequest.Outcome; ;
             testLastState.LastOutcome = outcome;
             switch (outcome)
             {
                 case TestRunOutcome.Successful:
-                    testLastState.ShouldBeRun = false;
-                    testLastState.RunReason = null;
+                    if (hasImpactData)
+                    {
+                        testLastState.ShouldBeRun = false;
+                        testLastState.RunReason = null;
+                    }
+                    else
+                    {
+                        testLastState.ShouldBeRun = true;
+                        testLastState.RunReason = RunReason.ImpactDataNotAvailable;
+                    }
                     break;
                 case TestRunOutcome.Failed:
                     testLastState.ShouldBeRun = true;
