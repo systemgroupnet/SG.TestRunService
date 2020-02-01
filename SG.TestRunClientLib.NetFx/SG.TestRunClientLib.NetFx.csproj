@@ -186,11 +186,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SG.TestRunClientLib\ConsoleLogger.cs">
+      <Link>ConsoleLogger.cs</Link>
+    </Compile>
     <Compile Include="..\SG.TestRunClientLib\IDevOpsServerHandle.cs">
       <Link>IDevOpsServerHandle.cs</Link>
     </Compile>
+    <Compile Include="..\SG.TestRunClientLib\ILogger.cs">
+      <Link>ILogger.cs</Link>
+    </Compile>
     <Compile Include="..\SG.TestRunClientLib\ITestRunClientConfiguration.cs">
       <Link>ITestRunClientConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\SG.TestRunClientLib\NullLogger.cs">
+      <Link>NullLogger.cs</Link>
     </Compile>
     <Compile Include="..\SG.TestRunClientLib\TestCaseInfo.cs">
       <Link>TestCaseInfo.cs</Link>

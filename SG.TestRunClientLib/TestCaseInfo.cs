@@ -22,5 +22,10 @@ namespace SG.TestRunClientLib
         public RunReason RunReason { get; }
         public int TestRunId { get; set; }
         public IDictionary<string, ExtraDataValue> ExtraData { get; }
+
+        public override string ToString()
+        {
+            return $"Azure TestCase Id: {AzureTestCaseId}, Run Reason: {RunReason}, Title: {Title}, Id {Id}, TestRunId: {TestRunId}";
+        }
     }
 }

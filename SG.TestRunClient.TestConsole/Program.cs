@@ -5,7 +5,7 @@ namespace SG.TestRunClient.TestConsole
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             new SampleTestRunner().RunAsync().Wait();
             Console.ReadKey();

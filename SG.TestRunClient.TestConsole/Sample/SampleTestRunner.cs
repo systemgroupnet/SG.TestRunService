@@ -37,29 +37,13 @@ namespace SG.TestRunClient.TestConsole.Sample
             _agent = await TestRunSessionFactory.StartAsync(
                 new TestRunClientJsonFileConfiguration("appsettings.json"),
                 _devOpsServerHandle,
-                build, suite, testBuildId, testBuildNumber);
-            Log("* Creating test session.");
-            Log(build.ToString());
+                build, suite, testBuildId, testBuildNumber, new ConsoleLogger());
             _suiteTestCases = GetTestCases();
-            Log("Total test cases: " + _suiteTestCases.Count);
             await _agent.IntroduceTestCasesAsync(CreateTestCaseRequests(_suiteTestCases));
             var testsToRun = await _agent.GetTestsToRunAsync();
-            LogTestsToRun(testsToRun);
             await _agent.RecordSessionTestsAsync(testsToRun);
             await RunTests(testsToRun);
             await _agent.RecordTestSessionEndAsync(TestRunSessionState.RanToEnd);
-        }
-
-        private void LogTestsToRun(IReadOnlyList<TestCaseInfo> tests)
-        {
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Tests to run :" + tests.Count);
-            foreach (var t in tests)
-            {
-                sb.AppendLine($"{t.AzureTestCaseId} ({t.RunReason}) - {t.Title}");
-            }
-            Log(sb.ToString());
         }
 
         public async Task RunTests(IReadOnlyList<TestCaseInfo> tests)
@@ -67,7 +51,6 @@ namespace SG.TestRunClient.TestConsole.Sample
             for (int i = 0; i < tests.Count; i++)
             {
                 var test = tests[i];
-                Log($"## Running test {i + 1} of {tests.Count}: {test.AzureTestCaseId}");
                 await _agent.StartTestRunAsync(test, TestRunState.FixtureQueued);
                 await Task.Delay(2000);
                 await _agent.AdvanceTestRunStateAsync(test, TestRunState.WaitingForWeb);
@@ -96,11 +79,6 @@ namespace SG.TestRunClient.TestConsole.Sample
                         ExtraData = { ["scriptPath"] = new ExtraDataValue(tc.ScriptPath) }
                     })
                 .ToList();
-        }
-
-        private void Log(string text)
-        {
-            Console.WriteLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - " + text);
         }
 
         public static string[] files = new[]
