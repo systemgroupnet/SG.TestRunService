@@ -5,6 +5,13 @@
     <AssemblyName>SG.TestRunClientLib</AssemblyName>
   </PropertyGroup>
 
+<!-- Temporarily disable general binding redirects
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
+-->
+
   <ItemGroup>
     <PackageReference Include="DalSoft.RestClient" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="3.1.1" />
