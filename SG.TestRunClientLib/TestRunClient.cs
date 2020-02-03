@@ -19,8 +19,7 @@ namespace SG.TestRunClientLib
             var config = new Config().UseRetryHandler();
             if (_serviceUri[_serviceUri.Length - 1] != '/')
                 _serviceUri = _serviceUri + '/';
-            var uri = new Uri(new Uri(_serviceUri), "api").AbsoluteUri;
-            _client = new RestClient(uri, config);
+            _client = new RestClient(_serviceUri + "api", config);
         }
 
         public async Task<IReadOnlyList<TestRunSessionResponse>> GetSessionsAsync()
