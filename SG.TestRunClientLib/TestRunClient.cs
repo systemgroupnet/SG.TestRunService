@@ -15,6 +15,8 @@ namespace SG.TestRunClientLib
 
         public TestRunClient(string serviceUri)
         {
+            if (string.IsNullOrWhiteSpace(serviceUri))
+                throw new ArgumentException("`serviceUri` cannot be empty.");
             _serviceUri = serviceUri;
             var config = new Config().UseRetryHandler();
             if (_serviceUri[_serviceUri.Length - 1] != '/')
