@@ -19,6 +19,7 @@ namespace SG.TestRunClientLib
                 throw new ArgumentException("`serviceUri` cannot be empty.");
             _serviceUri = serviceUri;
             var config = new Config().UseRetryHandler();
+            config.Timeout = TimeSpan.FromMinutes(10);
             if (_serviceUri[_serviceUri.Length - 1] != '/')
                 _serviceUri = _serviceUri + '/';
             _client = new RestClient(_serviceUri + "api", config);
