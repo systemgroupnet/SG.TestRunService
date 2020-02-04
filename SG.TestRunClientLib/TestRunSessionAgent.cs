@@ -50,7 +50,7 @@ namespace SG.TestRunClientLib
             logger.Info("'TestRunClient' created.");
 
             var response = await client.InsertSessionAsync(sessionRequest);
-            logger.Info("'TestRunSession' inserted: " + ObjToString(response));
+            logger.Debug("'TestRunSession' inserted: " + ObjToString(response));
 
             return new TestRunSessionAgent(client, configuration, devOpsServerHandle, response, logger);
         }
@@ -111,7 +111,7 @@ namespace SG.TestRunClientLib
             }
             else if (!_devOpsServerHandle.IsChronologicallyAfter(currentSourceVersion, baseSourceVersion))
             {
-                string message = $"Source version used for this test (${currentSourceVersion}) is older than the last test ran on this build definition (${baseSourceVersion}).";
+                string message = $"Source version used for this test ({currentSourceVersion}) is older than the last test ran on this build definition ({baseSourceVersion}).";
                 _logger.Info(message);
                 _logger.Debug($"Deciding by configuration '{nameof(_configuration.RunForOlderVersionBeahvior)}': {_configuration.RunForOlderVersionBeahvior}");
 
@@ -157,9 +157,10 @@ namespace SG.TestRunClientLib
 
         public async Task<IReadOnlyList<TestRunResponse>> RecordSessionTestsAsync(IReadOnlyCollection<TestCaseInfo> testCases)
         {
+            _logger.Info("Total tests to run: " + testCases.Count);
+
             var responses = new List<TestRunResponse>();
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Tests to run (total " + testCases.Count + " tests):");
+
             foreach (var testCase in testCases)
             {
                 var testRunResponse = await _client.InsertTestRunAsync(
@@ -171,9 +172,7 @@ namespace SG.TestRunClientLib
                         });
                 responses.Add(testRunResponse);
                 testCase.TestRunId = testRunResponse.Id;
-                sb.AppendLine(testCase.ToString());
             }
-            _logger.Info(sb.ToString());
             return responses;
         }
 
@@ -288,11 +287,9 @@ namespace SG.TestRunClientLib
 
         private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRunAsync(PublishImpactChangesRequest req)
         {
-            LogDebug("Publishing changes. Request object:", req);
+            LogDebug("Publishing changes to the service and updating last states of tests...");
 
             var response = await _client.PublishImpactChangesAsync(req);
-
-            LogDebug("Response: ", response);
 
             var testsToRun = new List<TestCaseInfo>();
             var azureIdToTestCases = _testCaseRequests.ToDictionary(t => t.AzureTestCaseId);
