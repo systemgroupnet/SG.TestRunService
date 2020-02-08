@@ -157,7 +157,7 @@ namespace SG.TestRunClientLib
 
         public async Task<IReadOnlyList<TestRunResponse>> RecordSessionTestsAsync(IReadOnlyCollection<TestCaseInfo> testCases)
         {
-            _logger.Info("Total tests to run: " + testCases.Count);
+            LogTestsToRun(testCases);
 
             var responses = new List<TestRunResponse>();
 
@@ -174,6 +174,15 @@ namespace SG.TestRunClientLib
                 testCase.TestRunId = testRunResponse.Id;
             }
             return responses;
+        }
+
+        private void LogTestsToRun(IReadOnlyCollection<TestCaseInfo> testCases)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Tests to run (total {testCases.Count} tests):");
+            foreach (var testCase in testCases)
+                sb.AppendLine(testCase.ToString());
+            _logger.Info(sb.ToString());
         }
 
         public async Task<TestRunResponse> StartTestRunAsync(TestCaseInfo testCase, TestRunState state)
