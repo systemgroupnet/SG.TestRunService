@@ -179,9 +179,12 @@ namespace SG.TestRunClientLib
         private void LogTestsToRun(IReadOnlyCollection<TestCaseInfo> testCases)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"Tests to run (total {testCases.Count} tests):");
+            var symbolStr = new string('=', 15);
+            var headerLine = symbolStr + $"   Tests to run (total {testCases.Count} tests)   " + symbolStr;
+            sb.AppendLine(headerLine);
             foreach (var testCase in testCases)
                 sb.AppendLine(testCase.ToString());
+            sb.AppendLine(new string('=', headerLine.Length));
             _logger.Info(sb.ToString());
         }
 
