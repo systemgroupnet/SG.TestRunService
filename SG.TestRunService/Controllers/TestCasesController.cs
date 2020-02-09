@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SG.TestRunService.Common.Models;
 using SG.TestRunService.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SG.TestRunService.Controllers
@@ -29,7 +32,7 @@ namespace SG.TestRunService.Controllers
             var fieldNames = fields.Split(',');
             if (fieldNames.Length == 1 && fieldNames[0] == nameof(TestCaseResponse.AzureTestCaseId))
                 return Ok(await _service.GetAzureTestCaseIdsAsync());
-            if(fieldNames.Length == 2 &&
+            if (fieldNames.Length == 2 &&
                 fieldNames.Contains(nameof(TestCaseResponse.Id)) &&
                 fieldNames.Contains(nameof(TestCaseResponse.AzureTestCaseId)))
             {
@@ -49,10 +52,37 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Insert(TestCaseRequest testCaseRequest)
+        public async Task<ActionResult> Insert()
         {
-            var tc = await _service.InsertAsync(testCaseRequest);
-            return CreatedAtAction(nameof(Get), new { id = tc.Id }, tc);
+            string jsonStr;
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                jsonStr = await reader.ReadToEndAsync();
+            }
+            List<TestCaseRequest> testCaseRequests;
+            try
+            {
+                if (jsonStr.StartsWith("["))
+                    testCaseRequests = JsonConvert.DeserializeObject<List<TestCaseRequest>>(jsonStr);
+                else if (jsonStr.StartsWith("{"))
+                    testCaseRequests = new List<TestCaseRequest>() { JsonConvert.DeserializeObject<TestCaseRequest>(jsonStr) };
+                else
+                    return BadRequest("Please post a valid JSON object.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            TestCaseResponse response = null;
+            foreach (var tc in testCaseRequests)
+            {
+                response = await _service.InsertAsync(tc);
+            }
+            if (testCaseRequests.Count == 1)
+                return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
+            else
+                return Ok();
         }
 
         [HttpDelete("{id:int}")]

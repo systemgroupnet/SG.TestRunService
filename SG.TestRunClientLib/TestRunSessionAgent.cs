@@ -66,10 +66,7 @@ namespace SG.TestRunClientLib
             if (newTestCases.Count > 0)
             {
                 _logger.Info("New test cases: " + newTestCases.Count);
-                foreach (var tc in newTestCases)
-                {
-                    await _client.InsertTestCaseAsync(tc);
-                }
+                await _client.InsertTestCasesAsync(newTestCases);
             }
         }
 

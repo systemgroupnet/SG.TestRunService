@@ -54,6 +54,11 @@ namespace SG.TestRunClientLib
                 .Get();
         }
 
+        public async Task<TestCaseResponse> InsertTestCasesAsync(IEnumerable<TestCaseRequest> testCaseRequests)
+        {
+            return await _client.testcases.Post(testCaseRequests);
+        }
+
         public async Task<TestCaseResponse> InsertTestCaseAsync(TestCaseRequest testCaseRequest)
         {
             return await _client.testcases.Post(testCaseRequest);
