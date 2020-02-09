@@ -16,7 +16,6 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         private readonly IBaseDbService _dbService;
         private readonly Data.BuildInfo _buildInfo;
         private readonly IConfiguration _configuration;
-        private readonly string _project;
         private readonly int _azureBuildDefId;
 
         public ImpactedTestsFinder(IBaseDbService dbService, IConfiguration configuration, Data.BuildInfo testRunSessionBuildInfo)
@@ -24,7 +23,6 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             _dbService = dbService;
             _configuration = configuration;
             _buildInfo = testRunSessionBuildInfo;
-            _project = _buildInfo.TeamProject;
             _azureBuildDefId = _buildInfo.AzureBuildDefinitionId;
         }
 
@@ -44,7 +42,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                 .ToList();
             UpdateLastStateToImpacted(impactedTestsLastStates);
 
-            List<TestCase> newTests = await GetNewTestCases(_project);
+            List<TestCase> newTests = await GetNewTestCases();
             var newTestsToRun = AddNewTestsLastStates(newTests);
 
             return impactedOrAlreadyShouldRun
@@ -57,7 +55,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             var currentLastStates = await GetTestLastStatesAsTestToRun();
             foreach (var l in currentLastStates)
                 l.RunReason = RunReason.ForceRun;
-            List<TestCase> newTests = await GetNewTestCases(_project);
+            List<TestCase> newTests = await GetNewTestCases();
             var newTestsToRun = AddNewTestsLastStates(newTests);
             return currentLastStates.Concat(newTestsToRun).ToList();
         }
@@ -74,7 +72,6 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             var impactedTestCases =
                 from tc in _dbService.Query<TestCase>()
                 where
-                    tc.TeamProject == _buildInfo.TeamProject &&
                     _dbService.Query<TestCaseImpactCodeSignature>().Any(tci =>
                        tci.TestCaseId == tc.Id &&
                        tci.AzureProductBuildDefinitionId == _azureBuildDefId &&
@@ -136,10 +133,10 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                 .ToListAsync();
         }
 
-        private async Task<List<TestCase>> GetNewTestCases(string project)
+        private async Task<List<TestCase>> GetNewTestCases()
         {
             var allTestLastStates = GetTestLastStates();
-            return await (from tc in _dbService.Query<TestCase>(tc => tc.TeamProject == project)
+            return await (from tc in _dbService.Query<TestCase>()
                           where !allTestLastStates.Any(lt => lt.TestCaseId == tc.Id)
                           select tc).ToListAsync();
         }

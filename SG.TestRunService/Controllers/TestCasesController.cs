@@ -21,23 +21,19 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get(string project, string fields = null)
+        public async Task<ActionResult> Get(string fields = null)
         {
-            if (project == null)
-                return StatusCode(
-                    StatusCodes.Status422UnprocessableEntity,
-                    new { message = "Project name should be specified in query ('?project=...')." });
             if (fields == null)
-                return Ok(await _service.GetAllAsync(project));
+                return Ok(await _service.GetAllAsync());
 
             var fieldNames = fields.Split(',');
             if (fieldNames.Length == 1 && fieldNames[0] == nameof(TestCaseResponse.AzureTestCaseId))
-                return Ok(await _service.GetAzureTestCaseIdsAsync(project));
+                return Ok(await _service.GetAzureTestCaseIdsAsync());
             if(fieldNames.Length == 2 &&
                 fieldNames.Contains(nameof(TestCaseResponse.Id)) &&
                 fieldNames.Contains(nameof(TestCaseResponse.AzureTestCaseId)))
             {
-                return Ok(await _service.GetAllAsync(project, fieldNames));
+                return Ok(await _service.GetAllAsync(fieldNames));
             }
 
             return StatusCode(StatusCodes.Status501NotImplemented);

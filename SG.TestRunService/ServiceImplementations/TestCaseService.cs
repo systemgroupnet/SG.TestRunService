@@ -38,24 +38,23 @@ namespace SG.TestRunService.ServiceImplementations
             return _dbService.Query<TestCase>(id).Project().FirstOrDefaultAsync();
         }
 
-        public async Task<IReadOnlyList<TestCaseResponse>> GetAllAsync(string teamProject)
+        public async Task<IReadOnlyList<TestCaseResponse>> GetAllAsync()
         {
             return await _dbService
-                .Query<TestCase>(tc => tc.TeamProject == teamProject)
+                .Query<TestCase>()
                 .Project()
                 .ToListAsync();
         }
 
-        public async Task<IReadOnlyList<int>> GetAzureTestCaseIdsAsync(string teamProject)
+        public async Task<IReadOnlyList<int>> GetAzureTestCaseIdsAsync()
         {
             return await _dbService
                 .Query<TestCase>()
-                .Where(tc => tc.TeamProject == teamProject)
                 .Select(tc => tc.AzureTestCaseId)
                 .ToListAsync();
         }
 
-        public async Task<IReadOnlyList<TestCaseResponse>> GetAllAsync(string teamProject, IEnumerable<string> fieldNames)
+        public async Task<IReadOnlyList<TestCaseResponse>> GetAllAsync(IEnumerable<string> fieldNames)
         {
             var names = fieldNames.ToList();
             if (names.Count == 2 &&
@@ -63,7 +62,6 @@ namespace SG.TestRunService.ServiceImplementations
                 names.Contains(nameof(TestCaseResponse.AzureTestCaseId)))
             {
                 return await _dbService.Query<TestCase>()
-                        .Where(tc => tc.TeamProject == teamProject)
                         .Select(tc => new TestCaseResponse()
                         {
                             Id = tc.Id,

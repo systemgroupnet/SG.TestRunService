@@ -40,17 +40,17 @@ namespace SG.TestRunClientLib
             return await _client.sessions.Post(session);
         }
 
-        public async Task<IReadOnlyList<int>> GetAzureTestCaseIdsAsync(string teamProject)
+        public async Task<IReadOnlyList<int>> GetAzureTestCaseIdsAsync()
         {
             return await _client.testcases
-                .Query(new { project = teamProject, fields = nameof(TestCaseResponse.AzureTestCaseId) })
+                .Query(new { fields = nameof(TestCaseResponse.AzureTestCaseId) })
                 .Get();
         }
 
-        public async Task<IReadOnlyList<TestCaseResponse>> GetTestCasesAsync(string teamProject, IEnumerable<string> fieldNames)
+        public async Task<IReadOnlyList<TestCaseResponse>> GetTestCasesAsync(IEnumerable<string> fieldNames)
         {
             return await _client.testcases
-                .Query(new { project = teamProject, fields = string.Join(",", fieldNames) })
+                .Query(new { fields = string.Join(",", fieldNames) })
                 .Get();
         }
 

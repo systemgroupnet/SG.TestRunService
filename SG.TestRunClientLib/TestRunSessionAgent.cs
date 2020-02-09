@@ -59,7 +59,7 @@ namespace SG.TestRunClientLib
         {
             _testCaseRequests = tests.ToList();
             _logger.Info("Total test cases: " + _testCaseRequests.Count);
-            var azureTestCaseIds = new HashSet<int>(await _client.GetAzureTestCaseIdsAsync(_project));
+            var azureTestCaseIds = new HashSet<int>(await _client.GetAzureTestCaseIdsAsync());
             var newTestCases = _testCaseRequests
                 .Where(t => !azureTestCaseIds.Contains(t.AzureTestCaseId))
                 .ToList();

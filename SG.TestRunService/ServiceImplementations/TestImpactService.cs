@@ -75,7 +75,6 @@ namespace SG.TestRunService.ServiceImplementations
             lastUpdate.ProductBuildInfoId = testRunSessionBuildInfo.Id;
             lastUpdate.UpdateDate = DateTime.Now;
 
-            string project = testRunSessionBuildInfo.TeamProject;
             int azureBuildDefId = testRunSessionBuildInfo.AzureBuildDefinitionId;
 
             var tlsUpdater = new ImpactedTestsFinder(_dbService, _configuration, testRunSessionBuildInfo);
