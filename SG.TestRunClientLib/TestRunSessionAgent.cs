@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using SG.TestRunService.Common.Models;
 using System;
 using System.Collections.Generic;
@@ -343,11 +344,13 @@ namespace SG.TestRunClientLib
 
         private static JsonSerializerSettings CreateLogSerializerSettings()
         {
-            return new JsonSerializerSettings()
+            var settings = new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore
             };
+            settings.Converters.Add(new StringEnumConverter());
+            return settings;
         }
 
         private static string ObjToString(object obj)
