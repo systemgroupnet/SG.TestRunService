@@ -74,13 +74,9 @@ namespace SG.TestRunService.Controllers
                 return BadRequest(ex.Message);
             }
 
-            TestCaseResponse response = null;
-            foreach (var tc in testCaseRequests)
-            {
-                response = await _service.InsertAsync(tc);
-            }
-            if (testCaseRequests.Count == 1)
-                return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
+            var responses = await _service.InsertAsync(testCaseRequests);
+            if (responses.Count == 1)
+                return CreatedAtAction(nameof(Get), new { id = responses[0].Id }, responses[0]);
             else
                 return Ok();
         }
