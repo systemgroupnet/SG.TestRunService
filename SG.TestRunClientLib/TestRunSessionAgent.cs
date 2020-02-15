@@ -181,6 +181,12 @@ namespace SG.TestRunClientLib
             foreach (var testCase in testCases)
                 sb.AppendLine(testCase.ToString());
             sb.AppendLine(new string('=', headerLine.Length));
+            if (testCases.Count > 0)
+            {
+                var reasons = string.Join(",",
+                    testCases.GroupBy(t => t.RunReason).Select(g => g.Count().ToString() + " " + g.Key));
+                sb.Append("Reasons: ").AppendLine(reasons);
+            }
             _logger.Info(sb.ToString());
         }
 
