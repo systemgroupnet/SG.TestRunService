@@ -197,7 +197,7 @@ namespace SG.TestRunService.ServiceImplementations
                     break;
                 case TestRunOutcome.Aborted:
                     testLastState.ShouldBeRun = true;
-                    testLastState.RunReason = RunReason.NotRan;
+                    testLastState.RunReason = RunReason.New;
                     break;
                 case TestRunOutcome.FatalError:
                 case TestRunOutcome.Unknown:

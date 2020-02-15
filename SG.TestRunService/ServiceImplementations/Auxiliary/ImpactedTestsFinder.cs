@@ -153,7 +153,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                         TestCase = nt,
                         ProductBuildInfo = _buildInfo,
 
-                        RunReason = RunReason.NotRan,
+                        RunReason = RunReason.New,
                         ShouldBeRun = true,
                         UpdateDate = DateTime.Now
                     };

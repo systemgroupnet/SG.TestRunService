@@ -6,6 +6,6 @@
         Failed = 2,
         ForceRun = 3,
         ImpactDataNotAvailable = 4,
-        NotRan = 10
+        New = 10
     }
 }
