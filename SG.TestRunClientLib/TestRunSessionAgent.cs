@@ -230,8 +230,10 @@ namespace SG.TestRunClientLib
                 CodeSignatures = impactFiles?.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
             };
 
-            LogDebug("Updating test impact information. Number of files (code signatures): " + impactRequest.CodeSignatures.Count);
-            if (impactRequest.CodeSignatures.Count == 0)
+            var impactFilesCount = impactRequest.CodeSignatures?.Count ?? 0;
+
+            LogDebug("Updating test impact information. Number of files (code signatures): " + impactFilesCount);
+            if (impactFilesCount == 0)
                 LogDebug("(No impact data is available)");
 
             await _client.UpdateTestImpactAsync(testCase.Id, impactRequest);
