@@ -177,7 +177,7 @@ namespace SG.TestRunClientLib
             StringBuilder sb = new StringBuilder();
             var symbolStr = new string('=', 20);
             var headerLine = symbolStr + $"   Tests to run (total {testCases.Count} tests)   " + symbolStr;
-            sb.AppendLine(headerLine);
+            sb.AppendLine().AppendLine(headerLine);
             foreach (var testCase in testCases)
                 sb.AppendLine(testCase.ToString());
             sb.AppendLine(new string('=', headerLine.Length));
