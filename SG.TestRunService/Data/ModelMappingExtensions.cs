@@ -199,7 +199,8 @@ namespace SG.TestRunService.Common.Models
                     SuiteName = session.SuiteName,
                     StartTime = session.StartTime,
                     FinishTime = session.FinishTime,
-                    State = session.State
+                    State = session.State,
+                    TestRunCount = session.TestRuns.Count()
                 });
         }
 
