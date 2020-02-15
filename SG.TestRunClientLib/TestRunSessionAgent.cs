@@ -155,8 +155,6 @@ namespace SG.TestRunClientLib
 
         public async Task<IReadOnlyList<TestRunResponse>> RecordSessionTestsAsync(IReadOnlyCollection<TestCaseInfo> testCases)
         {
-            LogTestsToRun(testCases);
-
             var responses = new List<TestRunResponse>();
 
             foreach (var testCase in testCases)
@@ -177,7 +175,7 @@ namespace SG.TestRunClientLib
         private void LogTestsToRun(IReadOnlyCollection<TestCaseInfo> testCases)
         {
             StringBuilder sb = new StringBuilder();
-            var symbolStr = new string('=', 15);
+            var symbolStr = new string('=', 20);
             var headerLine = symbolStr + $"   Tests to run (total {testCases.Count} tests)   " + symbolStr;
             sb.AppendLine(headerLine);
             foreach (var testCase in testCases)
@@ -226,7 +224,9 @@ namespace SG.TestRunClientLib
                 CodeSignatures = impactFiles?.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
             };
 
-            LogDebug("Updating test impact information: ", impactRequest);
+            LogDebug("Updating test impact information. Number of files (code signatures): " + impactRequest.CodeSignatures.Count);
+            if (impactRequest.CodeSignatures.Count == 0)
+                LogDebug("(No impact data is available)");
 
             await _client.UpdateTestImpactAsync(testCase.Id, impactRequest);
 
@@ -237,7 +237,7 @@ namespace SG.TestRunClientLib
                 Outcome = outcome
             };
 
-            LogDebug("Updating test last state:", lastStateRequest);
+            LogDebug($"Updating test last state. Azure Test Case Id: {testCase.AzureTestCaseId}, Outcome: {outcome}");
 
             await _client.UpdateTestLastStateAsync(testCase.Id, lastStateRequest);
 
@@ -298,6 +298,8 @@ namespace SG.TestRunClientLib
         private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRunAsync(PublishImpactChangesRequest req)
         {
             LogDebug("Publishing changes to the service and updating last states of tests...");
+            if (req.RunAllTests)
+                LogDebug("Running all tests ('RunAllTests' is set to true)");
 
             var response = await _client.PublishImpactChangesAsync(req);
 
@@ -313,6 +315,9 @@ namespace SG.TestRunClientLib
                             testCase.Title, tr.RunReason));
                 }
             }
+
+            LogTestsToRun(testsToRun);
+
             _testsToRun = testsToRun;
             return _testsToRun;
         }
@@ -338,7 +343,7 @@ namespace SG.TestRunClientLib
         {
             if (_logger.IsEnabled)
             {
-                _logger.Debug(text + (obj != null ? Environment.NewLine + ObjToString(obj) : string.Empty));
+                _logger.Debug(text + (obj != null ? ObjToString(obj) : string.Empty));
             }
         }
 
