@@ -60,6 +60,7 @@
   <ItemGroup>
     <None Include="..\SG.TestRunClient.TestConsole\appsettings.json">
       <Link>appsettings.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="App.config" />
   </ItemGroup>
