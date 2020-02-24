@@ -31,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DalSoft.RestClient, Version=1.0.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DalSoft.RestClient.4.2.0\lib\netstandard2.0\DalSoft.RestClient.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Microsoft.AspNetCore.JsonPatch, Version=3.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.JsonPatch.3.1.1\lib\netstandard2.0\Microsoft.AspNetCore.JsonPatch.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -189,6 +185,9 @@
     <Compile Include="..\SG.TestRunClientLib\ConsoleLogger.cs">
       <Link>ConsoleLogger.cs</Link>
     </Compile>
+    <Compile Include="..\SG.TestRunClientLib\DalSoft\RetryHandler.cs">
+      <Link>DalSoft\RetryHandler.cs</Link>
+    </Compile>
     <Compile Include="..\SG.TestRunClientLib\IDevOpsServerHandle.cs">
       <Link>IDevOpsServerHandle.cs</Link>
     </Compile>
@@ -228,5 +227,6 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
