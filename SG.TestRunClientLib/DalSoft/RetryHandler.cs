@@ -18,11 +18,12 @@ namespace DalSoft.RestClient.Handlers
         internal readonly BackOffStrategy CurrentBackOffStrategy;
 
         private Exception _lastException;
-       
+
         //https://docs.microsoft.com/en-us/azure/architecture/best-practices/retry-service-specific
         public RetryHandler() : this(3, 1.44, 10, BackOffStrategy.Exponential) { }
-        
+
         public RetryHandler(int maxRetries, double waitToRetryInSeconds, double maxWaitToRetryInSeconds, BackOffStrategy backOffStrategy)
+            : base(new HttpClientHandler())
         {
             MaxRetries = maxRetries;
             WaitToRetryInSeconds = waitToRetryInSeconds;
@@ -50,7 +51,7 @@ namespace DalSoft.RestClient.Handlers
 
             for (var retryCount = 0; retryCount < MaxRetries + 1; retryCount++)
             {
-                if (retryCount!=0)
+                if (retryCount != 0)
                     await BackOff(retryCount); //start backing off after the first try
 
                 _lastException = null;
@@ -77,14 +78,13 @@ namespace DalSoft.RestClient.Handlers
                         handled = HandleTransientExceptionEveryThingElse(httpRequestException);
 
                     if (!handled)
-                        throw;    
+                        throw;
                 }
 
-                if (!IsServerErrorStatusCode(response?.StatusCode) && _lastException == null)
+                if (_lastException == null)
                 {
                     return response;
                 }
-
             }
 
             if (_lastException != null)
@@ -199,9 +199,9 @@ namespace DalSoft.RestClient.Handlers
                     return true;
                 default:
                     return false;
-            }  
+            }
         }
-        
+
         private static bool IsServerErrorStatusCode(HttpStatusCode? statusCode)
         {
             return statusCode == null || (int)statusCode >= 500;
