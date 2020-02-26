@@ -10,6 +10,5 @@ namespace SG.TestRunService.Common.Models
 
         public DateTime UpdateDate { get; set; }
         public BuildInfo ProductBuild { get; set; }
-        public TestRunSessionResponse TestRunSession { get; set; }
     }
 }

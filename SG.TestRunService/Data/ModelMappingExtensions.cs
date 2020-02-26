@@ -345,14 +345,8 @@ namespace SG.TestRunService.Common.Models
             {
                 AzureProductBuildDefinitionId = lastImpactUpdate.AzureProductBuildDefinitionId,
                 UpdateDate = lastImpactUpdate.UpdateDate,
-                TestRunSession = lastImpactUpdate.TestRunSession?.ToResponse(),
                 ProductBuild = lastImpactUpdate.ProductBuildInfo?.ToDto()
             };
-            if (response.TestRunSession == null && lastImpactUpdate.TestRunSessionId.HasValue)
-                response.TestRunSession = new TestRunSessionResponse()
-                {
-                    Id = lastImpactUpdate.TestRunSessionId.Value
-                };
             return response;
         }
 

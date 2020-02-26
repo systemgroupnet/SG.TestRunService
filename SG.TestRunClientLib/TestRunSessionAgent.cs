@@ -286,7 +286,7 @@ namespace SG.TestRunClientLib
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
                 AzureProductBuildDefinitionId = _session.ProductBuild.AzureBuildDefinitionId,
-                TestRunSessionId = _session.Id,
+                AzureProductBuildId = _session.ProductBuild.AzureBuildId,
                 Changes = changedFiles.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
             };
             return await PublishChangesAndGetTestsToRunAsync(req);

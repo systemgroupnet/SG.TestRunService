@@ -67,17 +67,25 @@ namespace SG.TestRunService.ServiceImplementations
             }
 
             lastUpdate.TestRunSessionId = request.TestRunSessionId;
-            var testRunSessionBuildInfo = await _dbService
-                .Query<TestRunSession>(id: request.TestRunSessionId)
-                .Select(s => s.ProductBuildInfo)
-                .FirstAsync();
+            Data.BuildInfo buildInfo;
+            if (request.TestRunSessionId.HasValue)
+                buildInfo = await _dbService
+                    .Query<TestRunSession>(id: request.TestRunSessionId.Value)
+                    .Select(s => s.ProductBuildInfo)
+                    .FirstAsync();
+            else if (request.AzureProductBuildId.HasValue)
+                buildInfo = await _dbService
+                    .Query<Data.BuildInfo>().Where(b => b.AzureBuildId == request.AzureProductBuildId.Value)
+                    .FirstAsync();
+            else
+                throw new ArgumentException("`PublishImpactChangesRequest.BuildInfoId` is not set.");
 
-            lastUpdate.ProductBuildInfoId = testRunSessionBuildInfo.Id;
+            lastUpdate.ProductBuildInfoId = buildInfo.Id;
             lastUpdate.UpdateDate = DateTime.Now;
 
-            int azureBuildDefId = testRunSessionBuildInfo.AzureBuildDefinitionId;
+            int azureBuildDefId = buildInfo.AzureBuildDefinitionId;
 
-            var tlsUpdater = new ImpactedTestsFinder(_dbService, _configuration, testRunSessionBuildInfo);
+            var tlsUpdater = new ImpactedTestsFinder(_dbService, _configuration, buildInfo);
             IReadOnlyCollection<TestToRun> testsToRun;
             if (request.RunAllTests)
             {
