@@ -196,11 +196,27 @@ namespace SG.TestRunClientLib
             {
                 await SetSessionStateAsync(TestRunSessionState.Running);
             }
-            var patch = new JsonPatchDocument<TestRunRequest>();
-            patch.Add(r => r.StartTime, DateTime.Now);
-            patch.Add(r => r.State, state);
             _logger.Debug($"Start testing test case {testCase.AzureTestCaseId}, State: {state}");
-            return await _client.PatchTestRunAsync(_session.Id, testCase.TestRunId, patch);
+            if (testCase.TestRunId == 0)
+            {
+                var testRunResponse = await _client.InsertTestRunAsync(
+                        _session.Id,
+                        new TestRunRequest()
+                        {
+                            TestCaseId = testCase.Id,
+                            StartTime = DateTime.Now,
+                            State = state,
+                        });
+                testCase.TestRunId = testRunResponse.Id;
+                return testRunResponse;
+            }
+            else
+            {
+                var patch = new JsonPatchDocument<TestRunRequest>();
+                patch.Add(r => r.StartTime, DateTime.Now);
+                patch.Add(r => r.State, state);
+                return await _client.PatchTestRunAsync(_session.Id, testCase.TestRunId, patch);
+            }
         }
 
         public Task<TestRunResponse> AdvanceTestRunStateAsync(TestCaseInfo testCase, TestRunState state)
