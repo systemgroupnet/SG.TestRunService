@@ -20,7 +20,7 @@ namespace DalSoft.RestClient.Handlers
         private Exception _lastException;
 
         //https://docs.microsoft.com/en-us/azure/architecture/best-practices/retry-service-specific
-        public RetryHandler() : this(3, 1.44, 10, BackOffStrategy.Exponential) { }
+        public RetryHandler() : this(5, 1.44, 10, BackOffStrategy.Exponential) { }
 
         public RetryHandler(int maxRetries, double waitToRetryInSeconds, double maxWaitToRetryInSeconds, BackOffStrategy backOffStrategy)
             : base(new HttpClientHandler())
