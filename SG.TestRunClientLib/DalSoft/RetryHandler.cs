@@ -81,7 +81,7 @@ namespace DalSoft.RestClient.Handlers
                         throw;
                 }
 
-                if (_lastException == null)
+                if (response?.StatusCode != HttpStatusCode.ServiceUnavailable && _lastException == null)
                 {
                     return response;
                 }
