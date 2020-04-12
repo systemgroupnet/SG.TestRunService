@@ -12,9 +12,9 @@ namespace SG.TestRunClient.TestConsole.Sample
     {
         readonly string project = "Sample";
         readonly int productBuildDefinitionId = 10;
-        readonly int productBuildId = 3;
-        readonly string productBuildNumber = "SampleBuild.Dvp_3";
-        readonly int testBuildId = 13;
+        readonly int productBuildId = 6;
+        readonly string productBuildNumber = "SampleBuild.Dvp_6";
+        readonly int testBuildId = 15;
         readonly string testBuildNumber = "SampleTest.Dvp_3";
         readonly string suite = "Dvp";
         readonly int sourceVersion = 132;
@@ -48,6 +48,7 @@ namespace SG.TestRunClient.TestConsole.Sample
 
         public async Task RunTests(IReadOnlyList<TestCaseInfo> tests)
         {
+            var r = new Random();
             for (int i = 0; i < tests.Count; i++)
             {
                 var test = tests[i];
@@ -57,7 +58,8 @@ namespace SG.TestRunClient.TestConsole.Sample
                 await Task.Delay(1000);
                 await _agent.AdvanceTestRunStateAsync(test, TestRunState.Running);
                 await Task.Delay(3000);
-                await _agent.RecordTestRunEndAsync(test, TestRunOutcome.Successful, null, GetTestImpactFiles(test, productBuildDefinitionId));
+                var state = r.Next(2) == 0 ? TestRunOutcome.Successful : TestRunOutcome.Failed;
+                await _agent.RecordTestRunEndAsync(test, state, null, GetTestImpactFiles(test, productBuildDefinitionId));
             }
         }
 
@@ -67,6 +69,7 @@ namespace SG.TestRunClient.TestConsole.Sample
             {
                 new TestCase(200, "بررسی 1", "/Tests/1.sgts"),
                 new TestCase(201, "تست بررسی 2", "/Tests/2.sgts"),
+                new TestCase(202, "تست سوم", "/Tests/3.sgts"),
             };
         }
 
@@ -88,6 +91,7 @@ namespace SG.TestRunClient.TestConsole.Sample
             "$/Dvp/Sales/OrderService.cs",
             "$/Dvp/Sales/IOrderService.cs",
             "$/Dvp/General/Party/PartyService.cs",
+            "$/Dvp/Sales/OtherOrderServie.cs"
         };
 
         private IEnumerable<string> GetTestImpactFiles(TestCaseInfo testCase, int azureBuildDefId)
@@ -106,6 +110,8 @@ namespace SG.TestRunClient.TestConsole.Sample
                 else if (testCase.AzureTestCaseId == 201)
                     return new[] { files[3], files[4] };
             }
+            if (testCase.AzureTestCaseId == 202)
+                return new[] { files[1], files[2], files[3], files[5] };
             throw new InvalidOperationException();
         }
     }
