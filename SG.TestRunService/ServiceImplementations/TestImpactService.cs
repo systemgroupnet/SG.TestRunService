@@ -110,18 +110,21 @@ namespace SG.TestRunService.ServiceImplementations
 
         public async Task UpdateTestCaseImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request)
         {
-            var now = DateTime.Now;
-            var originalCodeSignatures = (await _dbService
-                .GetFilteredAsync<TestCaseImpactCodeSignature>(cs =>
+            var impactItemsOnDb = (await _dbService
+                .GetFilteredAsync<TestCaseImpactItem>(cs =>
                     cs.TestCaseId == testCaseId &&
                     cs.AzureProductBuildDefinitionId == request.AzureProductBuildDefinitionId))
-                .ToDictionary(cs => cs.Signature);
-            var present = new HashSet<TestCaseImpactCodeSignature>();
+                .ToDictionary(cs => cs.CodeSignature.Signature);
+
+            var present = new HashSet<TestCaseImpactItem>();
+            var codeSignaturesToAdd = new List<Common.Models.CodeSignature>();
+            var now = DateTime.Now;
+
             if (request.CodeSignatures != null)
             {
                 foreach (var rcs in request.CodeSignatures)
                 {
-                    if (originalCodeSignatures.TryGetValue(rcs.Signature, out var testImpactCodeSignature))
+                    if (impactItemsOnDb.TryGetValue(rcs.Signature, out var testImpactCodeSignature))
                     {
                         present.Add(testImpactCodeSignature);
                         if (testImpactCodeSignature.IsDeleted)
@@ -132,19 +135,39 @@ namespace SG.TestRunService.ServiceImplementations
                     }
                     else
                     {
+                        codeSignaturesToAdd.Add(rcs);
+                    }
+                }
+                if (codeSignaturesToAdd.Count > 0)
+                {
+                    var signatures = codeSignaturesToAdd.Select(cs => cs.Signature).ToList();
+                    var availableDbCodeSignatures = (await _dbService
+                        .GetFilteredAsync<Data.CodeSignature>(cs => signatures.Contains(cs.Signature)))
+                        .ToDictionary(cs => cs.Signature);
+
+                    foreach (var csToAdd in codeSignaturesToAdd)
+                    {
+                        if (!availableDbCodeSignatures.TryGetValue(csToAdd.Signature, out var dbCodeSignature))
+                        {
+                            dbCodeSignature = new Data.CodeSignature()
+                            {
+                                Path = csToAdd.FileName,
+                                Signature = csToAdd.Signature
+                            };
+                            _dbService.Add(dbCodeSignature);
+                        }
                         _dbService.Add(
-                            new TestCaseImpactCodeSignature()
+                            new TestCaseImpactItem()
                             {
                                 AzureProductBuildDefinitionId = request.AzureProductBuildDefinitionId,
                                 DateAdded = now,
-                                Signature = rcs.Signature,
-                                FilePath = rcs.FileName,
-                                TestCaseId = testCaseId
+                                TestCaseId = testCaseId,
+                                CodeSignature = dbCodeSignature
                             });
                     }
                 }
             }
-            foreach (var impactCodeSignatureEntity in originalCodeSignatures.Values)
+            foreach (var impactCodeSignatureEntity in impactItemsOnDb.Values)
                 if (!present.Contains(impactCodeSignatureEntity))
                 {
                     impactCodeSignatureEntity.IsDeleted = true;
@@ -178,7 +201,7 @@ namespace SG.TestRunService.ServiceImplementations
             }
 
             bool hasImpactData = _dbService
-                .Query<TestCaseImpactCodeSignature>(t =>
+                .Query<TestCaseImpactItem>(t =>
                     t.TestCaseId == testCaseId &&
                     t.AzureProductBuildDefinitionId == lastStateUpdateRequest.AzureProductBuildDefinitionId &&
                     !t.IsDeleted)

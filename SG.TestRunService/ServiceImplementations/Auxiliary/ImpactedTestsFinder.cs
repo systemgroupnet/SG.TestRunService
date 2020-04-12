@@ -72,11 +72,11 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             var impactedTestCases =
                 from tc in _dbService.Query<TestCase>()
                 where
-                    _dbService.Query<TestCaseImpactCodeSignature>().Any(tci =>
+                    _dbService.Query<TestCaseImpactItem>().Any(tci =>
                        tci.TestCaseId == tc.Id &&
                        tci.AzureProductBuildDefinitionId == _azureBuildDefId &&
                        !tci.IsDeleted &&
-                       changedCodeSignatures.Contains(tci.Signature))
+                       changedCodeSignatures.Contains(tci.CodeSignature.Signature))
                 select tc;
 
             var impactedOrAlreadyShouldRun =
@@ -99,16 +99,16 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         {
             var impactedTestsLastStates = new List<TestLastState>();
 
-            var allSignatures = await _dbService
-                .Query<TestCaseImpactCodeSignature>(tis =>
-                    tis.AzureProductBuildDefinitionId == _azureBuildDefId &&
-                    !tis.IsDeleted)
-                .Select(tis => new { tis.TestCaseId, tis.Signature })
+            var buildDefCodeSignatures = await _dbService
+                .Query<TestCaseImpactItem>(tci =>
+                    tci.AzureProductBuildDefinitionId == _azureBuildDefId &&
+                    !tci.IsDeleted)
+                .Select(tci => new { tci.TestCaseId, tci.CodeSignature.Signature })
                 .ToListAsync();
             var changeSignaturesSet = new HashSet<string>(changedCodeSignatures);
 
             HashSet<int> impactedTestCaseIds = new HashSet<int>();
-            foreach (var sig in allSignatures)
+            foreach (var sig in buildDefCodeSignatures)
                 if (changeSignaturesSet.Contains(sig.Signature))
                     impactedTestCaseIds.Add(sig.TestCaseId);
 

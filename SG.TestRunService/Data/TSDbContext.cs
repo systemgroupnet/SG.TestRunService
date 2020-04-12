@@ -21,10 +21,11 @@ namespace SG.TestRunService.Data
 
         private static void ConfigureIndexes(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TestCaseImpactCodeSignature>()
-                .HasIndex(s => s.Signature);
-            modelBuilder.Entity<TestCaseImpactCodeSignature>()
-                .HasIndex(s => new { s.TestCaseId, s.AzureProductBuildDefinitionId, s.Signature })
+            modelBuilder.Entity<CodeSignature>()
+                .HasIndex(s => s.Signature)
+                .IsUnique();
+            modelBuilder.Entity<TestCaseImpactItem>()
+                .HasIndex(s => new { s.TestCaseId, s.AzureProductBuildDefinitionId, s.CodeSignatureId })
                 .IsUnique();
             modelBuilder.Entity<TestCase>()
                 .HasIndex(t => new { t.AzureTestCaseId })
@@ -48,7 +49,8 @@ namespace SG.TestRunService.Data
         public DbSet<TestRunSession> TestRunSession { get; }
         public DbSet<TestRun> TestRun { get; }
         public DbSet<Attachment> Attachment { get; }
-        public DbSet<TestCaseImpactCodeSignature> TestCaseImpactCodeSignature { get; }
+        public DbSet<TestCaseImpactItem> TestCaseImpactItem { get; }
+        public DbSet<CodeSignature> CodeSignature { get; }
         public DbSet<ExtraData> ExtraData { get; }
         public DbSet<TestLastState> TestLastState { get; }
         public DbSet<LastImpactUpdate> LastImpactUpdate { get; }

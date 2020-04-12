@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SG.TestRunService.Data
 {
-    public class TestCaseImpactCodeSignature : IEntity
+    public class TestCaseImpactItem : IEntity
     {
         public int Id { get; set; }
 
@@ -12,8 +12,7 @@ namespace SG.TestRunService.Data
         public int AzureProductBuildDefinitionId { get; set; }
 
         [Required]
-        public string Signature { get; set; }
-        public string FilePath { get; set; }
+        public int CodeSignatureId { get; set; }
 
         public DateTime DateAdded { get; set; }
         public DateTime? DateRemoved { get; set; }
@@ -21,5 +20,8 @@ namespace SG.TestRunService.Data
 
         [OnDelete(DeleteBehavior.Cascade)]
         public TestCase TestCase { get; set; }
+
+        [OnDelete(DeleteBehavior.Restrict)]
+        public CodeSignature CodeSignature { get; set; }
     }
 }
