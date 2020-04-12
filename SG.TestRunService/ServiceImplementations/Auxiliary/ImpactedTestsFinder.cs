@@ -77,7 +77,8 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
 
             var impactedTestCases = impactItems
                 .Where(ii => changedCodeSignatures.Contains(ii.CodeSignature.Signature))
-                .Select(ii => ii.TestCase);
+                .Select(ii => ii.TestCase)
+                .Distinct();
 
             var impactedOrAlreadyShouldRun =
                 await (from tls in GetTestLastStates()
