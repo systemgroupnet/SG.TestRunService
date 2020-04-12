@@ -27,6 +27,9 @@ namespace SG.TestRunService.Data
             modelBuilder.Entity<TestCaseImpactItem>()
                 .HasIndex(s => new { s.TestCaseId, s.AzureProductBuildDefinitionId, s.CodeSignatureId })
                 .IsUnique();
+            modelBuilder.Entity<TestCaseImpactItem>()
+                .HasIndex(s => new { s.AzureProductBuildDefinitionId, s.IsDeleted })
+                .IncludeProperties(s => new { s.TestCaseId, s.CodeSignatureId });
             modelBuilder.Entity<TestCase>()
                 .HasIndex(t => new { t.AzureTestCaseId })
                 .IsUnique();

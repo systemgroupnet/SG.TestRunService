@@ -69,15 +69,15 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         private async Task<List<TestToRun>> UseDbQueryToFindTestsToRun(
                 IReadOnlyList<string> changedCodeSignatures)
         {
-            var impactedTestCases =
-                from tc in _dbService.Query<TestCase>()
-                where
-                    _dbService.Query<TestCaseImpactItem>().Any(tci =>
-                       tci.TestCaseId == tc.Id &&
+            var impactItems = _dbService
+                .Query<TestCaseImpactItem>()
+                .Where(tci =>
                        tci.AzureProductBuildDefinitionId == _azureBuildDefId &&
-                       !tci.IsDeleted &&
-                       changedCodeSignatures.Contains(tci.CodeSignature.Signature))
-                select tc;
+                       !tci.IsDeleted);
+
+            var impactedTestCases = impactItems
+                .Where(ii => changedCodeSignatures.Contains(ii.CodeSignature.Signature))
+                .Select(ii => ii.TestCase);
 
             var impactedOrAlreadyShouldRun =
                 await (from tls in GetTestLastStates()
