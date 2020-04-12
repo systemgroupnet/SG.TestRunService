@@ -11,7 +11,7 @@ namespace SG.TestRunService.Data
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required, StringLength(50)]
         public string Signature { get; set; }
         public string Path { get; set; }
     }
