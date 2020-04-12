@@ -111,10 +111,13 @@ namespace SG.TestRunService.ServiceImplementations
         public async Task UpdateTestCaseImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request)
         {
             var impactItemsOnDb = (await _dbService
-                .GetFilteredAsync<TestCaseImpactItem>(cs =>
-                    cs.TestCaseId == testCaseId &&
-                    cs.AzureProductBuildDefinitionId == request.AzureProductBuildDefinitionId))
-                .ToDictionary(cs => cs.CodeSignature.Signature);
+                .GetFilteredAsync(
+                    filter: (TestCaseImpactItem tci) =>
+                        tci.TestCaseId == testCaseId &&
+                        tci.AzureProductBuildDefinitionId == request.AzureProductBuildDefinitionId,
+                    projection: (TestCaseImpactItem tci) =>
+                        new { tci, tci.CodeSignature.Signature }))
+                .ToDictionary(t => t.Signature, t => t.tci);
 
             var present = new HashSet<TestCaseImpactItem>();
             var codeSignaturesToAdd = new List<Common.Models.CodeSignature>();
