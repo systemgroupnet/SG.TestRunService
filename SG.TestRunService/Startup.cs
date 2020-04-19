@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,9 @@ namespace SG.TestRunService
 {
     public class Startup
     {
+
+        private const string MyAllowSpecificOrigins = "allowed";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -34,6 +38,24 @@ namespace SG.TestRunService
             services.AddDbContext<TSDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("db")));
 
+            services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
+                .AddNegotiate();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder => builder.WithOrigins(new string[] {
+                                      "http://ws-702",
+                                      "https://ws-702",
+                                      "http://ws-702:3000",
+                                      "https://ws-702:3000",
+                                      "http://srv-framework",
+                                      "https://srv-framework",
+                                      "http://alborzscm",
+                                      "https://alborzscm"
+                                  }));
+            });
+
             services.AddTransient<IBaseDbService, BaseDbService>();
             services.AddTransient<ITestRunSessionService, TestRunSessionService>();
             services.AddTransient<ITestCaseService, TestCaseService>();
@@ -45,6 +67,9 @@ namespace SG.TestRunService
         {
             app.UseDeveloperExceptionPage();
             app.UseRouting();
+
+            app.UseCors(MyAllowSpecificOrigins);
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
