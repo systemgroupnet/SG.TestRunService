@@ -54,7 +54,8 @@ namespace SG.TestRunService
                                       "http://alborzscm",
                                       "https://alborzscm"
                                   })
-                                  .AllowAnyMethod());
+                                  .AllowAnyMethod()
+                                  .AllowAnyHeader());
             });
 
             services.AddTransient<IBaseDbService, BaseDbService>();
