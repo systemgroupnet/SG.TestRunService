@@ -53,7 +53,8 @@ namespace SG.TestRunService
                                       "https://srv-framework",
                                       "http://alborzscm",
                                       "https://alborzscm"
-                                  }));
+                                  })
+                                  .AllowAnyMethod());
             });
 
             services.AddTransient<IBaseDbService, BaseDbService>();
