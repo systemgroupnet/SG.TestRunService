@@ -16,7 +16,7 @@ namespace SG.TestRunService
     public class Startup
     {
 
-        private const string MyAllowSpecificOrigins = "allowed";
+        private const string corsAllowSgServersPolicyName = "sgServers";
 
         public Startup(IConfiguration configuration)
         {
@@ -43,7 +43,7 @@ namespace SG.TestRunService
 
             services.AddCors(options =>
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
+                options.AddPolicy(name: corsAllowSgServersPolicyName,
                                   builder => builder.WithOrigins(new string[] {
                                       "http://ws-702",
                                       "https://ws-702",
@@ -69,7 +69,7 @@ namespace SG.TestRunService
             app.UseDeveloperExceptionPage();
             app.UseRouting();
 
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors(corsAllowSgServersPolicyName);
 
             app.UseEndpoints(endpoints =>
             {
