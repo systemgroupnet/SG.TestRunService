@@ -20,6 +20,7 @@ namespace SG.TestRunClientLib
 
         private readonly string _serviceUri;
         private readonly HttpClient _client;
+        private const string ApiResourcePrefix = "api/";
 
         public TestRunClient(string serviceUri, int timeoutSeconds = 600)
         {
@@ -29,12 +30,20 @@ namespace SG.TestRunClientLib
             _client = new HttpClient(new RetryHandler());
             _client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMediaType));
-            _client.BaseAddress = new Uri(_serviceUri.TrimEnd('/') + "/api/");
+            _client.BaseAddress = new Uri(_serviceUri.TrimEnd('/') + "/");
+        }
+
+        public TestRunClient(HttpClient client)
+        {
+            if (client == null)
+                throw new ArgumentException("`client` argument should not be null");
+            _client = client;
         }
 
         private async Task<object> SendAsync(HttpMethod method, string resource, object content = null, Type returnType = null)
         {
-            var message = new HttpRequestMessage(method, resource);
+            var apiResource = ApiResourcePrefix + resource;
+            var message = new HttpRequestMessage(method, apiResource);
             if (content != null)
                 message.Content = new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, JsonMediaType);
             var response = await _client.SendAsync(message);
@@ -52,7 +61,7 @@ namespace SG.TestRunClientLib
                 }
                 throw new Exception("Response content is not JSON. The response is:\r\n" + responseContent);
             }
-            var msg = $"An error occurred while sending request to Uri '{resource}'.\r\nThe status code is: {(int)response.StatusCode}.";
+            var msg = $"An error occurred while sending request to Uri '{apiResource}'.\r\nThe status code is: {(int)response.StatusCode}.";
             if (!string.IsNullOrWhiteSpace(responseContent))
                 msg += "\r\nThe response body is:\r\n" + responseContent;
             throw new Exception(msg);

@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SG.TestRunClientLib\SG.TestRunClientLib.csproj" />
     <ProjectReference Include="..\SG.TestRunService.Common\SG.TestRunService.Common.csproj" />
     <ProjectReference Include="..\SG.TestRunService\SG.TestRunService.csproj" />
   </ItemGroup>

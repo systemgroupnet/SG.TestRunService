@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.IntegrationTests
 {
-    public class TestingWebAppFactory<T> : WebApplicationFactory<Startup>
+    public class TestingWebAppFactory : WebApplicationFactory<Startup>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -28,6 +28,14 @@ namespace SG.TestRunService.IntegrationTests
                     services.AddDbContext<TSDbContext>(options =>
                         options.UseInMemoryDatabase("InMemoryTestRunServiceDb"));
 
+                    var sp = services.BuildServiceProvider();
+                    using (var scope = sp.CreateScope())
+                    {
+                        using (var db = scope.ServiceProvider.GetRequiredService<TSDbContext>())
+                        {
+                            db.Database.EnsureCreated();
+                        }
+                    }
                 });
         }
     }
