@@ -57,7 +57,6 @@ namespace SG.TestRunService.IntegrationTests
         [Fact]
         public async void InsertSession_AfterFetched_ShouldMatch()
         {
-
             var request = CreateSampleRequst();
 
             var response1 = await _client.InsertSessionAsync(request);
@@ -69,6 +68,11 @@ namespace SG.TestRunService.IntegrationTests
             Assert.Equal(response1.AzureTestBuildNumber, response2.AzureTestBuildNumber);
             Assert.Equal(response1.AzureTestBuildId, response2.AzureTestBuildId);
             Assert.Equal(response1.SuiteName, response2.SuiteName);
+            Assert.Equal(response1.ExtraData.Count, response2.ExtraData.Count);
+            foreach (var key in response1.ExtraData.Keys)
+            {
+                Assert.Equal(response1.ExtraData[key], response2.ExtraData[key]);
+            }
         }
     }
 }
