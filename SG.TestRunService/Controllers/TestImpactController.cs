@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.Controllers
 {
-    [Route(RoutConstants.Impact)]
+    [Route(RouteConstants.Impact)]
     [ApiController]
     public class TestImpactController : ControllerBase
     {

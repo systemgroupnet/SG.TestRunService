@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.Controllers
 {
-    public static class RoutConstants
+    public static class RouteConstants
     {
         public const string ApiRoot = "api";
         public const string TestRuns = ApiRoot + "/runs";

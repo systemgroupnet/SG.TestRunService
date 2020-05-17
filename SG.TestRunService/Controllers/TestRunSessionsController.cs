@@ -10,7 +10,7 @@ using SG.TestRunService.Services;
 
 namespace SG.TestRunService.Controllers
 {
-    [Route(RoutConstants.Sessions)]
+    [Route(RouteConstants.Sessions)]
     [ApiController]
     public class TestRunSessionsController : ControllerBase
     {
@@ -119,7 +119,7 @@ namespace SG.TestRunService.Controllers
         }
 
         private CreatedResult CreatedAt(TestRunResponse testRunResponse)
-            => Created($"{RoutConstants.TestRuns}/{testRunResponse.Id}", testRunResponse);
+            => Created($"{RouteConstants.TestRuns}/{testRunResponse.Id}", testRunResponse);
     }
 }
 

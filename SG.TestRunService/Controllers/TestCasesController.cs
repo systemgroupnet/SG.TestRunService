@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.Controllers
 {
-    [Route(RoutConstants.TestCases)]
+    [Route(RouteConstants.TestCases)]
     [ApiController]
     public class TestCasesController : ControllerBase
     {
