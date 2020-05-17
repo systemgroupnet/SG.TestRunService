@@ -15,7 +15,6 @@ namespace SG.TestRunService.Common.Models
         public string SourceVersion { get; set; }
         public DateTime Date { get; set; }
         public string BuildNumber { get; set; }
-        public IDictionary<string, ExtraDataValue> ExtraData { get; set; }
 
         public override string ToString()
         {

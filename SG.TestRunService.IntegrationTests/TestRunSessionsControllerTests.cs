@@ -45,11 +45,11 @@ namespace SG.TestRunService.IntegrationTests
                         Date = DateTime.Now.AddDays(-3),
                         SourceVersion = "4000",
                         TeamProject = "TestTeam",
-                        ExtraData = new Dictionary<string, ExtraDataValue>()
-                        {
-                            [nameof(AgentMachineName)] = new ExtraDataValue(AgentMachineName, AgentMachineUrl),
-                            [nameof(FixtureSessionId)] = new ExtraDataValue(FixtureSessionId, null)
-                        }
+                    },
+                    ExtraData = new Dictionary<string, ExtraDataValue>()
+                    {
+                        [nameof(AgentMachineName)] = new ExtraDataValue(AgentMachineName, AgentMachineUrl),
+                        [nameof(FixtureSessionId)] = new ExtraDataValue(FixtureSessionId, null)
                     }
                 };
         }
