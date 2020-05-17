@@ -16,7 +16,6 @@ namespace SG.TestRunService.Common.Models
         public DateTime? FinishTime { get; set; }
         public TestRunSessionState State { get; set; }
         public IDictionary<string, ExtraDataValue> ExtraData { get; set; }
-        public int TestRunCount { get; set; }
         public IList<TestRunStatisticItem> RunStatistics { get; set; }
     }
 }
