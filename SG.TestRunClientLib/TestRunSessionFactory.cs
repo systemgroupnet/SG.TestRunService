@@ -13,7 +13,8 @@ namespace SG.TestRunClientLib
             IDevOpsServerHandle devOpsServerHandle,
             BuildInfo productBuild, string suiteName,
             int testBuildId, string testBuildNumber,
-            ILogger logger = null)
+            ILogger logger = null,
+            IDictionary<string, ExtraDataValue> extraData = null)
         {
             TestRunSessionRequest sessionRequest = new TestRunSessionRequest()
             {
@@ -23,6 +24,7 @@ namespace SG.TestRunClientLib
                 SuiteName = suiteName,
                 StartTime = DateTime.Now,
                 State = TestRunSessionState.NotStarted,
+                ExtraData = extraData
             };
 
             return await TestRunSessionAgent.CreateAsync(configuration,devOpsServerHandle, sessionRequest, logger);
