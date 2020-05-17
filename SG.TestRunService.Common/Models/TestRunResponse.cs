@@ -9,6 +9,7 @@ namespace SG.TestRunService.Common.Models
     {
         public int Id { get; set; }
         public int TestCaseId { get; set; }
+        public TestCaseResponse TestCase { get; set; }
         public int TestRunSessionId { get; set; }
         public TestRunState State { get; set; }
         public DateTime? StartTime { get; set; }

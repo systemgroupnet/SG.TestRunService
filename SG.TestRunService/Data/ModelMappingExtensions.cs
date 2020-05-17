@@ -303,6 +303,7 @@ namespace SG.TestRunService.Common.Models
                 {
                     Id = r.Id,
                     TestCaseId = r.TestCaseId,
+                    TestCase = r.TestCase.ToResponse(),
                     TestRunSessionId = r.TestRunSessionId,
                     State = r.State,
                     Outcome = r.Outcome,
