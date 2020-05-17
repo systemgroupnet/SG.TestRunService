@@ -1,4 +1,5 @@
 ﻿using SG.TestRunService.Data;
+using SG.TestRunService.Data.FetchModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace SG.TestRunService.Common.Models
 {
-    public static class ModelMappingExtensions
+    internal static class ModelMappingExtensions
     {
         #region Helpers
 
@@ -135,7 +136,8 @@ namespace SG.TestRunService.Common.Models
                 StartTime = r.StartTime,
                 FinishTime = r.FinishTime,
                 State = r.State,
-                TestRuns = r.TestRuns.ConvertAll(tr => tr.ToDataModel())
+                TestRuns = r.TestRuns.ConvertAll(tr => tr.ToDataModel()),
+                ExtraData = r.ExtraData.ToDataModel()
             };
         }
 
@@ -150,7 +152,8 @@ namespace SG.TestRunService.Common.Models
                 SuiteName = session.SuiteName,
                 StartTime = session.StartTime,
                 FinishTime = session.FinishTime,
-                State = session.State
+                State = session.State,
+                ExtraData = session.ExtraData.ToDto()
             };
         }
 
@@ -179,28 +182,32 @@ namespace SG.TestRunService.Common.Models
             session.State = request.State;
         }
 
-        public static IQueryable<TestRunSessionResponse> Project(this IQueryable<TestRunSession> sessions)
+        public static IQueryable<FTestRunSession> Project(this IQueryable<TestRunSession> sessions)
         {
             return sessions.Select(
-                session => new TestRunSessionResponse()
+                session => new FTestRunSession()
                 {
-                    Id = session.Id,
-                    ProductBuild = new BuildInfo()
+                    Response = new TestRunSessionResponse()
                     {
-                        TeamProject = session.ProductBuildInfo.TeamProject,
-                        AzureBuildDefinitionId = session.ProductBuildInfo.AzureBuildDefinitionId,
-                        AzureBuildId = session.ProductBuildInfo.AzureBuildId,
-                        SourceVersion = session.ProductBuildInfo.SourceVersion,
-                        Date = session.ProductBuildInfo.Date,
-                        BuildNumber = session.ProductBuildInfo.BuildNumber,
+                        Id = session.Id,
+                        ProductBuild = new BuildInfo()
+                        {
+                            TeamProject = session.ProductBuildInfo.TeamProject,
+                            AzureBuildDefinitionId = session.ProductBuildInfo.AzureBuildDefinitionId,
+                            AzureBuildId = session.ProductBuildInfo.AzureBuildId,
+                            SourceVersion = session.ProductBuildInfo.SourceVersion,
+                            Date = session.ProductBuildInfo.Date,
+                            BuildNumber = session.ProductBuildInfo.BuildNumber,
+                        },
+                        AzureTestBuildId = session.AzureTestBuildId,
+                        AzureTestBuildNumber = session.AzureTestBuildNumber,
+                        SuiteName = session.SuiteName,
+                        StartTime = session.StartTime,
+                        FinishTime = session.FinishTime,
+                        State = session.State,
+                        TestRunCount = session.TestRuns.Count()
                     },
-                    AzureTestBuildId = session.AzureTestBuildId,
-                    AzureTestBuildNumber = session.AzureTestBuildNumber,
-                    SuiteName = session.SuiteName,
-                    StartTime = session.StartTime,
-                    FinishTime = session.FinishTime,
-                    State = session.State,
-                    TestRunCount = session.TestRuns.Count()
+                    ExtraData = session.ExtraData
                 });
         }
 
