@@ -37,7 +37,11 @@ namespace SG.TestRunClient.TestConsole.Sample
             _agent = await TestRunSessionFactory.StartAsync(
                 new TestRunClientJsonFileConfiguration("appsettings.json"),
                 _devOpsServerHandle,
-                build, suite, testBuildId, testBuildNumber, new ConsoleLogger());
+                build, suite, testBuildId, testBuildNumber, new ConsoleLogger(),
+                new Dictionary<string, ExtraDataValue>()
+                {
+                    ["AgentName"] = new ExtraDataValue("ws-223")
+                });
             _suiteTestCases = GetTestCases();
             await _agent.IntroduceTestCasesAsync(CreateTestCaseRequests(_suiteTestCases));
             var testsToRun = await _agent.GetTestsToRunAsync();
