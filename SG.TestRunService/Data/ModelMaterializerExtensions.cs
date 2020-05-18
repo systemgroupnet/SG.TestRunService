@@ -24,5 +24,22 @@ namespace SG.TestRunService.Data
             item.Response.ExtraData = item.ExtraData.ToDto();
             return item.Response;
         }
+
+        public static async Task<List<TestRunResponse>> MaterializeAllAsync(this IQueryable<TestRun> runs)
+        {
+            var list = await runs.Project().ToListAsync();
+
+            foreach (var item in list)
+                item.Response.TestCase.ExtraData = item.TestCaseExtraData.ToDto();
+
+            return list.Select(item => item.Response).ToList();
+        }
+
+        public static async Task<TestRunResponse> MaterializeFirstOrDefaultAsync(this IQueryable<TestRun> runs)
+        {
+            var item = await runs.Project().FirstOrDefaultAsync();
+            item.Response.TestCase.ExtraData = item.TestCaseExtraData.ToDto();
+            return item.Response;
+        }
     }
 }

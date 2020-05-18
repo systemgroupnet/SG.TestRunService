@@ -85,12 +85,12 @@ namespace SG.TestRunService.ServiceImplementations
         public async Task<IReadOnlyList<TestRunResponse>> GetSessionTestRunsAsync(int sessionId)
         {
             return await _dbService.Query<TestRun>(r => r.TestRunSessionId == sessionId)
-                .Project().ToListAsync();
+                .MaterializeAllAsync();
         }
 
         public Task<TestRunResponse> GetTestRunAsync(int testRunId)
         {
-            return _dbService.Query<TestRun>(testRunId).Project().FirstOrDefaultAsync();
+            return _dbService.Query<TestRun>(testRunId).MaterializeFirstOrDefaultAsync();
         }
 
         public async Task<(TestRunResponse, ServiceError)> UpdateTestRunAsync(

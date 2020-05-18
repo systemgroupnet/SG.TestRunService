@@ -296,20 +296,31 @@ namespace SG.TestRunService.Common.Models
             };
         }
 
-        public static IQueryable<TestRunResponse> Project(this IQueryable<TestRun> runs)
+        public static IQueryable<FTestRun> Project(this IQueryable<TestRun> runs)
         {
             return runs.Select(
-                r => new TestRunResponse()
+
+                r => new FTestRun
                 {
-                    Id = r.Id,
-                    TestCaseId = r.TestCaseId,
-                    TestCase = r.TestCase.ToResponse(),
-                    TestRunSessionId = r.TestRunSessionId,
-                    State = r.State,
-                    Outcome = r.Outcome,
-                    StartTime = r.StartTime,
-                    FinishTime = r.FinishTime,
-                    ErrorMessage = r.ErrorMessage
+                    Response = new TestRunResponse()
+                    {
+                        Id = r.Id,
+                        TestCaseId = r.TestCaseId,
+                        TestCase = new TestCaseResponse
+                        {
+                            Id = r.TestCase.Id,
+                            AzureTestCaseId = r.TestCase.AzureTestCaseId,
+                            Title = r.TestCase.Title,
+                            TeamProject = r.TestCase.TeamProject
+                        },
+                        TestRunSessionId = r.TestRunSessionId,
+                        State = r.State,
+                        Outcome = r.Outcome,
+                        StartTime = r.StartTime,
+                        FinishTime = r.FinishTime,
+                        ErrorMessage = r.ErrorMessage
+                    },
+                    TestCaseExtraData = r.TestCase.ExtraData
                 });
         }
 
