@@ -297,6 +297,18 @@ namespace SG.TestRunClientLib
             _session.State = newSession.State;
         }
 
+        public async Task AddExtraDataAsync(IDictionary<string, ExtraDataValue> extraDataValue)
+        {
+            var sessionPatch = new JsonPatchDocument<TestRunSessionRequest>();
+            sessionPatch.Add(s => s.ExtraData, extraDataValue);
+            var newSession = await _client.PatchTestRunSessionAsync(_session.Id, sessionPatch);
+            _logger.Debug("Session extra data updated.");
+            foreach (var item in extraDataValue)
+            {
+                _session.ExtraData.Add(item.Key, item.Value);
+            }
+        }
+
         private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRunAsync(IEnumerable<string> changedFiles)
         {
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
