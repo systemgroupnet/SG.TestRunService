@@ -206,6 +206,7 @@ namespace SG.TestRunService.Common.Models
                         StartTime = session.StartTime,
                         FinishTime = session.FinishTime,
                         State = session.State,
+                        TestRunCount = session.TestRuns.Count()
                     },
                     ExtraData = session.ExtraData
                 });
