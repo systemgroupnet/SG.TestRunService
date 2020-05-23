@@ -309,6 +309,13 @@ namespace SG.TestRunClientLib
             }
         }
 
+        public async Task AddRunExtraDataAsync(int runId, IDictionary<string, ExtraDataValue> extraDataValue)
+        {
+            var runPatch = new JsonPatchDocument<TestRunRequest>();
+            runPatch.Add(s => s.ExtraData, extraDataValue);
+            var newSession = await _client.PatchTestRunAsync(_session.Id, runId, runPatch);
+        }
+
         private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRunAsync(IEnumerable<string> changedFiles)
         {
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
