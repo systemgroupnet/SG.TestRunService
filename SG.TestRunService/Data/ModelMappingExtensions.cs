@@ -3,7 +3,6 @@ using SG.TestRunService.Data.FetchModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SG.TestRunService.Common.Models
 {
@@ -57,9 +56,9 @@ namespace SG.TestRunService.Common.Models
         public static void UpdateFrom(this IList<ExtraData> extraData, IDictionary<string, ExtraDataValue> extraDataRequest)
         {
             var extraDataDict = extraData.ToDictionary(e => e.Value);
-            foreach(var requestItem in extraDataRequest)
+            foreach (var requestItem in extraDataRequest)
             {
-                if(extraDataDict.TryGetValue(requestItem.Key, out var dataItem))
+                if (extraDataDict.TryGetValue(requestItem.Key, out var dataItem))
                 {
                     dataItem.Value = requestItem.Value.Value;
                     dataItem.Url = requestItem.Value.Url;
@@ -168,7 +167,8 @@ namespace SG.TestRunService.Common.Models
                 FinishTime = session.FinishTime,
                 State = session.State,
                 ProductBuild = session.ProductBuildInfo?.ToDto(),
-                TestRuns = session.TestRuns?.Select(ToRequest).ToList()
+                TestRuns = session.TestRuns?.Select(ToRequest).ToList(),
+                ExtraData = session.ExtraData.ToDto()
             };
         }
 
@@ -180,6 +180,7 @@ namespace SG.TestRunService.Common.Models
             session.StartTime = request.StartTime;
             session.FinishTime = request.FinishTime;
             session.State = request.State;
+            session.ExtraData.UpdateFrom(request.ExtraData);
         }
 
         public static IQueryable<FTestRunSession> Project(this IQueryable<TestRunSession> sessions)
