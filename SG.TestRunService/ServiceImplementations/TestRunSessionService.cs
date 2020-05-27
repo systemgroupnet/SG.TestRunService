@@ -57,7 +57,7 @@ namespace SG.TestRunService.ServiceImplementations
 
         public async Task<(TestRunSessionResponse, ServiceError)> UpdateSessionAsync(int sessionId, Action<TestRunSessionRequest> sessionUpdater)
         {
-            var session = _dbService.Query<TestRunSession>(sessionId).FirstOrDefault();
+            var session = await _dbService.Query<TestRunSession>(sessionId).Include(s => s.ExtraData).FirstOrDefaultAsync();
             if (session == null)
                 return (null, ServiceError.NotFound($"No TestRunSession with Id of {sessionId} found."));
             var sessionRequest = session.ToRequest();
@@ -96,7 +96,7 @@ namespace SG.TestRunService.ServiceImplementations
         public async Task<(TestRunResponse, ServiceError)> UpdateTestRunAsync(
             int sessionId, int testRunId, Action<TestRunRequest> testRunUpdater)
         {
-            var testRun = _dbService.Query<TestRun>(testRunId).FirstOrDefault();
+            var testRun = await _dbService.Query<TestRun>(testRunId).Include(r => r.ExtraData).FirstOrDefaultAsync();
             if (testRun == null)
                 return (null, ServiceError.NotFound($"No TestRun with Id of {testRunId} found."));
             if (testRun.TestRunSessionId != sessionId)
@@ -113,7 +113,7 @@ namespace SG.TestRunService.ServiceImplementations
         public async Task<(TestRunResponse, bool isNew, ServiceError)> ReplaceTestRun(
             int sessionId, int testRunId, TestRunRequest testRunRequest)
         {
-            var testRun = _dbService.Query<TestRun>(testRunId).FirstOrDefault();
+            var testRun = await _dbService.Query<TestRun>(testRunId).Include(r => r.ExtraData).FirstOrDefaultAsync();
             bool isNew;
             if (testRun == null)
             {

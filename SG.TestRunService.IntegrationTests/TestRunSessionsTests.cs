@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using SG.TestRunClientLib;
 using SG.TestRunService.Common.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -17,10 +19,6 @@ namespace SG.TestRunService.IntegrationTests
         private TestRunClient _client;
 
 
-        private const string AgentMachineName = "test-server300";
-        private const string AgentMachineUrl = "http://test:8080/proj1/agents/869";
-        private const string FixtureSessionId = "{339b496b-2fde-45b6-b4be-c7617dee2d4a}";
-
         public TestRunSessionsTests(TestingWebAppFactory appFactory)
         {
             _appFactory = appFactory;
@@ -28,36 +26,10 @@ namespace SG.TestRunService.IntegrationTests
             _client = new TestRunClient(_httpClient);
         }
 
-        private TestRunSessionRequest CreateSampleRequst()
-        {
-            return
-                new TestRunSessionRequest()
-                {
-                    AzureTestBuildId = 1101,
-                    AzureTestBuildNumber = "Test1.20200203.5",
-                    StartTime = DateTime.Now,
-                    SuiteName = "Dvp",
-                    ProductBuild = new BuildInfo()
-                    {
-                        AzureBuildDefinitionId = 10,
-                        AzureBuildId = 544,
-                        BuildNumber = "Build1.20200201.9",
-                        Date = DateTime.Now.AddDays(-3),
-                        SourceVersion = "4000",
-                        TeamProject = "TestTeam",
-                    },
-                    ExtraData = new Dictionary<string, ExtraDataValue>()
-                    {
-                        [nameof(AgentMachineName)] = new ExtraDataValue(AgentMachineName, AgentMachineUrl),
-                        [nameof(FixtureSessionId)] = new ExtraDataValue(FixtureSessionId, null)
-                    }
-                };
-        }
-
         [Fact]
         public async void InsertSession_AfterFetched_ShouldMatch()
         {
-            var request = CreateSampleRequst();
+            var request = Helpers.CreateSampleTestRunSessionRequst();
 
             var response1 = await _client.InsertSessionAsync(request);
             Assert.True(response1.Id > 0);
@@ -73,6 +45,46 @@ namespace SG.TestRunService.IntegrationTests
             {
                 Assert.Equal(response1.ExtraData[key], response2.ExtraData[key]);
             }
+        }
+
+        [Fact]
+        public async void InsertBasicDataAndUpdateTestRunExtraData()
+        {
+            var testCaseRequest = Helpers.CreateSampleTestCases();
+            await _client.InsertTestCasesAsync(testCaseRequest);
+            var testCaseResponses = await _client.GetTestCasesAsync();
+            Assert.Equal(testCaseRequest.Count, testCaseResponses.Count);
+            foreach (var tc in testCaseResponses)
+                Assert.True(tc.Id > 0, "Invalid TestCase.Id");
+            var sessionRequest = Helpers.CreateSampleTestRunSessionRequst();
+            var sessionResponse = await _client.InsertSessionAsync(sessionRequest);
+            Assert.True(sessionResponse.Id > 0, "Invalid TestRunSession.Id");
+            var testRunRequests = Helpers.CreateSampleTestRunRequests(testCaseResponses);
+            var testRunResponses = new List<TestRunResponse>();
+            foreach (var runRequest in testRunRequests)
+            {
+                var runResponse = await _client.InsertTestRunAsync(sessionResponse.Id, runRequest);
+                Assert.True(runResponse.Id > 0, "Invalid TestRunResponse.Id");
+                Assert.Equal(runRequest.ExtraData.Count, runResponse.ExtraData.Count);
+                foreach (var ed in runRequest.ExtraData)
+                    Assert.Equal(ed.Value, runResponse.ExtraData[ed.Key]);
+                testRunResponses.Add(runResponse);
+            }
+
+            var testRunToUpdate = testRunResponses[0];
+            var testRunPatch = new JsonPatchDocument<TestRunRequest>();
+            var newTestRunExtraDataDict =
+                new Dictionary<string, ExtraDataValue>()
+                {
+                    ["ex2"] = new ExtraDataValue("ex2Value")
+                };
+            testRunPatch.Add( r => r.ExtraData, newTestRunExtraDataDict);
+
+            var updatedTestRun = await _client.PatchTestRunAsync(
+                testRunToUpdate.TestRunSessionId, testRunToUpdate.Id, testRunPatch);
+            Assert.Equal(testRunToUpdate.ExtraData.Count + 1, updatedTestRun.ExtraData.Count);
+            foreach (var newExtraData in newTestRunExtraDataDict)
+                Assert.Equal(newExtraData.Value, updatedTestRun.ExtraData[newExtraData.Key]);
         }
     }
 }
