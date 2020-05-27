@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SG.TestRunService.Common.Models
 {
-    public class TestRunSessionRequest
+    public class TestRunSessionRequest : IExtraDataContainer
     {
         [Required]
         public BuildInfo ProductBuild { get; set; }

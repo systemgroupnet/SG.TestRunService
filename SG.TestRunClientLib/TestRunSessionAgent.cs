@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SG.TestRunService.Common.Models;
@@ -297,23 +298,21 @@ namespace SG.TestRunClientLib
             _session.State = newSession.State;
         }
 
-        public async Task AddExtraDataAsync(IDictionary<string, ExtraDataValue> extraDataValue)
+        public async Task AddExtraDataAsync(IDictionary<string, ExtraDataValue> extraDataValues)
         {
-            var sessionPatch = new JsonPatchDocument<TestRunSessionRequest>();
-            sessionPatch.Add(s => s.ExtraData, extraDataValue);
-            var newSession = await _client.PatchTestRunSessionAsync(_session.Id, sessionPatch);
+            var patch = HttpHelper.CreateJsonPatchToAddOrUpdateExtraData<TestRunSessionRequest>(extraDataValues);
+            var newSession = await _client.PatchTestRunSessionAsync(_session.Id, patch);
             _logger.Debug("Session extra data updated.");
-            foreach (var item in extraDataValue)
+            foreach (var ex in newSession.ExtraData)
             {
-                _session.ExtraData.Add(item.Key, item.Value);
+                _session.ExtraData[ex.Key] = ex.Value;
             }
         }
 
-        public async Task AddRunExtraDataAsync(int runId, IDictionary<string, ExtraDataValue> extraDataValue)
+        public async Task AddRunExtraDataAsync(int runId, IDictionary<string, ExtraDataValue> extraDataValues)
         {
-            var runPatch = new JsonPatchDocument<TestRunRequest>();
-            runPatch.Add(s => s.ExtraData, extraDataValue);
-            var newSession = await _client.PatchTestRunAsync(_session.Id, runId, runPatch);
+            var patch = HttpHelper.CreateJsonPatchToAddOrUpdateExtraData<TestRunRequest>(extraDataValues);
+            await _client.PatchTestRunAsync(_session.Id, runId, patch);
         }
 
         private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRunAsync(IEnumerable<string> changedFiles)

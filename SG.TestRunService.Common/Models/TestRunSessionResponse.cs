@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SG.TestRunService.Common.Models
 {
-    public class TestRunSessionResponse
+    public class TestRunSessionResponse : IExtraDataContainer
     {
         public int Id { get; set; }
         public BuildInfo ProductBuild { get; set; }

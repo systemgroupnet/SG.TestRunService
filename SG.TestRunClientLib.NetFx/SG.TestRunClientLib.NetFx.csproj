@@ -188,6 +188,9 @@
     <Compile Include="..\SG.TestRunClientLib\DalSoft\RetryHandler.cs">
       <Link>DalSoft\RetryHandler.cs</Link>
     </Compile>
+    <Compile Include="..\SG.TestRunClientLib\HttpHelper.cs">
+      <Link>HttpHelper.cs</Link>
+    </Compile>
     <Compile Include="..\SG.TestRunClientLib\IDevOpsServerHandle.cs">
       <Link>IDevOpsServerHandle.cs</Link>
     </Compile>

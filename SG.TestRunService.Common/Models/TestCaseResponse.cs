@@ -2,7 +2,7 @@
 
 namespace SG.TestRunService.Common.Models
 {
-    public class TestCaseResponse
+    public class TestCaseResponse : IExtraDataContainer
     {
         public TestCaseResponse()
         {

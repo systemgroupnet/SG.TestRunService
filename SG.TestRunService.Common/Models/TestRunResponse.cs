@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.Common.Models
 {
-    public class TestRunResponse
+    public class TestRunResponse : IExtraDataContainer
     {
         public int Id { get; set; }
         public int TestCaseId { get; set; }

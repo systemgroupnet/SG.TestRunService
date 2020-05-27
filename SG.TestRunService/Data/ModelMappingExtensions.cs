@@ -55,7 +55,7 @@ namespace SG.TestRunService.Common.Models
 
         public static void UpdateFrom(this IList<ExtraData> extraData, IDictionary<string, ExtraDataValue> extraDataRequest)
         {
-            var extraDataDict = extraData.ToDictionary(e => e.Value);
+            var extraDataDict = extraData.ToDictionary(e => e.Name);
             foreach (var requestItem in extraDataRequest)
             {
                 if (extraDataDict.TryGetValue(requestItem.Key, out var dataItem))

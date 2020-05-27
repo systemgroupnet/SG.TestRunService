@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SG.TestRunService.Common.Models
 {
-    public class TestRunRequest
+    public class TestRunRequest : IExtraDataContainer
     {
         public TestRunRequest()
         {

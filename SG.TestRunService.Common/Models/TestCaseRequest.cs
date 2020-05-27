@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SG.TestRunService.Common.Models
 {
-    public class TestCaseRequest
+    public class TestCaseRequest : IExtraDataContainer
     {
         public TestCaseRequest() { }
 

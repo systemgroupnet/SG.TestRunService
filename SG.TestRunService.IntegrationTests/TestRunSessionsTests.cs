@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using SG.TestRunClientLib;
 using SG.TestRunService.Common.Models;
@@ -72,19 +73,18 @@ namespace SG.TestRunService.IntegrationTests
             }
 
             var testRunToUpdate = testRunResponses[0];
-            var testRunPatch = new JsonPatchDocument<TestRunRequest>();
+            var originalExtraData = testRunToUpdate.ExtraData.ToList();
             var newTestRunExtraDataDict =
                 new Dictionary<string, ExtraDataValue>()
                 {
                     ["ex2"] = new ExtraDataValue("ex2Value")
                 };
-            testRunPatch.Add( r => r.ExtraData, newTestRunExtraDataDict);
-
+            var testRunPatch = HttpHelper.CreateJsonPatchToAddOrUpdateExtraData<TestRunRequest>(newTestRunExtraDataDict);
             var updatedTestRun = await _client.PatchTestRunAsync(
                 testRunToUpdate.TestRunSessionId, testRunToUpdate.Id, testRunPatch);
             Assert.Equal(testRunToUpdate.ExtraData.Count + 1, updatedTestRun.ExtraData.Count);
-            foreach (var newExtraData in newTestRunExtraDataDict)
-                Assert.Equal(newExtraData.Value, updatedTestRun.ExtraData[newExtraData.Key]);
+            foreach (var extraData in originalExtraData.Concat(newTestRunExtraDataDict))
+                Assert.Equal(extraData.Value, updatedTestRun.ExtraData[extraData.Key]);
         }
     }
 }
