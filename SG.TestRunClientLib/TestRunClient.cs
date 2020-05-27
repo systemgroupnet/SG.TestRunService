@@ -92,9 +92,12 @@ namespace SG.TestRunClientLib
             return await SendAsync<IReadOnlyList<int>>(HttpMethod.Get, "testcases?fields=" + nameof(TestCaseResponse.AzureTestCaseId));
         }
 
-        public async Task<IReadOnlyList<TestCaseResponse>> GetTestCasesAsync(IEnumerable<string> fieldNames)
+        public async Task<IReadOnlyList<TestCaseResponse>> GetTestCasesAsync(IEnumerable<string> fieldNames = null)
         {
-            return await SendAsync<IReadOnlyList<TestCaseResponse>>(HttpMethod.Get, "testcases?fields=" + string.Join(",", fieldNames));
+            string fieldsQuery = fieldNames == null
+                ? string.Empty
+                : "?fields=" + string.Join(",", fieldNames);
+            return await SendAsync<IReadOnlyList<TestCaseResponse>>(HttpMethod.Get, "testcases" + fieldsQuery);
         }
 
         public async Task<TestCaseResponse> InsertTestCasesAsync(IEnumerable<TestCaseRequest> testCaseRequests)
