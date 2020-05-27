@@ -74,7 +74,7 @@ namespace SG.TestRunService.Common.Models
                         });
                 }
             }
-            var toRemove = extraData.Where(d => !extraDataRequest.ContainsKey(d.Name));
+            var toRemove = extraData.Where(d => !extraDataRequest.ContainsKey(d.Name)).ToList();
             foreach (var d in toRemove)
                 extraData.Remove(d);
         }
