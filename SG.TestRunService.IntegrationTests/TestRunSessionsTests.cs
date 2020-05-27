@@ -10,7 +10,7 @@ using Xunit;
 
 namespace SG.TestRunService.IntegrationTests
 {
-    public class TestRunSessionsControllerTests : IClassFixture<TestingWebAppFactory>
+    public class TestRunSessionsTests : IClassFixture<TestingWebAppFactory>
     {
         private TestingWebAppFactory _appFactory;
         private HttpClient _httpClient;
@@ -21,7 +21,7 @@ namespace SG.TestRunService.IntegrationTests
         private const string AgentMachineUrl = "http://test:8080/proj1/agents/869";
         private const string FixtureSessionId = "{339b496b-2fde-45b6-b4be-c7617dee2d4a}";
 
-        public TestRunSessionsControllerTests(TestingWebAppFactory appFactory)
+        public TestRunSessionsTests(TestingWebAppFactory appFactory)
         {
             _appFactory = appFactory;
             _httpClient = _appFactory.CreateClient();
