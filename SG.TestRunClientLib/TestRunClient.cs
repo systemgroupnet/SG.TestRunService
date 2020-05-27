@@ -100,9 +100,9 @@ namespace SG.TestRunClientLib
             return await SendAsync<IReadOnlyList<TestCaseResponse>>(HttpMethod.Get, "testcases" + fieldsQuery);
         }
 
-        public async Task<TestCaseResponse> InsertTestCasesAsync(IEnumerable<TestCaseRequest> testCaseRequests)
+        public async Task InsertTestCasesAsync(IEnumerable<TestCaseRequest> testCaseRequests)
         {
-            return await SendAsync<TestCaseResponse>(HttpMethod.Post, "testcases", testCaseRequests);
+            await SendAsync(HttpMethod.Post, "testcases", testCaseRequests);
         }
 
         public async Task<TestCaseResponse> InsertTestCaseAsync(TestCaseRequest testCaseRequest)
@@ -148,7 +148,7 @@ namespace SG.TestRunClientLib
 
         public async Task UpdateTestLastStateAsync(int testCaseId, TestLastStateUpdateRequest request)
         {
-             await SendAsync<IReadOnlyCollection<TestLastStateResponse>>(HttpMethod.Post, "impact/lastState/" + testCaseId, request);
+            await SendAsync<IReadOnlyCollection<TestLastStateResponse>>(HttpMethod.Post, "impact/lastState/" + testCaseId, request);
         }
     }
 }
