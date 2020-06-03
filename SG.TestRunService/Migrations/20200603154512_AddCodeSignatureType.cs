@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using SG.TestRunService.Data;
+using SG.TestRunService.Common.Models;
 
 namespace SG.TestRunService.Migrations
 {

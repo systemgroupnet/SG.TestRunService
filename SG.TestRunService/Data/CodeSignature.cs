@@ -1,4 +1,5 @@
-﻿using SG.TestRunService.Infrastructure;
+﻿using SG.TestRunService.Common.Models;
+using SG.TestRunService.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
