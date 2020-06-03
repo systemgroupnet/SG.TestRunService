@@ -14,5 +14,6 @@ namespace SG.TestRunService.Data
         [Required, StringLength(50)]
         public string Signature { get; set; }
         public string Path { get; set; }
+        public CodeSignatureType Type { get; set; }
     }
 }
