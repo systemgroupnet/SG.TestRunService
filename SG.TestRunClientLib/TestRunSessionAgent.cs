@@ -230,7 +230,7 @@ namespace SG.TestRunClientLib
         }
 
         public async Task<TestRunResponse> RecordTestRunEndAsync(TestCaseInfo testCase, TestRunOutcome outcome,
-            string errorMessage, IEnumerable<string> impactFiles)
+            string errorMessage, IEnumerable<string> impactFiles, IEnumerable<string> impactMethods)
         {
             var patch = new JsonPatchDocument<TestRunRequest>();
             patch.Add(r => r.State, TestRunState.Finished);
@@ -241,16 +241,24 @@ namespace SG.TestRunClientLib
 
             _logger.Info("Test run finished: " + ObjToString(runResponse));
 
+            List<CodeSignature> codeSignatures = new List<CodeSignature>();
+            if (impactFiles != null)
+                codeSignatures.AddRange(
+                    impactFiles.Select(f => new CodeSignature(f, CalculateSignature(f), CodeSignatureType.File)));
+            if (impactMethods != null)
+                codeSignatures.AddRange(
+                    impactMethods.Select(f => new CodeSignature(f, CalculateSignature(f), CodeSignatureType.Method)));
+
             var impactRequest = new TestCaseImpactUpdateRequest()
             {
                 AzureProductBuildDefinitionId = _session.ProductBuild.AzureBuildDefinitionId,
-                CodeSignatures = impactFiles?.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
+                CodeSignatures = codeSignatures
             };
 
-            var impactFilesCount = impactRequest.CodeSignatures?.Count ?? 0;
+            var impactDataCount = codeSignatures.Count;
 
-            LogDebug("Updating test impact information. Number of files (code signatures): " + impactFilesCount);
-            if (impactFilesCount == 0)
+            LogDebug("Updating test impact information. Number of files/methods (code signatures): " + impactDataCount);
+            if (impactDataCount == 0)
                 LogDebug("(No impact data is available)");
 
             await _client.UpdateTestImpactAsync(testCase.Id, impactRequest);
@@ -315,13 +323,13 @@ namespace SG.TestRunClientLib
             await _client.PatchTestRunAsync(_session.Id, runId, patch);
         }
 
-        private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRunAsync(IEnumerable<string> changedFiles)
+        private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRunAsync(IEnumerable<string> changedFilesOrMethods)
         {
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
                 AzureProductBuildDefinitionId = _session.ProductBuild.AzureBuildDefinitionId,
                 AzureProductBuildId = _session.ProductBuild.AzureBuildId,
-                Changes = changedFiles.Select(f => new CodeSignature(f, CalculateSignature(f))).ToList()
+                CodeSignatures = changedFilesOrMethods.Select(CalculateSignature).ToList()
             };
             return await PublishChangesAndGetTestsToRunAsync(req);
         }

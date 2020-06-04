@@ -63,7 +63,7 @@ namespace SG.TestRunClient.TestConsole.Sample
                 await _agent.AdvanceTestRunStateAsync(test, TestRunState.Running);
                 await Task.Delay(3000);
                 var state = r.Next(2) == 0 ? TestRunOutcome.Successful : TestRunOutcome.Failed;
-                await _agent.RecordTestRunEndAsync(test, state, null, GetTestImpactFiles(test, productBuildDefinitionId));
+                await _agent.RecordTestRunEndAsync(test, state, null, GetTestImpactFiles(test, productBuildDefinitionId), null);
             }
         }
 

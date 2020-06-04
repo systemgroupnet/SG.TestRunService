@@ -93,7 +93,10 @@ namespace SG.TestRunService.ServiceImplementations
             }
             else
             {
-                testsToRun = await tlsUpdater.UpdateAndGetTestsToRun(request.Changes.Select(c => c.Signature).ToList());
+#pragma warning disable 618
+                var signatures = (request.CodeSignatures ?? request.Changes.Select(c => c.Signature)).ToList();
+#pragma warning restore 618
+                testsToRun = await tlsUpdater.UpdateAndGetTestsToRun(signatures);
             }
             var response = testsToRun
                 .Select(t =>
@@ -154,8 +157,11 @@ namespace SG.TestRunService.ServiceImplementations
                         {
                             dbCodeSignature = new Data.CodeSignature()
                             {
-                                Path = csToAdd.FileName,
-                                Signature = csToAdd.Signature
+#pragma warning disable 618
+                                Path = csToAdd.Path ?? csToAdd.FileName,
+#pragma warning restore 618
+                                Signature = csToAdd.Signature,
+                                Type = csToAdd.Type == 0 ? CodeSignatureType.File : csToAdd.Type
                             };
                             _dbService.Add(dbCodeSignature);
                         }
