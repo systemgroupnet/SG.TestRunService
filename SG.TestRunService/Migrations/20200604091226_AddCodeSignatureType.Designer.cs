@@ -10,7 +10,7 @@ using SG.TestRunService.Data;
 namespace SG.TestRunService.Migrations
 {
     [DbContext(typeof(TSDbContext))]
-    [Migration("20200603154512_AddCodeSignatureType")]
+    [Migration("20200604091226_AddCodeSignatureType")]
     partial class AddCodeSignatureType
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,8 +108,8 @@ namespace SG.TestRunService.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<byte>("Type")
+                        .HasColumnType("tinyint");
 
                     b.HasKey("Id");
 

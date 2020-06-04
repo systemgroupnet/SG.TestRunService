@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.Common.Models
 {
-    public enum CodeSignatureType
+    public enum CodeSignatureType : byte
     {
         File = 1,
         Method = 2

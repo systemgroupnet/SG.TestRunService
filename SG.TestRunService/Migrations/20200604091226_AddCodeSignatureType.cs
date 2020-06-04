@@ -7,7 +7,7 @@ namespace SG.TestRunService.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
+            migrationBuilder.AddColumn<byte>(
                 name: "Type",
                 table: "CodeSignature",
                 nullable: false,
