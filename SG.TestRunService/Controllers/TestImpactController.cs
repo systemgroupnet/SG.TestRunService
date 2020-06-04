@@ -41,14 +41,17 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpPost("changes")]
-        public async Task<PublishImpactChangesResponse> PublichChanges(PublishImpactChangesRequest request)
+        public async Task<IActionResult> PublichChanges(PublishImpactChangesRequest request)
         {
-            var testsToRun = await _service.PublishImpactChangesAsync(request);
-            return new PublishImpactChangesResponse()
-            {
-                TestsToRun = testsToRun,
-                TestsToRunCount = testsToRun.Count
-            };
+            var (testsToRun, error) = await _service.PublishImpactChangesAsync(request);
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
+            return Ok(
+                new PublishImpactChangesResponse()
+                {
+                    TestsToRun = testsToRun,
+                    TestsToRunCount = testsToRun.Count
+                });
         }
 
         [HttpPost("testrun/{testCaseId:int}")]

@@ -54,7 +54,7 @@ namespace SG.TestRunService.ServiceImplementations
             return lastImpactUpdate.ToResponse();
         }
 
-        public async Task<IReadOnlyList<TestToRunResponse>> PublishImpactChangesAsync(PublishImpactChangesRequest request)
+        public async Task<(IReadOnlyList<TestToRunResponse>, ServiceError)>  PublishImpactChangesAsync(PublishImpactChangesRequest request)
         {
             var lastUpdate = await GetLastImpactUpdateInternal(request.AzureProductBuildDefinitionId, e => e);
             if (lastUpdate == null)
@@ -94,8 +94,10 @@ namespace SG.TestRunService.ServiceImplementations
             else
             {
 #pragma warning disable 618
-                var signatures = (request.CodeSignatures ?? request.Changes.Select(c => c.Signature)).ToList();
+                var signatures = (request.CodeSignatures ?? request.Changes?.Select(c => c.Signature))?.ToList();
 #pragma warning restore 618
+                if (signatures == null)
+                    return (null, new ServiceError(ServiceErrorCategory.BadRequest, "Code signatures are missing."));
                 testsToRun = await tlsUpdater.UpdateAndGetTestsToRun(signatures);
             }
             var response = testsToRun
@@ -108,7 +110,7 @@ namespace SG.TestRunService.ServiceImplementations
                     })
                 .ToList();
             await _dbService.SaveChangesAsync();
-            return response;
+            return (response, ServiceError.NoError());
         }
 
         public async Task UpdateTestCaseImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request)
