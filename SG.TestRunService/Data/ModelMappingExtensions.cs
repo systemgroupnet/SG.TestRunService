@@ -301,7 +301,6 @@ namespace SG.TestRunService.Common.Models
         public static IQueryable<FTestRun> Project(this IQueryable<TestRun> runs)
         {
             return runs.Select(
-
                 r => new FTestRun
                 {
                     Response = new TestRunResponse()
@@ -322,6 +321,7 @@ namespace SG.TestRunService.Common.Models
                         FinishTime = r.FinishTime,
                         ErrorMessage = r.ErrorMessage
                     },
+                    TestRunExtraData = r.ExtraData,
                     TestCaseExtraData = r.TestCase.ExtraData
                 });
         }

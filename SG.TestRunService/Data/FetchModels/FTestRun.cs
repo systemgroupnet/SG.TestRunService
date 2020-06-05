@@ -10,6 +10,7 @@ namespace SG.TestRunService.Data.FetchModels
     {
         public TestRunResponse Response { get; set; }
 
+        public IList<ExtraData> TestRunExtraData { get; set; }
         public IList<ExtraData> TestCaseExtraData { get; set; }
     }
 }

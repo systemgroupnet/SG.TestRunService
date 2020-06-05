@@ -30,7 +30,10 @@ namespace SG.TestRunService.Data
             var list = await runs.Project().ToListAsync();
 
             foreach (var item in list)
+            {
+                item.Response.ExtraData = item.TestRunExtraData.ToDto();
                 item.Response.TestCase.ExtraData = item.TestCaseExtraData.ToDto();
+            }
 
             return list.Select(item => item.Response).ToList();
         }
@@ -38,6 +41,7 @@ namespace SG.TestRunService.Data
         public static async Task<TestRunResponse> MaterializeFirstOrDefaultAsync(this IQueryable<TestRun> runs)
         {
             var item = await runs.Project().FirstOrDefaultAsync();
+            item.Response.ExtraData = item.TestRunExtraData.ToDto();
             item.Response.TestCase.ExtraData = item.TestCaseExtraData.ToDto();
             return item.Response;
         }
