@@ -48,7 +48,7 @@ namespace SG.TestRunClientLib
             }
             else
             {
-                var changedFiles = _devOpsServerHandle.GetBuildChanges(baseBuild, _build);
+                var changedFiles = await _devOpsServerHandle.GetBuildChangesAsync(baseBuild, _build);
                 LogChangedFiles(currentSourceVersion, baseSourceVersion, changedFiles);
                 return await PublishChanges(changedFiles);
             }

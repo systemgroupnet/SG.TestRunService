@@ -3,6 +3,7 @@ using SG.TestRunService.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SG.TestRunClient.TestConsole.Sample
 {
@@ -40,7 +41,7 @@ namespace SG.TestRunClient.TestConsole.Sample
             },
         };
 
-        public IReadOnlyList<string> GetBuildChanges(BuildInfo from, BuildInfo to)
+        public Task<IReadOnlyList<string>> GetBuildChangesAsync(BuildInfo from, BuildInfo to)
         {
             var fromSourceVersion = from.SourceVersion;
             var toSourceVersion = to.SourceVersion;
@@ -56,7 +57,7 @@ namespace SG.TestRunClient.TestConsole.Sample
                     foreach (var c in changes)
                         result.Add(c);
             }
-            return result;
+            return Task.FromResult<IReadOnlyList<string>>(result);
         }
 
         public bool IsChronologicallyAfter(string currentSourceVersion, string baseSourceVersion)
