@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SG.TestRunClientLib
 {
-    public class HttpHelper
+    public static class HttpHelper
     {
         public static JsonPatchDocument<TModel> CreateJsonPatchToAddOrUpdateExtraData<TModel>(
             IDictionary<string, ExtraDataValue> extraData)
