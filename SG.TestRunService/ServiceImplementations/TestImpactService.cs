@@ -101,7 +101,7 @@ namespace SG.TestRunService.ServiceImplementations
                 .Select(t =>
                     new TestToRunResponse()
                     {
-                        Id = t.TestLastState.TestCaseId,
+                        TestCaseId = t.TestLastState.TestCaseId,
                         AzureTestCaseId = t.AzureTestCaseId,
                         RunReason = t.RunReason
                     })
@@ -175,6 +175,7 @@ namespace SG.TestRunService.ServiceImplementations
                     }
                 }
             }
+
             foreach (var impactCodeSignatureEntity in impactItemsOnDb.Values)
                 if (!present.Contains(impactCodeSignatureEntity))
                 {

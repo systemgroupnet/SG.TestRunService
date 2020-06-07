@@ -361,7 +361,7 @@ namespace SG.TestRunClientLib
                 {
                     testsToRun.Add(
                         new TestCaseInfo(
-                            tr.Id, tr.AzureTestCaseId,
+                            tr.TestCaseId, tr.AzureTestCaseId,
                             testCase.Title, tr.RunReason));
                 }
             }
