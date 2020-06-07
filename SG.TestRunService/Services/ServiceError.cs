@@ -33,6 +33,11 @@ namespace SG.TestRunService.Services
         {
             return new ServiceError(ServiceErrorCategory.UnprocessableEntity, message);
         }
+
+        public static ServiceError BadRequest(string message)
+        {
+            return new ServiceError(ServiceErrorCategory.BadRequest, message);
+        }
     }
 
     public enum ServiceErrorCategory

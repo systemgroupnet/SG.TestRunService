@@ -92,7 +92,7 @@ namespace SG.TestRunService.ServiceImplementations
             else
             {
                 if (request.CodeSignatures == null)
-                    return (null, new ServiceError(ServiceErrorCategory.BadRequest, "Code signatures are missing."));
+                    return (null, ServiceError.BadRequest("Code signatures are missing."));
                 response = await tlsUpdater.UpdateImpactedTests(request.CodeSignatures);
             }
             await _dbService.SaveChangesAsync();
