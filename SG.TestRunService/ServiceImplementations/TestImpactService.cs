@@ -52,7 +52,7 @@ namespace SG.TestRunService.ServiceImplementations
             return lastImpactUpdate.ToResponse();
         }
 
-        public async Task<(PublishImpactChangesResponse, ServiceError)>  PublishImpactChangesAsync(PublishImpactChangesRequest request)
+        public async Task<(PublishImpactChangesResponse, ServiceError)> PublishImpactChangesAsync(PublishImpactChangesRequest request)
         {
             var lastUpdate = await GetLastImpactUpdateInternal(request.AzureProductBuildDefinitionId, e => e);
             if (lastUpdate == null)
@@ -269,30 +269,25 @@ namespace SG.TestRunService.ServiceImplementations
         {
             var testLastStates = _dbService
                 .Query<TestLastState>(tl =>
-                    tl.AzureProductBuildDefinitionId == azureBuildDefinitionId &&
-                    tl.ShouldBeRun);
+                    tl.AzureProductBuildDefinitionId == azureBuildDefinitionId);
 
-            IQueryable<TestToRunResponse> testsToRun;
-            if (allTests)
-                testsToRun =
+            var joined =
                     from tc in _dbService.Query<TestCase>()
-                    join l in testLastStates on tc.Id equals l.TestCaseId into lj
-                    from l in lj.DefaultIfEmpty()
-                    select new TestToRunResponse()
-                    {
-                        TestCaseId = tc.Id,
-                        AzureTestCaseId = tc.AzureTestCaseId,
-                        RunReason = l.RunReason ?? RunReason.ForceRun
-                    };
-            else
-                testsToRun =
-                    from l in testLastStates
-                    select new TestToRunResponse()
-                    {
-                        TestCaseId = l.TestCaseId,
-                        AzureTestCaseId = l.TestCase.AzureTestCaseId,
-                        RunReason = l.RunReason.Value
-                    };
+                    join tl in testLastStates on tc.Id equals tl.TestCaseId into tlj
+                    from tl in tlj.DefaultIfEmpty()
+                    select new { TestCase = tc, TestLastState = tl };
+
+            if (!allTests)
+                joined = joined.Where(j => j.TestLastState == null || j.TestLastState.ShouldBeRun);
+
+            var testsToRun =
+                from j in joined
+                select new TestToRunResponse()
+                {
+                    TestCaseId = j.TestCase.Id,
+                    AzureTestCaseId = j.TestCase.AzureTestCaseId,
+                    RunReason = j.TestLastState == null ? RunReason.New : (j.TestLastState.RunReason ?? RunReason.ForceRun)
+                };
 
             return await testsToRun.ToListAsync();
         }

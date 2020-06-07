@@ -10,5 +10,4 @@ namespace SG.TestRunClientLib
         IReadOnlyList<string> GetBuildChanges(BuildInfo from, BuildInfo to);
         bool IsChronologicallyAfter(string currentSourceVersion, string baseSourceVersion);
     }
-
 }
