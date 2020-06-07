@@ -182,6 +182,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SG.TestRunClientLib\CodeSignatureUtils.cs">
+      <Link>CodeSignatureUtils.cs</Link>
+    </Compile>
     <Compile Include="..\SG.TestRunClientLib\ConsoleLogger.cs">
       <Link>ConsoleLogger.cs</Link>
     </Compile>
@@ -217,6 +220,9 @@
     </Compile>
     <Compile Include="..\SG.TestRunClientLib\TestRunSessionFactory.cs">
       <Link>TestRunSessionFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\SG.TestRunClientLib\TestStateUpdater.cs">
+      <Link>TestStateUpdater.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

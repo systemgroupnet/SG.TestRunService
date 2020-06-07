@@ -121,6 +121,13 @@ namespace SG.TestRunClientLib
             return await SendAsync<PublishImpactChangesResponse>(HttpMethod.Post, "impact/changes", impactChangeRequest);
         }
 
+        public async Task<IReadOnlyList<TestToRunResponse>> GetTestsToRun(int azureBuildDefinitionId, bool allTests = false)
+        {
+            return await SendAsync<IReadOnlyList<TestToRunResponse>>(
+                HttpMethod.Get,
+                $"impact/testsToRun?azureBuildDefinitionId={azureBuildDefinitionId}&allTests={allTests}");
+        }
+
         public async Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest)
         {
             return await SendAsync<TestRunResponse>(HttpMethod.Post, $"sessions/{sessionId}/runs", testRunRequest);

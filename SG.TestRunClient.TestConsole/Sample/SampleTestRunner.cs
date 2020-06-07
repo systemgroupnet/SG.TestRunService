@@ -21,7 +21,6 @@ namespace SG.TestRunClient.TestConsole.Sample
 
         TestRunSessionAgent _agent;
         IList<TestCase> _suiteTestCases;
-        readonly SampleAzureDevopsHandle _devOpsServerHandle = new SampleAzureDevopsHandle();
 
         public async Task RunAsync()
         {
@@ -36,7 +35,6 @@ namespace SG.TestRunClient.TestConsole.Sample
             };
             _agent = await TestRunSessionFactory.StartAsync(
                 new TestRunClientJsonFileConfiguration("appsettings.json"),
-                _devOpsServerHandle,
                 build, suite, testBuildId, testBuildNumber, new ConsoleLogger(),
                 new Dictionary<string, ExtraDataValue>()
                 {

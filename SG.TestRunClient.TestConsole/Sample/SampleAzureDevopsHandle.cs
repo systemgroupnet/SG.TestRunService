@@ -1,4 +1,5 @@
 ﻿using SG.TestRunClientLib;
+using SG.TestRunService.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,7 @@ namespace SG.TestRunClient.TestConsole.Sample
         {
         }
 
-        private Dictionary<int, string[]> _changeSets = new Dictionary<int, string[]>()
+        private readonly Dictionary<int, string[]> _changeSets = new Dictionary<int, string[]>()
         {
             [131] = new[]
             {
@@ -39,10 +40,11 @@ namespace SG.TestRunClient.TestConsole.Sample
             },
         };
 
-        public IReadOnlyList<string> GetChangedFiles(
-            string project, int azureProductBuildDefinitionId,
-            string fromSourceVersion, string toSourceVersion)
+        public IReadOnlyList<string> GetBuildChanges(BuildInfo from, BuildInfo to)
         {
+            var fromSourceVersion = from.SourceVersion;
+            var toSourceVersion = to.SourceVersion;
+
             int start = int.Parse(fromSourceVersion);
             int end = int.Parse(toSourceVersion);
 

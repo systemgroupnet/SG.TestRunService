@@ -6,7 +6,15 @@ namespace SG.TestRunService.Common.Models
 {
     public class PublishImpactChangesResponse
     {
-        public IReadOnlyList<TestToRunResponse> TestsToRun { get; set; }
-        public int TestsToRunCount { get; set; }
+        public IReadOnlyList<ImpactedTestResponse> ImpactedTests { get; set; }
+        public IDictionary<string, IReadOnlyList<int>> CodeSignatureImpactedTestCaseIds { get; set; }
+        public static PublishImpactChangesResponse Empty()
+        {
+            return new PublishImpactChangesResponse()
+            {
+                CodeSignatureImpactedTestCaseIds = new Dictionary<string, IReadOnlyList<int>>(),
+                ImpactedTests = new List<ImpactedTestResponse>()
+            };
+        }
     }
 }

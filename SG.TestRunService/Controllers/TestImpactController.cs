@@ -43,15 +43,18 @@ namespace SG.TestRunService.Controllers
         [HttpPost("changes")]
         public async Task<IActionResult> PublichChanges(PublishImpactChangesRequest request)
         {
-            var (testsToRun, error) = await _service.PublishImpactChangesAsync(request);
+            var (response, error) = await _service.PublishImpactChangesAsync(request);
             if (!error.IsSuccessful())
                 return error.ToActionResult();
-            return Ok(
-                new PublishImpactChangesResponse()
-                {
-                    TestsToRun = testsToRun,
-                    TestsToRunCount = testsToRun.Count
-                });
+            return Ok(response);
+        }
+
+        [HttpGet("testsToRun")]
+        public async Task<IActionResult> GetTestsToRun([FromQuery]int? azureBuildDefinitionId, bool? allTests)
+        {
+            if (azureBuildDefinitionId == null)
+                return BadRequest($"Query string parameter missing: \"{nameof(azureBuildDefinitionId)}\"");
+            return Ok(await _service.GetTestsToRun(azureBuildDefinitionId.Value, allTests ?? false));
         }
 
         [HttpPost("testrun/{testCaseId:int}")]

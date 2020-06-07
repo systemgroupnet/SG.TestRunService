@@ -10,7 +10,6 @@ namespace SG.TestRunClientLib
     {
         public static async Task<TestRunSessionAgent> StartAsync(
             ITestRunClientConfiguration configuration,
-            IDevOpsServerHandle devOpsServerHandle,
             BuildInfo productBuild, string suiteName,
             int testBuildId, string testBuildNumber,
             ILogger logger = null,
@@ -27,7 +26,7 @@ namespace SG.TestRunClientLib
                 ExtraData = extraData
             };
 
-            return await TestRunSessionAgent.CreateAsync(configuration,devOpsServerHandle, sessionRequest, logger);
+            return await TestRunSessionAgent.CreateAsync(configuration, sessionRequest, logger);
         }
     }
 }

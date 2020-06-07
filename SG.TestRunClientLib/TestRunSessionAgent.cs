@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.JsonPatch.Operations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SG.TestRunService.Common.Models;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +13,6 @@ namespace SG.TestRunClientLib
     public class TestRunSessionAgent
     {
         private readonly TestRunClient _client;
-        private readonly IDevOpsServerHandle _devOpsServerHandle;
         private readonly ITestRunClientConfiguration _configuration;
         private readonly TestRunSessionResponse _session;
         private readonly string _project;
@@ -29,13 +25,11 @@ namespace SG.TestRunClientLib
         private TestRunSessionAgent(
             TestRunClient client,
             ITestRunClientConfiguration configuration,
-            IDevOpsServerHandle devOpsServerHandle,
             TestRunSessionResponse session,
             ILogger logger)
         {
             _client = client;
             _configuration = configuration;
-            _devOpsServerHandle = devOpsServerHandle;
             _session = session;
             _project = session.ProductBuild.TeamProject;
             _logger = logger;
@@ -43,7 +37,6 @@ namespace SG.TestRunClientLib
 
         public static async Task<TestRunSessionAgent> CreateAsync(
             ITestRunClientConfiguration configuration,
-            IDevOpsServerHandle devOpsServerHandle,
             TestRunSessionRequest sessionRequest,
             ILogger logger = null)
         {
@@ -54,7 +47,7 @@ namespace SG.TestRunClientLib
             var response = await client.InsertSessionAsync(sessionRequest);
             logger.Debug("'TestRunSession' inserted: " + ObjToString(response));
 
-            return new TestRunSessionAgent(client, configuration, devOpsServerHandle, response, logger);
+            return new TestRunSessionAgent(client, configuration, response, logger);
         }
 
         public async Task IntroduceTestCasesAsync(IEnumerable<TestCaseRequest> tests)
@@ -72,7 +65,7 @@ namespace SG.TestRunClientLib
             }
         }
 
-        private async Task<string> GetBaseBuildSourceVersionAsync()
+        private async Task<BuildInfo> GetBaseBuildAsync()
         {
             var build = _session.ProductBuild;
             var lastUpdate = await _client.GetLastImpactUpdateAsync(build.AzureBuildDefinitionId);
@@ -82,10 +75,10 @@ namespace SG.TestRunClientLib
                 return null;
             }
             LogDebug("Previous update information:", lastUpdate);
-            return lastUpdate.ProductBuild.SourceVersion;
+            return lastUpdate.ProductBuild;
         }
 
-        public async Task<IReadOnlyList<TestCaseInfo>> GetTestsToRunAsync()
+        public async Task<IReadOnlyList<TestCaseInfo>> GetTestsToRunAsync(bool runAllTests = false)
         {
             if (_testCaseRequests == null)
                 throw new InvalidOperationException($"Test cases are not available. Call `{nameof(IntroduceTestCasesAsync)}` first.");
@@ -96,62 +89,24 @@ namespace SG.TestRunClientLib
                 return _testsToRun;
             }
 
-            var build = _session.ProductBuild;
-            var currentSourceVersion = build.SourceVersion;
-            var baseSourceVersion = await GetBaseBuildSourceVersionAsync();
-            if (baseSourceVersion == null)
+            var response = await _client.GetTestsToRun(_session.ProductBuild.AzureBuildDefinitionId, runAllTests);
+            var azureIdToTestCases = _testCaseRequests.ToDictionary(t => t.AzureTestCaseId);
+            var testsToRun = new List<TestCaseInfo>();
+            foreach (var tr in response)
             {
-                _logger.Info("This is the first test session for pipeline " + build.AzureBuildDefinitionId + ". All tests will be run.");
-                return await PublishNoChangeAndGetAllTestsAsync();
-            }
-            if (baseSourceVersion == currentSourceVersion)
-            {
-                _logger.Warn("This test session is being run for the same source version as the previous session: " + currentSourceVersion);
-            }
-            else if (!_devOpsServerHandle.IsChronologicallyAfter(currentSourceVersion, baseSourceVersion))
-            {
-                string message = $"Source version used for this test ({currentSourceVersion}) is older than the last test ran on this build definition ({baseSourceVersion}).";
-                _logger.Info(message);
-                _logger.Debug($"Deciding by configuration '{nameof(_configuration.RunForOlderVersionBeahvior)}': {_configuration.RunForOlderVersionBeahvior}");
-
-                switch (_configuration.RunForOlderVersionBeahvior)
+                if (azureIdToTestCases.TryGetValue(tr.AzureTestCaseId, out var testCase))
                 {
-                    case TestOlderVersionBehavior.Fail:
-                        throw new Exception(message);
-                    case TestOlderVersionBehavior.RunNotSuccessfulTests:
-                        return await PublishChangesAndGetTestsToRunAsync(Enumerable.Empty<string>());
-                    case TestOlderVersionBehavior.RunImpactedAndNotSuccessfulTests:
-                        // default behavior
-                        break;
-                    case TestOlderVersionBehavior.RunAllTests:
-                        return await PublishNoChangeAndGetAllTestsAsync();
-                    default:
-                        throw new NotSupportedException($"The value '{_configuration.RunForOlderVersionBeahvior}' for configuration '{nameof(_configuration.RunForOlderVersionBeahvior)}' is not valid.");
+                    testsToRun.Add(
+                        new TestCaseInfo(
+                            tr.TestCaseId, tr.AzureTestCaseId,
+                            testCase.Title, tr.RunReason));
                 }
             }
-            var changedFiles = _devOpsServerHandle.GetChangedFiles(
-                _project,
-                _session.ProductBuild.AzureBuildDefinitionId,
-                baseSourceVersion, currentSourceVersion);
-            LogChangedFiles(currentSourceVersion, baseSourceVersion, changedFiles);
-            return await PublishChangesAndGetTestsToRunAsync(changedFiles);
-        }
 
-        private void LogChangedFiles(string currentSourceVersion, string baseSourceVersion, IReadOnlyList<string> changedFiles)
-        {
-            if (_logger.IsEnabled)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine($"Changed files between source version {baseSourceVersion} and {currentSourceVersion}:");
-                sb.AppendLine("===============================================================================");
-                foreach (var c in changedFiles)
-                {
-                    sb.AppendLine(c);
-                }
-                sb.AppendLine("===============================================================================");
-                _logger.Info(sb.ToString());
-                _logger.Info("Total changed files: " + changedFiles.Count);
-            }
+            LogTestsToRun(testsToRun);
+
+            _testsToRun = testsToRun;
+            return _testsToRun;
         }
 
         public async Task<IReadOnlyList<TestRunResponse>> RecordSessionTestsAsync(IReadOnlyCollection<TestCaseInfo> testCases)
@@ -244,10 +199,10 @@ namespace SG.TestRunClientLib
             List<CodeSignature> codeSignatures = new List<CodeSignature>();
             if (impactFiles != null)
                 codeSignatures.AddRange(
-                    impactFiles.Select(f => new CodeSignature(f, CalculateSignature(f), CodeSignatureType.File)));
+                    impactFiles.Select(f => new CodeSignature(f, CodeSignatureUtils.CalculateSignature(f), CodeSignatureType.File)));
             if (impactMethods != null)
                 codeSignatures.AddRange(
-                    impactMethods.Select(f => new CodeSignature(f, CalculateSignature(f), CodeSignatureType.Method)));
+                    impactMethods.Select(f => new CodeSignature(f, CodeSignatureUtils.CalculateSignature(f), CodeSignatureType.Method)));
 
             var impactRequest = new TestCaseImpactUpdateRequest()
             {
@@ -321,72 +276,6 @@ namespace SG.TestRunClientLib
         {
             var patch = HttpHelper.CreateJsonPatchToAddOrUpdateExtraData<TestRunRequest>(extraDataValues);
             await _client.PatchTestRunAsync(_session.Id, runId, patch);
-        }
-
-        private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRunAsync(IEnumerable<string> changedFilesOrMethods)
-        {
-            PublishImpactChangesRequest req = new PublishImpactChangesRequest()
-            {
-                AzureProductBuildDefinitionId = _session.ProductBuild.AzureBuildDefinitionId,
-                AzureProductBuildId = _session.ProductBuild.AzureBuildId,
-                CodeSignatures = changedFilesOrMethods.Select(CalculateSignature).ToList()
-            };
-            return await PublishChangesAndGetTestsToRunAsync(req);
-        }
-
-        public async Task<IReadOnlyList<TestCaseInfo>> PublishNoChangeAndGetAllTestsAsync()
-        {
-            PublishImpactChangesRequest req = new PublishImpactChangesRequest()
-            {
-                AzureProductBuildDefinitionId = _session.ProductBuild.AzureBuildDefinitionId,
-                TestRunSessionId = _session.Id,
-                RunAllTests = true
-            };
-            return await PublishChangesAndGetTestsToRunAsync(req);
-        }
-
-        private async Task<IReadOnlyList<TestCaseInfo>> PublishChangesAndGetTestsToRunAsync(PublishImpactChangesRequest req)
-        {
-            LogDebug("Publishing changes to the service and updating last states of tests...");
-            if (req.RunAllTests)
-                LogDebug("Running all tests ('RunAllTests' is set to true)");
-
-            var response = await _client.PublishImpactChangesAsync(req);
-
-            var testsToRun = new List<TestCaseInfo>();
-            var azureIdToTestCases = _testCaseRequests.ToDictionary(t => t.AzureTestCaseId);
-            foreach (var tr in response.TestsToRun)
-            {
-                if (azureIdToTestCases.TryGetValue(tr.AzureTestCaseId, out var testCase))
-                {
-                    testsToRun.Add(
-                        new TestCaseInfo(
-                            tr.TestCaseId, tr.AzureTestCaseId,
-                            testCase.Title, tr.RunReason));
-                }
-            }
-
-            LogTestsToRun(testsToRun);
-
-            _testsToRun = testsToRun;
-            return _testsToRun;
-        }
-
-        private string CalculateSignature(string value)
-        {
-            var sha1 = new SHA1CryptoServiceProvider();
-            var hash = sha1.ComputeHash(Encoding.Unicode.GetBytes(value));
-            return GetBytesHexString(hash);
-        }
-
-        private string GetBytesHexString(byte[] bytes)
-        {
-            StringBuilder builder = new StringBuilder(bytes.Length * 2);
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                builder.Append(bytes[i].ToString("X2", CultureInfo.InvariantCulture));
-            }
-            return builder.ToString();
         }
 
         private void LogDebug(string text, object obj = null)

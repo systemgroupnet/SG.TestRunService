@@ -11,11 +11,12 @@ namespace SG.TestRunService.Services
     {
         Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastImpactUpdatesAsync();
         Task<LastImpactUpdateResponse> GetLastImpactUpdateAsync(int azureProductBuildDefId);
-        Task<(IReadOnlyList<TestToRunResponse>, ServiceError)> PublishImpactChangesAsync(PublishImpactChangesRequest request);
+        Task<(PublishImpactChangesResponse, ServiceError)> PublishImpactChangesAsync(PublishImpactChangesRequest request);
         Task UpdateTestCaseImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request);
         Task<ServiceError> UpdateTestLastStateAsync(int testCaseId, TestLastStateUpdateRequest lastStateUpdateRequest);
         Task<IReadOnlyList<TestLastStateResponse>> GetTestLastStatesAsync(int testCaseId);
         Task<LastImpactUpdateResponse> DeleteLastImpactUpdateAsync(int azureProductBuildDefId);
         Task<TestLastStateResponse> DeleteTestLastStateAsync(int testCaseId, int azureProductBuildDefId);
+        Task<IReadOnlyCollection<TestToRunResponse>> GetTestsToRun(int azureBuildDefinitionId, bool allTests = false);
     }
 }

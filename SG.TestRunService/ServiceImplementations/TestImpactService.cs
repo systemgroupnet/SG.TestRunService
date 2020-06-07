@@ -15,12 +15,10 @@ namespace SG.TestRunService.ServiceImplementations
     public class TestImpactService : ITestImpactService
     {
         private readonly IBaseDbService _dbService;
-        readonly IConfiguration _configuration;
 
-        public TestImpactService(IBaseDbService dbService, IConfiguration configuration)
+        public TestImpactService(IBaseDbService dbService)
         {
             _dbService = dbService;
-            _configuration = configuration;
         }
 
         public async Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastImpactUpdatesAsync()
@@ -54,7 +52,7 @@ namespace SG.TestRunService.ServiceImplementations
             return lastImpactUpdate.ToResponse();
         }
 
-        public async Task<(IReadOnlyList<TestToRunResponse>, ServiceError)>  PublishImpactChangesAsync(PublishImpactChangesRequest request)
+        public async Task<(PublishImpactChangesResponse, ServiceError)>  PublishImpactChangesAsync(PublishImpactChangesRequest request)
         {
             var lastUpdate = await GetLastImpactUpdateInternal(request.AzureProductBuildDefinitionId, e => e);
             if (lastUpdate == null)
@@ -85,27 +83,18 @@ namespace SG.TestRunService.ServiceImplementations
 
             int azureBuildDefId = buildInfo.AzureBuildDefinitionId;
 
-            var tlsUpdater = new ImpactedTestsFinder(_dbService, _configuration, buildInfo);
-            IReadOnlyCollection<TestToRun> testsToRun;
-            if (request.RunAllTests)
+            var tlsUpdater = new ImpactedTestUpdater(_dbService, buildInfo);
+            PublishImpactChangesResponse response = null;
+            if (request.NoBaseBuild)
             {
-                testsToRun = await tlsUpdater.UpdateAndGetAllTestsToRun();
+                await tlsUpdater.UpdateToNoBaseBuild();
             }
             else
             {
                 if (request.CodeSignatures == null)
                     return (null, new ServiceError(ServiceErrorCategory.BadRequest, "Code signatures are missing."));
-                testsToRun = await tlsUpdater.UpdateAndGetTestsToRun(request.CodeSignatures);
+                response = await tlsUpdater.UpdateImpactedTests(request.CodeSignatures);
             }
-            var response = testsToRun
-                .Select(t =>
-                    new TestToRunResponse()
-                    {
-                        TestCaseId = t.TestLastState.TestCaseId,
-                        AzureTestCaseId = t.AzureTestCaseId,
-                        RunReason = t.RunReason
-                    })
-                .ToList();
             await _dbService.SaveChangesAsync();
             return (response, ServiceError.NoError());
         }
@@ -273,6 +262,39 @@ namespace SG.TestRunService.ServiceImplementations
                 return null;
             await _dbService.DeleteAsync(lastState);
             return lastState.ToResponse();
+        }
+
+        public async Task<IReadOnlyCollection<TestToRunResponse>> GetTestsToRun(
+            int azureBuildDefinitionId, bool allTests = false)
+        {
+            var testLastStates = _dbService
+                .Query<TestLastState>(tl =>
+                    tl.AzureProductBuildDefinitionId == azureBuildDefinitionId &&
+                    tl.ShouldBeRun);
+
+            IQueryable<TestToRunResponse> testsToRun;
+            if (allTests)
+                testsToRun =
+                    from tc in _dbService.Query<TestCase>()
+                    join l in testLastStates on tc.Id equals l.TestCaseId into lj
+                    from l in lj.DefaultIfEmpty()
+                    select new TestToRunResponse()
+                    {
+                        TestCaseId = tc.Id,
+                        AzureTestCaseId = tc.AzureTestCaseId,
+                        RunReason = l.RunReason ?? RunReason.ForceRun
+                    };
+            else
+                testsToRun =
+                    from l in testLastStates
+                    select new TestToRunResponse()
+                    {
+                        TestCaseId = l.TestCaseId,
+                        AzureTestCaseId = l.TestCase.AzureTestCaseId,
+                        RunReason = l.RunReason.Value
+                    };
+
+            return await testsToRun.ToListAsync();
         }
     }
 }
