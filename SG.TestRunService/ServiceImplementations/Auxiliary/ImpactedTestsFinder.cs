@@ -26,7 +26,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             _azureBuildDefId = _buildInfo.AzureBuildDefinitionId;
         }
 
-        public async Task<IReadOnlyList<TestToRun>> UpdateAndGetTestsToRun(IReadOnlyList<string> changedCodeSignatures)
+        public async Task<IReadOnlyList<TestToRun>> UpdateAndGetTestsToRun(IEnumerable<string> changedCodeSignatures)
         {
             var testImpactQueryMethodConfig = _configuration["testImpact:query"];
             bool runInMemory = testImpactQueryMethodConfig?.Contains("memory", StringComparison.OrdinalIgnoreCase) ?? false;
@@ -60,6 +60,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             return currentLastStates.Concat(newTestsToRun).ToList();
         }
 
+
         private IQueryable<TestLastState> GetTestLastStates()
         {
             return _dbService.Query<TestLastState>(tl =>
@@ -67,7 +68,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         }
 
         private async Task<List<TestToRun>> UseDbQueryToFindTestsToRun(
-                IReadOnlyList<string> changedCodeSignatures)
+                IEnumerable<string> changedCodeSignatures)
         {
             var impactItems = _dbService
                 .Query<TestCaseImpactItem>()
@@ -96,7 +97,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         }
 
         private async Task<List<TestToRun>> FetchToMemeoryAndFindTestsToRun(
-                IReadOnlyList<string> changedCodeSignatures)
+                IEnumerable<string> changedCodeSignatures)
         {
             var impactedTestsLastStates = new List<TestLastState>();
 

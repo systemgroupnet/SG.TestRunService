@@ -93,12 +93,9 @@ namespace SG.TestRunService.ServiceImplementations
             }
             else
             {
-#pragma warning disable 618
-                var signatures = (request.CodeSignatures ?? request.Changes?.Select(c => c.Signature))?.ToList();
-#pragma warning restore 618
-                if (signatures == null)
+                if (request.CodeSignatures == null)
                     return (null, new ServiceError(ServiceErrorCategory.BadRequest, "Code signatures are missing."));
-                testsToRun = await tlsUpdater.UpdateAndGetTestsToRun(signatures);
+                testsToRun = await tlsUpdater.UpdateAndGetTestsToRun(request.CodeSignatures);
             }
             var response = testsToRun
                 .Select(t =>
