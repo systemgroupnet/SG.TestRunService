@@ -59,7 +59,7 @@ namespace SG.TestRunClientLib
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
                 AzureProductBuildDefinitionId = _build.AzureBuildDefinitionId,
-                AzureProductBuildId = _build.AzureBuildId,
+                ProductBuild = _build,
                 CodeSignatures = new List<string>(),
                 NoBaseBuild = true
             };
@@ -71,7 +71,7 @@ namespace SG.TestRunClientLib
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
                 AzureProductBuildDefinitionId = _build.AzureBuildDefinitionId,
-                AzureProductBuildId = _build.AzureBuildId,
+                ProductBuild = _build,
                 CodeSignatures = changedFilesOrMethods.Select(CodeSignatureUtils.CalculateSignature).ToList()
             };
             return await PublishChanges(req);

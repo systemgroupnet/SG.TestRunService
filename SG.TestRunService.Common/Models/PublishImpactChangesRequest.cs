@@ -10,6 +10,6 @@ namespace SG.TestRunService.Common.Models
         public IEnumerable<string> CodeSignatures { get; set; }
         public bool NoBaseBuild { get; set; }
         public int? TestRunSessionId { get; set; }
-        public int? AzureProductBuildId { get; set; }
+        public BuildInfo ProductBuild { get; set; }
     }
 }

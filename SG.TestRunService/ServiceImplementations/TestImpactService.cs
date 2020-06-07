@@ -71,10 +71,24 @@ namespace SG.TestRunService.ServiceImplementations
                     .Query<TestRunSession>(id: request.TestRunSessionId.Value)
                     .Select(s => s.ProductBuildInfo)
                     .FirstAsync();
-            else if (request.AzureProductBuildId.HasValue)
+            else if (request.ProductBuild != null)
+            {
                 buildInfo = await _dbService
-                    .Query<Data.BuildInfo>().Where(b => b.AzureBuildId == request.AzureProductBuildId.Value)
+                    .Query<Data.BuildInfo>().Where(b => b.AzureBuildId == request.ProductBuild.AzureBuildId)
                     .FirstAsync();
+                if (buildInfo == null)
+                {
+                    if (request.ProductBuild.AzureBuildDefinitionId == default)
+                        request.ProductBuild.AzureBuildDefinitionId = request.AzureProductBuildDefinitionId;
+                    if (string.IsNullOrEmpty(request.ProductBuild.SourceVersion))
+                        return (null, ServiceError.BadRequest($"Required value `{nameof(request.ProductBuild)}.{nameof(request.ProductBuild.SourceVersion)}` is missing."));
+                    if(string.IsNullOrEmpty(request.ProductBuild.BuildNumber))
+                        return (null, ServiceError.BadRequest($"Required value `{nameof(request.ProductBuild)}.{nameof(request.ProductBuild.BuildNumber)}` is missing."));
+
+                    buildInfo = request.ProductBuild.ToDataModel();
+                    await _dbService.InsertAsync(buildInfo);
+                }
+            }
             else
                 throw new ArgumentException("`PublishImpactChangesRequest.BuildInfoId` is not set.");
 
