@@ -123,7 +123,7 @@ namespace SG.TestRunClientLib
 
         private void LogImpactedTests(Dictionary<string, string> codeSignaturesDict, PublishImpactChangesResponse response)
         {
-            if(response.ImpactedTests.Count == 0)
+            if (response.ImpactedTests.Count == 0)
             {
                 _logger.Debug("No test impacted.");
                 return;
@@ -131,19 +131,39 @@ namespace SG.TestRunClientLib
 
             StringBuilder msg = new StringBuilder();
             int delimCount = 15;
-            msg.AppendLine().Append('=', delimCount).Append("  Impact Information  ").Append('=', delimCount);
-            msg.AppendLine();
+            var header = new StringBuilder()
+                .Append('=', delimCount).Append("  Impact Information  ").Append('=', delimCount)
+                .ToString();
+
+            msg.AppendLine().AppendLine(header);
 
             var testCasesDict = response.ImpactedTests.ToDictionary(it => it.TestCaseId, it => it.AzureTestCaseId);
-            foreach(var cs in response.CodeSignatureImpactedTestCaseIds)
+            foreach (var cs in response.CodeSignatureImpactedTestCaseIds)
             {
                 var path = codeSignaturesDict[cs.Key];
                 var azureTestCaseIds = cs.Value.Select(id => testCasesDict[id]).ToList();
 
                 msg.AppendLine(
-                    $"{cs.Key}  \"{path}\" - {azureTestCaseIds.Count} test cases ({string.Join(", ", azureTestCaseIds)})");
+                    $"{cs.Key}  \"{path}\" - {azureTestCaseIds.Count} test cases:");
+                AppendTestCases(msg, azureTestCaseIds);
             }
-            msg.Append('=', delimCount * 2).AppendLine();
+            msg.Append('=', header.Length).AppendLine();
+        }
+
+        private void AppendTestCases(StringBuilder sb, IReadOnlyList<int> testCaseIds)
+        {
+            for (int i = 0; i < testCaseIds.Count; i++)
+            {
+                if (i > 0)
+                {
+                    if (i % 1000 == 0)
+                        sb.AppendLine(",");
+                    else
+                        sb.Append(", ");
+                }
+                sb.Append(testCaseIds[i]);
+            }
+            sb.AppendLine();
         }
 
         private void LogDebug(string text, object obj = null)
