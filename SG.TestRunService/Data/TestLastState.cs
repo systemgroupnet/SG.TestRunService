@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SG.TestRunService.Data
 {
@@ -29,5 +30,22 @@ namespace SG.TestRunService.Data
 
         [OnDelete(DeleteBehavior.Restrict)]
         public BuildInfo ProductBuildInfo { get; set; }
+
+        public class IDEqulityComparer : IEqualityComparer<TestLastState>
+        {
+            public bool Equals([AllowNull] TestLastState x, [AllowNull] TestLastState y)
+            {
+                if (object.ReferenceEquals(x, y))
+                    return true;
+                if (x == null || y == null)
+                    return false;
+                return x.Id == y.Id;
+            }
+
+            public int GetHashCode([DisallowNull] TestLastState obj)
+            {
+                return obj.Id.GetHashCode();
+            }
+        }
     }
 }

@@ -44,7 +44,10 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                     })
                     .ToListAsync();
 
-            var testLastStates = signaturesAndImpactedTests.Select(s => s.TestLastState).Distinct().ToList();
+            var testLastStates = signaturesAndImpactedTests
+                .Select(s => s.TestLastState)
+                .Distinct(new TestLastState.IDEqulityComparer())
+                .ToList();
             UpdateLastStateToImpacted(testLastStates);
 
             var impactedTests = signaturesAndImpactedTests
@@ -54,6 +57,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                         TestCaseId = s.TestCaseId,
                         AzureTestCaseId = s.AzureTestCaseId
                     })
+                .Distinct()
                 .ToList();
 
             var codeSignatureTests = signaturesAndImpactedTests
