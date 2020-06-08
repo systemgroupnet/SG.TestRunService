@@ -148,6 +148,7 @@ namespace SG.TestRunClientLib
                 AppendTestCases(msg, azureTestCaseIds);
             }
             msg.Append('=', header.Length).AppendLine();
+            _logger.Debug(msg.ToString());
         }
 
         private void AppendTestCases(StringBuilder sb, IReadOnlyList<int> testCaseIds)
