@@ -75,7 +75,7 @@ namespace SG.TestRunService.ServiceImplementations
             {
                 buildInfo = await _dbService
                     .Query<Data.BuildInfo>().Where(b => b.AzureBuildId == request.ProductBuild.AzureBuildId)
-                    .FirstAsync();
+                    .FirstOrDefaultAsync();
                 if (buildInfo == null)
                 {
                     if (request.ProductBuild.AzureBuildDefinitionId == default)
