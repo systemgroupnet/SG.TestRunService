@@ -49,7 +49,7 @@ namespace SG.TestRunClientLib
             else
             {
                 var changedFiles = await _devOpsServerHandle.GetBuildChangesAsync(baseBuild, _build);
-                LogChangedFiles(currentSourceVersion, baseSourceVersion, changedFiles);
+                LogChanges(currentSourceVersion, baseSourceVersion, changedFiles);
                 return await PublishChanges(changedFiles);
             }
         }
@@ -68,13 +68,16 @@ namespace SG.TestRunClientLib
 
         private async Task<PublishImpactChangesResponse> PublishChanges(IEnumerable<string> changedFilesOrMethods)
         {
+            var codeSignaturesDict = changedFilesOrMethods.ToDictionary(CodeSignatureUtils.CalculateSignature);
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
                 AzureProductBuildDefinitionId = _build.AzureBuildDefinitionId,
                 ProductBuild = _build,
-                CodeSignatures = changedFilesOrMethods.Select(CodeSignatureUtils.CalculateSignature).ToList()
+                CodeSignatures = codeSignaturesDict.Keys
             };
-            return await PublishChanges(req);
+            var response = await PublishChanges(req);
+            LogImpactedTests(codeSignaturesDict, response);
+            return response;
         }
 
         private async Task<PublishImpactChangesResponse> PublishChanges(PublishImpactChangesRequest req)
@@ -101,21 +104,46 @@ namespace SG.TestRunClientLib
             return lastUpdate.ProductBuild;
         }
 
-        private void LogChangedFiles(string currentSourceVersion, string baseSourceVersion, IReadOnlyList<string> changedFiles)
+        private void LogChanges(string currentSourceVersion, string baseSourceVersion, IReadOnlyList<string> changes)
         {
             if (_logger.IsEnabled)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendLine($"Changed files between source version {baseSourceVersion} and {currentSourceVersion}:");
+                sb.AppendLine($"Changed files or methods between source version {baseSourceVersion} and {currentSourceVersion}:");
                 sb.AppendLine("===============================================================================");
-                foreach (var c in changedFiles)
+                foreach (var c in changes)
                 {
                     sb.AppendLine(c);
                 }
                 sb.AppendLine("===============================================================================");
                 _logger.Info(sb.ToString());
-                _logger.Info("Total changed files: " + changedFiles.Count);
+                _logger.Info("Total changed files: " + changes.Count);
             }
+        }
+
+        private void LogImpactedTests(Dictionary<string, string> codeSignaturesDict, PublishImpactChangesResponse response)
+        {
+            if(response.ImpactedTests.Count == 0)
+            {
+                _logger.Debug("No test impacted.");
+                return;
+            }
+
+            StringBuilder msg = new StringBuilder();
+            int delimCount = 15;
+            msg.AppendLine().Append('=', delimCount).Append("  Impact Information  ").Append('=', delimCount);
+            msg.AppendLine();
+
+            var testCasesDict = response.ImpactedTests.ToDictionary(it => it.TestCaseId, it => it.AzureTestCaseId);
+            foreach(var cs in response.CodeSignatureImpactedTestCaseIds)
+            {
+                var path = codeSignaturesDict[cs.Key];
+                var azureTestCaseIds = cs.Value.Select(id => testCasesDict[id]).ToList();
+
+                msg.AppendLine(
+                    $"{cs.Key}  \"{path}\" - {azureTestCaseIds.Count} test cases ({string.Join(", ", azureTestCaseIds)})");
+            }
+            msg.Append('=', delimCount * 2).AppendLine();
         }
 
         private void LogDebug(string text, object obj = null)
