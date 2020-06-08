@@ -34,14 +34,14 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
 
             var signaturesAndImpactedTests = await
                     (from ii in impactItems
-                    join tl in GetTestLastStates() on ii.TestCaseId equals tl.TestCaseId
-                    select new
-                    {
-                        ii.CodeSignature.Signature,
-                        ii.TestCaseId,
-                        TestLastState = tl,
-                        tl.TestCase.AzureTestCaseId
-                    })
+                     join tl in GetTestLastStates() on ii.TestCaseId equals tl.TestCaseId
+                     select new
+                     {
+                         ii.CodeSignature.Signature,
+                         ii.TestCaseId,
+                         TestLastState = tl,
+                         tl.TestCase.AzureTestCaseId
+                     })
                     .ToListAsync();
 
             var testLastStates = signaturesAndImpactedTests

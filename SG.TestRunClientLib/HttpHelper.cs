@@ -14,7 +14,7 @@ namespace SG.TestRunClientLib
             where TModel : class, IExtraDataContainer
         {
             var patch = new JsonPatchDocument<TModel>();
-            foreach(var keyValue in extraData)
+            foreach (var keyValue in extraData)
             {
                 patch.Operations.Add(
                     new Operation<TModel>()

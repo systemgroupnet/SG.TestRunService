@@ -82,7 +82,7 @@ namespace SG.TestRunService.ServiceImplementations
                         request.ProductBuild.AzureBuildDefinitionId = request.AzureProductBuildDefinitionId;
                     if (string.IsNullOrEmpty(request.ProductBuild.SourceVersion))
                         return (null, ServiceError.BadRequest($"Required value `{nameof(request.ProductBuild)}.{nameof(request.ProductBuild.SourceVersion)}` is missing."));
-                    if(string.IsNullOrEmpty(request.ProductBuild.BuildNumber))
+                    if (string.IsNullOrEmpty(request.ProductBuild.BuildNumber))
                         return (null, ServiceError.BadRequest($"Required value `{nameof(request.ProductBuild)}.{nameof(request.ProductBuild.BuildNumber)}` is missing."));
 
                     buildInfo = request.ProductBuild.ToDataModel();

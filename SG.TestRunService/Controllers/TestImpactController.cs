@@ -50,7 +50,7 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpGet("testsToRun")]
-        public async Task<IActionResult> GetTestsToRun([FromQuery]int? azureBuildDefinitionId, bool? allTests)
+        public async Task<IActionResult> GetTestsToRun([FromQuery] int? azureBuildDefinitionId, bool? allTests)
         {
             if (azureBuildDefinitionId == null)
                 return BadRequest($"Query string parameter missing: \"{nameof(azureBuildDefinitionId)}\"");
