@@ -68,7 +68,7 @@ namespace SG.TestRunClientLib
 
         private async Task<PublishImpactChangesResponse> PublishChanges(IEnumerable<string> changedFilesOrMethods)
         {
-            var codeSignaturesDict = changedFilesOrMethods.ToDictionary(CodeSignatureUtils.CalculateSignature);
+            var codeSignaturesDict = changedFilesOrMethods.Distinct().ToDictionary(CodeSignatureUtils.CalculateSignature);
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
                 AzureProductBuildDefinitionId = _build.AzureBuildDefinitionId,
