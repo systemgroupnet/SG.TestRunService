@@ -52,7 +52,9 @@ namespace SG.TestRunService
                                       "http://srv-framework",
                                       "https://srv-framework",
                                       "http://alborzscm",
-                                      "https://alborzscm"
+                                      "https://alborzscm",
+                                      "http://alborzscm:8080",
+                                      "https://alborzscm:8080"
                                   })
                                   .AllowAnyMethod()
                                   .AllowAnyHeader());
