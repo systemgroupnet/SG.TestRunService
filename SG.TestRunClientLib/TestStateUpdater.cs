@@ -30,12 +30,12 @@ namespace SG.TestRunClientLib
         {
             var currentSourceVersion = _build.SourceVersion;
             var baseBuild = await GetBaseBuildAsync();
-            var baseSourceVersion = baseBuild.SourceVersion;
-            if (baseSourceVersion == null)
+            if (baseBuild == null)
             {
                 _logger.Info("This is the first test session for pipeline " + _build.AzureBuildDefinitionId + ". All tests will be run.");
                 return await PublishNoBaseBuild();
             }
+            var baseSourceVersion = baseBuild.SourceVersion;
             if (baseSourceVersion == currentSourceVersion)
             {
                 _logger.Warn("This test session is being run for the same source version as the previous session: " + currentSourceVersion);
