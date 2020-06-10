@@ -115,9 +115,9 @@ namespace SG.TestRunClientLib
                 {
                     sb.AppendLine(c);
                 }
-                sb.AppendLine("===============================================================================");
+                sb.Append("===============================================================================");
                 _logger.Info(sb.ToString());
-                _logger.Info("Total changed files: " + changes.Count);
+                _logger.Info("Total changed files/methods: " + changes.Count + "\r\n");
             }
         }
 
@@ -125,7 +125,7 @@ namespace SG.TestRunClientLib
         {
             if (response.ImpactedTests.Count == 0)
             {
-                _logger.Debug("No test impacted.");
+                _logger.Debug("No tests impacted.");
                 return;
             }
 
