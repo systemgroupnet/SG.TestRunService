@@ -86,13 +86,13 @@ namespace SG.TestRunService.ServiceImplementations
                         return (null, ServiceError.BadRequest($"Required value `{nameof(request.ProductBuild)}.{nameof(request.ProductBuild.BuildNumber)}` is missing."));
 
                     buildInfo = request.ProductBuild.ToDataModel();
-                    await _dbService.InsertAsync(buildInfo);
+                    _dbService.Add(buildInfo);
                 }
             }
             else
                 throw new ArgumentException("`PublishImpactChangesRequest.BuildInfoId` is not set.");
 
-            lastUpdate.ProductBuildInfoId = buildInfo.Id;
+            lastUpdate.ProductBuildInfo = buildInfo;
             lastUpdate.UpdateDate = DateTime.Now;
 
             int azureBuildDefId = buildInfo.AzureBuildDefinitionId;
