@@ -39,19 +39,15 @@ namespace SG.TestRunClientLib
             if (baseSourceVersion == currentSourceVersion)
             {
                 _logger.Warn("This test session is being run for the same source version as the previous session: " + currentSourceVersion);
-                return await PublishChanges(Enumerable.Empty<string>());
             }
             else if (!_devOpsServerHandle.IsChronologicallyAfter(currentSourceVersion, baseSourceVersion))
             {
                 _logger.Info($"Source version used for this test ({currentSourceVersion}) is older than the last test ran on this build definition ({baseSourceVersion}). Nothing to update.");
                 return PublishImpactChangesResponse.Empty();
             }
-            else
-            {
-                var changedFiles = await _devOpsServerHandle.GetBuildChangesAsync(baseBuild, _build);
-                LogChanges(currentSourceVersion, baseSourceVersion, changedFiles);
-                return await PublishChanges(changedFiles);
-            }
+            var changes = await _devOpsServerHandle.GetBuildChangesAsync(baseBuild, _build);
+            LogChanges(baseBuild, _build, changes);
+            return await PublishChanges(changes);
         }
 
         public async Task<PublishImpactChangesResponse> PublishNoBaseBuild()
@@ -104,12 +100,12 @@ namespace SG.TestRunClientLib
             return lastUpdate.ProductBuild;
         }
 
-        private void LogChanges(string currentSourceVersion, string baseSourceVersion, IReadOnlyList<string> changes)
+        private void LogChanges(BuildInfo baseBuild, BuildInfo currentBuild, IReadOnlyList<string> changes)
         {
             if (_logger.IsEnabled)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendLine($"Changed files or methods between source version {baseSourceVersion} and {currentSourceVersion}:");
+                sb.AppendLine($"Changed files or methods between build {baseBuild.BuildNumber} (version {baseBuild.SourceVersion}) and {currentBuild.BuildNumber} (version {currentBuild.SourceVersion}):");
                 sb.AppendLine("===============================================================================");
                 foreach (var c in changes)
                 {
