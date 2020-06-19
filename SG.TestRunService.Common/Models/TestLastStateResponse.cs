@@ -9,9 +9,11 @@ namespace SG.TestRunService.Common.Models
         public int TestCaseId { get; set; }
         public int AzureProductBuildDefinitionId { get; set; }
 
-        public BuildInfo ProductBuildInfo { get; set; }
-        public DateTime UpdateDate { get; set; }
-        public TestRunOutcome? LastOutcome { get; set; }
+        public TestRunOutcome LastOutcome { get; set; }
+        public BuildInfo LastOutcomeProductBuildInfo { get; set; }
+        public DateTime LastOutcomeDate { get; set; }
+        public BuildInfo LastImpactedProductBuildInfo { get; set; }
+        public DateTime? LastImpactedDate { get; set; }
         public bool ShouldBeRun { get; set; }
         public RunReason? RunReason { get; set; }
     }

@@ -250,8 +250,8 @@ namespace SG.TestRunService.ServiceImplementations
                 default:
                     return ServiceError.UnprocessableEntity("Invalid outcome: " + outcome);
             }
-            testLastState.UpdateDate = DateTime.Now;
-            testLastState.ProductBuildInfoId = productBuildInfoId;
+            testLastState.LastOutcomeDate = DateTime.Now;
+            testLastState.LastOutcomeProductBuildInfoId = productBuildInfoId;
 
             await _dbService.SaveChangesAsync();
             return ServiceError.NoError();

@@ -93,8 +93,8 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             var now = DateTime.Now;
             foreach (var state in testLastStates)
             {
-                state.UpdateDate = now;
-                state.ProductBuildInfo = _buildInfo;
+                state.LastImpactedDate = now;
+                state.LastImpactedProductBuildInfo = _buildInfo;
                 state.ShouldBeRun = true;
                 state.RunReason = runReason;
             }

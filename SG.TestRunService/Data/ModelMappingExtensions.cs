@@ -375,23 +375,33 @@ namespace SG.TestRunService.Common.Models
 
         public static IQueryable<TestLastStateResponse> Project(this IQueryable<TestLastState> lastStates)
         {
-            return lastStates.Select(l => new TestLastStateResponse()
+            return lastStates.Select(lastState => new TestLastStateResponse()
             {
-                TestCaseId = l.TestCaseId,
-                AzureProductBuildDefinitionId = l.AzureProductBuildDefinitionId,
-                ProductBuildInfo = new BuildInfo()
+                TestCaseId = lastState.TestCaseId,
+                AzureProductBuildDefinitionId = lastState.AzureProductBuildDefinitionId,
+                LastOutcome = lastState.LastOutcome,
+                LastOutcomeProductBuildInfo = new BuildInfo()
                 {
-                    TeamProject = l.ProductBuildInfo.TeamProject,
-                    AzureBuildDefinitionId = l.ProductBuildInfo.AzureBuildDefinitionId,
-                    AzureBuildId = l.ProductBuildInfo.AzureBuildId,
-                    SourceVersion = l.ProductBuildInfo.SourceVersion,
-                    Date = l.ProductBuildInfo.Date,
-                    BuildNumber = l.ProductBuildInfo.BuildNumber
+                    TeamProject = lastState.LastOutcomeProductBuildInfo.TeamProject,
+                    AzureBuildDefinitionId = lastState.LastOutcomeProductBuildInfo.AzureBuildDefinitionId,
+                    AzureBuildId = lastState.LastOutcomeProductBuildInfo.AzureBuildId,
+                    SourceVersion = lastState.LastOutcomeProductBuildInfo.SourceVersion,
+                    Date = lastState.LastOutcomeProductBuildInfo.Date,
+                    BuildNumber = lastState.LastOutcomeProductBuildInfo.BuildNumber
                 },
-                UpdateDate = l.UpdateDate,
-                LastOutcome = l.LastOutcome,
-                ShouldBeRun = l.ShouldBeRun,
-                RunReason = l.RunReason
+                LastOutcomeDate = lastState.LastOutcomeDate,
+                LastImpactedProductBuildInfo = new BuildInfo()
+                {
+                    TeamProject = lastState.LastImpactedProductBuildInfo.TeamProject,
+                    AzureBuildDefinitionId = lastState.LastImpactedProductBuildInfo.AzureBuildDefinitionId,
+                    AzureBuildId = lastState.LastImpactedProductBuildInfo.AzureBuildId,
+                    SourceVersion = lastState.LastImpactedProductBuildInfo.SourceVersion,
+                    Date = lastState.LastImpactedProductBuildInfo.Date,
+                    BuildNumber = lastState.LastImpactedProductBuildInfo.BuildNumber
+                },
+                LastImpactedDate = lastState.LastImpactedDate,
+                ShouldBeRun = lastState.ShouldBeRun,
+                RunReason = lastState.RunReason
             });
         }
 
@@ -401,11 +411,13 @@ namespace SG.TestRunService.Common.Models
             {
                 TestCaseId = testLastState.TestCaseId,
                 AzureProductBuildDefinitionId = testLastState.AzureProductBuildDefinitionId,
-                UpdateDate = testLastState.UpdateDate,
                 LastOutcome = testLastState.LastOutcome,
+                LastOutcomeProductBuildInfo = testLastState.LastOutcomeProductBuildInfo.ToDto(),
+                LastOutcomeDate = testLastState.LastOutcomeDate,
+                LastImpactedProductBuildInfo = testLastState.LastImpactedProductBuildInfo?.ToDto(),
+                LastImpactedDate = testLastState.LastImpactedDate,
                 ShouldBeRun = testLastState.ShouldBeRun,
-                RunReason = testLastState.RunReason,
-                ProductBuildInfo = testLastState.ProductBuildInfo?.ToDto()
+                RunReason = testLastState.RunReason
             };
         }
 

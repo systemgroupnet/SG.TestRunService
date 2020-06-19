@@ -15,10 +15,11 @@ namespace SG.TestRunService.Data
         public int TestCaseId { get; set; }
         public int AzureProductBuildDefinitionId { get; set; }
 
-        public int ProductBuildInfoId { get; set; }
-
-        public DateTime UpdateDate { get; set; }
-        public TestRunOutcome? LastOutcome { get; set; }
+        public TestRunOutcome LastOutcome { get; set; }
+        public int LastOutcomeProductBuildInfoId { get; set; }
+        public DateTime LastOutcomeDate { get; set; }
+        public int? LastImpactedProductBuildInfoId { get; set; }
+        public DateTime? LastImpactedDate { get; set; }
         public bool ShouldBeRun { get; set; }
         public RunReason? RunReason { get; set; }
 
@@ -29,7 +30,10 @@ namespace SG.TestRunService.Data
         public TestCase TestCase { get; set; }
 
         [OnDelete(DeleteBehavior.Restrict)]
-        public BuildInfo ProductBuildInfo { get; set; }
+        public BuildInfo LastOutcomeProductBuildInfo { get; set; }
+
+        [OnDelete(DeleteBehavior.Restrict)]
+        public BuildInfo LastImpactedProductBuildInfo { get; set; }
 
         public class IDEqulityComparer : IEqualityComparer<TestLastState>
         {
