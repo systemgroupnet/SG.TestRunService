@@ -218,7 +218,7 @@ namespace SG.TestRunService.ServiceImplementations
                     t.AzureProductBuildDefinitionId == lastStateUpdateRequest.AzureProductBuildDefinitionId &&
                     !t.IsDeleted)
                 .Any();
-            var outcome = lastStateUpdateRequest.Outcome; ;
+            var outcome = lastStateUpdateRequest.Outcome;
             testLastState.LastOutcome = outcome;
             switch (outcome)
             {
