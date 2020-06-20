@@ -274,10 +274,19 @@ namespace SG.TestRunService.Migrations
                     b.Property<int>("AzureProductBuildDefinitionId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("LastOutcome")
+                    b.Property<DateTime?>("LastImpactedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("LastImpactedProductBuildInfoId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductBuildInfoId")
+                    b.Property<int>("LastOutcome")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastOutcomeDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LastOutcomeProductBuildInfoId")
                         .HasColumnType("int");
 
                     b.Property<int?>("RunReason")
@@ -294,12 +303,11 @@ namespace SG.TestRunService.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductBuildInfoId");
+                    b.HasIndex("LastImpactedProductBuildInfoId");
+
+                    b.HasIndex("LastOutcomeProductBuildInfoId");
 
                     b.HasIndex("TestCaseId", "AzureProductBuildDefinitionId")
                         .IsUnique();
@@ -454,9 +462,14 @@ namespace SG.TestRunService.Migrations
 
             modelBuilder.Entity("SG.TestRunService.Data.TestLastState", b =>
                 {
-                    b.HasOne("SG.TestRunService.Data.BuildInfo", "ProductBuildInfo")
+                    b.HasOne("SG.TestRunService.Data.BuildInfo", "LastImpactedProductBuildInfo")
                         .WithMany()
-                        .HasForeignKey("ProductBuildInfoId")
+                        .HasForeignKey("LastImpactedProductBuildInfoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SG.TestRunService.Data.BuildInfo", "LastOutcomeProductBuildInfo")
+                        .WithMany()
+                        .HasForeignKey("LastOutcomeProductBuildInfoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
