@@ -35,6 +35,11 @@ namespace SG.TestRunService.Data
         [OnDelete(DeleteBehavior.Restrict)]
         public BuildInfo LastImpactedProductBuildInfo { get; set; }
 
+        public bool IsImpactedAfter(DateTime dateTimeToCompare)
+        {
+            return ShouldBeRun && LastImpactedDate > dateTimeToCompare;
+        }
+
         public class IDEqulityComparer : IEqualityComparer<TestLastState>
         {
             public bool Equals([AllowNull] TestLastState x, [AllowNull] TestLastState y)

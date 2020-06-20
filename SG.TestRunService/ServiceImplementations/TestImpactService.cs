@@ -204,12 +204,12 @@ namespace SG.TestRunService.ServiceImplementations
                 _dbService.Add(testLastState);
             }
 
-            var productBuildInfoId = await _dbService.Query<TestRunSession>(s => s.Id == lastStateUpdateRequest.TestRunSessionId)
-                .Select(s => s.ProductBuildInfoId)
+            var testRunSessionInfo = await _dbService.Query<TestRunSession>(s => s.Id == lastStateUpdateRequest.TestRunSessionId)
+                .Select(s => new { SessionStartTime = s.StartTime, BuildInfoId = s.ProductBuildInfoId })
                 .FirstOrDefaultAsync();
-            if (productBuildInfoId == default)
+            if (testRunSessionInfo == default)
             {
-                return ServiceError.NotFound("Requested test run session (or related build info) not found. Id: " + lastStateUpdateRequest.TestRunSessionId);
+                return ServiceError.NotFound("Requested test run session not found. Id: " + lastStateUpdateRequest.TestRunSessionId);
             }
 
             bool hasImpactData = _dbService
@@ -225,8 +225,11 @@ namespace SG.TestRunService.ServiceImplementations
                 case TestRunOutcome.Successful:
                     if (hasImpactData)
                     {
-                        testLastState.ShouldBeRun = false;
-                        testLastState.RunReason = null;
+                        if (!testLastState.IsImpactedAfter(testRunSessionInfo.SessionStartTime))
+                        {
+                            testLastState.ShouldBeRun = false;
+                            testLastState.RunReason = null;
+                        }
                     }
                     else
                     {
@@ -251,7 +254,7 @@ namespace SG.TestRunService.ServiceImplementations
                     return ServiceError.UnprocessableEntity("Invalid outcome: " + outcome);
             }
             testLastState.LastOutcomeDate = DateTime.Now;
-            testLastState.LastOutcomeProductBuildInfoId = productBuildInfoId;
+            testLastState.LastOutcomeProductBuildInfoId = testRunSessionInfo.BuildInfoId;
 
             await _dbService.SaveChangesAsync();
             return ServiceError.NoError();
