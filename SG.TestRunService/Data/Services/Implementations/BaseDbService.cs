@@ -18,55 +18,55 @@ namespace SG.TestRunService.Data.Services.Implementations
         }
 
         public async Task<IReadOnlyList<TOutput>> GetAllAsync<TEntity, TOutput>(Expression<Func<TEntity, TOutput>> projection)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return await _db.Set<TEntity>().Select(projection).ToListAsync();
         }
 
         public async Task<IReadOnlyList<TOutput>> GetAllAsync<TEntity, TOutput>(Func<IQueryable<TEntity>, IQueryable<TOutput>> projector)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return await projector(_db.Set<TEntity>()).ToListAsync();
         }
 
         public async Task<IReadOnlyList<TEntity>> GetAllAsync<TEntity>()
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return await _db.Set<TEntity>().ToListAsync();
         }
 
         public async Task<IReadOnlyList<TOutput>> GetFilteredAsync<TEntity, TOutput>(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, TOutput>> projection)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return await _db.Set<TEntity>().Where(filter).Select(projection).ToListAsync();
         }
 
         public async Task<IReadOnlyList<TOutput>> GetFilteredAsync<TEntity, TOutput>(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return await projector(_db.Set<TEntity>().Where(filter)).ToListAsync();
         }
 
         public async Task<IReadOnlyList<TEntity>> GetFilteredAsync<TEntity>(Expression<Func<TEntity, bool>> filter)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return await _db.Set<TEntity>().Where(filter).ToListAsync();
         }
 
         public async Task<TOutput> GetFirstOrDefaultAsync<TEntity, TOutput>(Expression<Func<TEntity, bool>> filter, Expression<Func<TEntity, TOutput>> projection)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return await _db.Set<TEntity>().Where(filter).Select(projection).FirstOrDefaultAsync();
         }
 
         public async Task<TOutput> GetFirstOrDefaultAsync<TEntity, TOutput>(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return await projector(_db.Set<TEntity>().Where(filter)).FirstOrDefaultAsync();
         }
 
         public async Task<TEntity> GetFirstOrDefaultAsync<TEntity>(Expression<Func<TEntity, bool>> filter)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return await _db.Set<TEntity>().Where(filter).FirstOrDefaultAsync();
         }
@@ -83,28 +83,28 @@ namespace SG.TestRunService.Data.Services.Implementations
         }
 
         public async Task InsertAsync<TEntity>(TEntity entity)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             _db.Add(entity);
             await _db.SaveChangesAsync();
         }
 
         public async Task InsertAsync<TEntity>(IEnumerable<TEntity> entities)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             _db.AddRange(entities);
             await _db.SaveChangesAsync();
         }
 
         public async Task UpdateAsync<TEntity>(TEntity entity)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             _db.Entry(entity).State = EntityState.Modified;
             await _db.SaveChangesAsync();
         }
 
         public async Task DeleteAsync<TEntity>(TEntity entity)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             _db.Remove(entity);
             await _db.SaveChangesAsync();
@@ -121,13 +121,13 @@ namespace SG.TestRunService.Data.Services.Implementations
         }
 
         public IQueryable<TEntity> Query<TEntity>()
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return _db.Set<TEntity>();
         }
 
         public IQueryable<TEntity> Query<TEntity>(Expression<Func<TEntity, bool>> filter)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             return _db.Set<TEntity>().Where(filter);
         }
@@ -145,13 +145,13 @@ namespace SG.TestRunService.Data.Services.Implementations
         }
 
         public void Add<TEntity>(TEntity entity)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             _db.Add(entity);
         }
 
         public void Remove<TEntity>(TEntity entity)
-            where TEntity : class, IEntity
+            where TEntity : class
         {
             _db.Remove(entity);
         }
