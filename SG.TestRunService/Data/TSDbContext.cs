@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace SG.TestRunService.Data
 {
@@ -7,6 +8,7 @@ namespace SG.TestRunService.Data
         public TSDbContext(DbContextOptions<TSDbContext> options)
             : base(options)
         {
+            Database.SetCommandTimeout(TimeSpan.FromMinutes(4));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
