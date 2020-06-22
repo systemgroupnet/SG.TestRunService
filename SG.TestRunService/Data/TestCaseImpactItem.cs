@@ -4,14 +4,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SG.TestRunService.Data
 {
-    public class TestCaseImpactItem : IEntity
+    public class TestCaseImpactItem
     {
-        public int Id { get; set; }
-
         public int TestCaseId { get; set; }
         public int AzureProductBuildDefinitionId { get; set; }
 
-        [Required]
         public int CodeSignatureId { get; set; }
 
         public DateTime DateAdded { get; set; }

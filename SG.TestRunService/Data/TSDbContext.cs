@@ -1,8 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SG.TestRunService.Data
 {
@@ -15,21 +11,19 @@ namespace SG.TestRunService.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<TestCaseImpactItem>()
+                .HasKey(i => new { i.AzureProductBuildDefinitionId, i.CodeSignatureId, i.TestCaseId });
+
             ConfigureIndexes(modelBuilder);
             Infrastructure.OnDeleteAttribute.Apply(modelBuilder);
         }
+
 
         private static void ConfigureIndexes(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CodeSignature>()
                 .HasIndex(s => s.Signature)
                 .IsUnique();
-            modelBuilder.Entity<TestCaseImpactItem>()
-                .HasIndex(s => new { s.TestCaseId, s.AzureProductBuildDefinitionId, s.CodeSignatureId })
-                .IsUnique();
-            modelBuilder.Entity<TestCaseImpactItem>()
-                .HasIndex(s => new { s.AzureProductBuildDefinitionId, s.IsDeleted })
-                .IncludeProperties(s => new { s.TestCaseId, s.CodeSignatureId });
             modelBuilder.Entity<TestCase>()
                 .HasIndex(t => new { t.AzureTestCaseId })
                 .IsUnique();
