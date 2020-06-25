@@ -238,17 +238,14 @@ namespace SG.TestRunService.ServiceImplementations
                     }
                     break;
                 case TestRunOutcome.Failed:
+                case TestRunOutcome.FatalError:
                     testLastState.ShouldBeRun = true;
                     testLastState.RunReason = RunReason.Failed;
                     break;
                 case TestRunOutcome.Aborted:
-                    testLastState.ShouldBeRun = true;
-                    testLastState.RunReason = RunReason.New;
-                    break;
-                case TestRunOutcome.FatalError:
                 case TestRunOutcome.Unknown:
                     testLastState.ShouldBeRun = true;
-                    testLastState.RunReason = RunReason.Failed;
+                    testLastState.RunReason = RunReason.Aborted;
                     break;
                 default:
                     return ServiceError.UnprocessableEntity("Invalid outcome: " + outcome);

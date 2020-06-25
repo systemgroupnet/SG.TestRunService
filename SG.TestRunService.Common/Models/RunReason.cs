@@ -7,6 +7,7 @@
         ForceRun = 3,
         ImpactDataNotAvailable = 4,
         NoBaseBuild = 5,
+        Aborted = 6,
         New = 10
     }
 }
