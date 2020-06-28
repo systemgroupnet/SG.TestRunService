@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SG.TestRunService.Data
 {
-    public class TestRunSession : IEntity
+    public class TestRunSession : IEntity<int>
     {
         public TestRunSession()
         {

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SG.TestRunService.Data
 {
-    public class LastImpactUpdate : IEntity
+    public class LastImpactUpdate : IEntity<int>
     {
         public int Id { get; set; }
 

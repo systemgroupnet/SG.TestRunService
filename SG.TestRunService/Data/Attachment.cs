@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SG.TestRunService.Data
 {
-    public class Attachment : IEntity
+    public class Attachment : IEntity<int>
     {
         public int Id { get; set; }
 

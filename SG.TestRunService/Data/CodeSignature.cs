@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SG.TestRunService.Data
 {
-    public class CodeSignature : IEntity
+    public class CodeSignature : IEntity<int>
     {
         public int Id { get; set; }
 

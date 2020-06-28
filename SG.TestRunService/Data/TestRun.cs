@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SG.TestRunService.Data
 {
-    public class TestRun : IEntity
+    public class TestRun : IEntity<int>
     {
         public TestRun()
         {

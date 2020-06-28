@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SG.TestRunService.Data
 {
-    public class TestLastState : IEntity
+    public class TestLastState : IEntity<int>
     {
         public int Id { get; set; }
 

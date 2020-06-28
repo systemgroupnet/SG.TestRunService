@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SG.TestRunService.Data
 {
-    public class TestCase : IEntity
+    public class TestCase : IEntity<int>
     {
         public TestCase()
         {

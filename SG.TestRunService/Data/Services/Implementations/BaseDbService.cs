@@ -71,13 +71,13 @@ namespace SG.TestRunService.Data.Services.Implementations
             return await _db.Set<TEntity>().Where(filter).FirstOrDefaultAsync();
         }
 
-        public Task<TOutput> GetByIdAsync<TEntity, TOutput>(int id, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector)
-            where TEntity : class, IEntity
+        public Task<TOutput> GetByIdAsync<TEntity, TKey, TOutput>(TKey id, Func<IQueryable<TEntity>, IQueryable<TOutput>> projector)
+            where TEntity : class, IEntity<TKey>
         {
-            return GetFirstOrDefaultAsync(e => e.Id == id, projector);
+            return GetFirstOrDefaultAsync(e => e.Id.Equals(id), projector);
         }
 
-        public Task<TEntity> GetByIdAsync<TEntity>(int id) where TEntity : class, IEntity
+        public Task<TEntity> GetByIdAsync<TEntity, TKey>(TKey id) where TEntity : class, IEntity<TKey>
         {
             return _db.FindAsync<TEntity>(id).AsTask();
         }
@@ -110,14 +110,20 @@ namespace SG.TestRunService.Data.Services.Implementations
             await _db.SaveChangesAsync();
         }
 
-        public async Task<TEntity> DeleteAsync<TEntity>(int id)
-            where TEntity : class, IEntity
+        public async Task<TEntity> DeleteAsync<TEntity, TKey>(TKey id)
+            where TEntity : class, IEntity<TKey>
         {
             var e = await _db.FindAsync<TEntity>(id);
             if (e == null)
                 return null;
             await DeleteAsync(e);
             return e;
+        }
+
+        public Task<TEntity> DeleteAsync<TEntity>(int id)
+            where TEntity : class, IEntity<int>
+        {
+            return DeleteAsync<TEntity, int>(id);
         }
 
         public IQueryable<TEntity> Query<TEntity>()
@@ -132,16 +138,28 @@ namespace SG.TestRunService.Data.Services.Implementations
             return _db.Set<TEntity>().Where(filter);
         }
 
+        public IQueryable<TEntity> Query<TEntity, TKey>(TKey id)
+            where TEntity : class, IEntity<TKey>
+        {
+            return _db.Set<TEntity>().Where(e => e.Id.Equals(id));
+        }
+
         public IQueryable<TEntity> Query<TEntity>(int id)
-            where TEntity : class, IEntity
+            where TEntity : class, IEntity<int>
         {
             return _db.Set<TEntity>().Where(e => e.Id == id);
         }
 
-        public IQueryable<TEntity> Query<TEntity>(IEnumerable<int> ids)
-            where TEntity : class, IEntity
+        public IQueryable<TEntity> Query<TEntity, TKey>(IEnumerable<TKey> ids)
+            where TEntity : class, IEntity<TKey>
         {
             return _db.Set<TEntity>().Where(e => ids.Contains(e.Id));
+        }
+
+        public IQueryable<TEntity> Query<TEntity>(IEnumerable<int> ids)
+            where TEntity : class, IEntity<int>
+        {
+            return Query<TEntity, int>(ids);
         }
 
         public void Add<TEntity>(TEntity entity)

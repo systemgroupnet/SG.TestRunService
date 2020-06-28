@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SG.TestRunService.Data
 {
-    public class ExtraData : IEntity
+    public class ExtraData : IEntity<int>
     {
         public int Id { get; set; }
         public int? TestCaseId { get; set; }

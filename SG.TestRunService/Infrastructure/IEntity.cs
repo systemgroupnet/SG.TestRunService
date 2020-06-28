@@ -1,7 +1,13 @@
-﻿namespace SG.TestRunService.Infrastructure
+﻿using System;
+
+namespace SG.TestRunService.Infrastructure
 {
     public interface IEntity
     {
-        int Id { get; set; }
+    }
+
+    public interface IEntity<TKey> : IEntity
+    {
+        TKey Id { get; set; }
     }
 }
