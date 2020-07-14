@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Negotiate;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +14,6 @@ namespace SG.TestRunService
 {
     public class Startup
     {
-
         private const string corsAllowSgServersPolicyName = "sgServers";
 
         public Startup(IConfiguration configuration)
@@ -37,9 +35,6 @@ namespace SG.TestRunService
 
             services.AddDbContext<TSDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("db")));
-
-            services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
-                .AddNegotiate();
 
             services.AddCors(options =>
             {
