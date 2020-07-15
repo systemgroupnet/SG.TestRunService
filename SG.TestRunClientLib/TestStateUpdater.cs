@@ -124,6 +124,7 @@ namespace SG.TestRunClientLib
                 _logger.Debug("No tests impacted.");
                 return;
             }
+            _logger.Debug(response.ImpactedTests.Count + " tests impacted.");
 
             StringBuilder msg = new StringBuilder();
             int delimCount = 15;
