@@ -137,7 +137,7 @@ namespace SG.TestRunClientLib
             foreach (var cs in response.CodeSignatureImpactedTestCaseIds)
             {
                 var path = codeSignaturesDict[cs.Key];
-                var azureTestCaseIds = cs.Value.Select(id => testCasesDict[id]).ToList();
+                var azureTestCaseIds = cs.Value.Select(id => testCasesDict[id]).OrderBy(t => t).ToList();
 
                 msg.AppendLine(
                     $"{cs.Key}  \"{path}\" - {azureTestCaseIds.Count} test cases:");

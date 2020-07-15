@@ -65,6 +65,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                         AzureTestCaseId = s.AzureTestCaseId
                     })
                 .Distinct()
+                .OrderBy(t => t.AzureTestCaseId)
                 .ToList();
 
             var codeSignatureTests = signaturesAndImpactedTests
