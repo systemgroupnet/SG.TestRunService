@@ -118,7 +118,56 @@ namespace SG.TestRunService.ServiceImplementations
                 response = await tlsUpdater.UpdateImpactedTests(request.CodeSignatures);
             }
             await _dbService.SaveChangesAsync();
+
+            if(response != null)
+            {
+                await InsertImpactHistoryAfterUpdate(buildInfo, response.CodeSignatureImpactedTestCaseIds);
+            }
+
             return (response, ServiceError.NoError());
+        }
+
+        private async Task InsertImpactHistoryAfterUpdate(
+            Data.BuildInfo productBuildInfo,
+            IDictionary<string, IReadOnlyList<int>> codeSignatureImpactedTestCaseIds)
+        {
+            try
+            {
+                var now = DateTime.Now;
+
+                var signatures = codeSignatureImpactedTestCaseIds.Keys;
+                var signatureIds = await _dbService.Query<Data.CodeSignature>(cs => signatures.Contains(cs.Signature))
+                    .Select(cs => new { cs.Id, cs.Signature })
+                    .ToDictionaryAsync(cs => cs.Signature, cs => cs.Id);
+
+                foreach (var keyVal in codeSignatureImpactedTestCaseIds)
+                {
+                    var signature = keyVal.Key;
+                    var testCaseIds = keyVal.Value;
+                    if (!signatureIds.TryGetValue(signature, out var signatureId))
+                    {
+                        _logger.LogWarning("Code Signature {Signature} not found in database!", signature);
+                        continue;
+                    }
+                    foreach (var tcId in testCaseIds)
+                    {
+                        _dbService.Add(new TestCaseImpactHistory()
+                        {
+                            AzureProductBuildDefinitionId = productBuildInfo.AzureBuildDefinitionId,
+                            CodeSignatureId = signatureId,
+                            TestCaseId = tcId,
+                            Date = now,
+                            ProductBuildInfoId = productBuildInfo.Id
+                        });
+                    }
+                }
+
+                await _dbService.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogWarning(ex, "Adding history items for impacted test cases on build {@BuildInfo} failed.", productBuildInfo);
+            }
         }
 
         public async Task UpdateTestCaseImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request)

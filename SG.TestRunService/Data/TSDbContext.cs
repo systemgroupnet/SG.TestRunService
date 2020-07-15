@@ -14,6 +14,9 @@ namespace SG.TestRunService.Data
             modelBuilder.Entity<TestCaseImpactItem>()
                 .HasKey(i => new { i.AzureProductBuildDefinitionId, i.CodeSignatureId, i.TestCaseId });
 
+            modelBuilder.Entity<TestCaseImpactHistory>()
+                .HasKey(i => new { i.AzureProductBuildDefinitionId, i.CodeSignatureId, i.TestCaseId, i.ProductBuildInfoId });
+
             ConfigureIndexes(modelBuilder);
             Infrastructure.OnDeleteAttribute.Apply(modelBuilder);
         }
@@ -51,5 +54,6 @@ namespace SG.TestRunService.Data
         public DbSet<ExtraData> ExtraData { get; }
         public DbSet<TestLastState> TestLastState { get; }
         public DbSet<LastImpactUpdate> LastImpactUpdate { get; }
+        public DbSet<TestCaseImpactHistory> TestCaseImpactHistory { get; set; }
     }
 }
