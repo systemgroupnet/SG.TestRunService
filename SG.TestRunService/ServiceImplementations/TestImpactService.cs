@@ -124,7 +124,7 @@ namespace SG.TestRunService.ServiceImplementations
         public async Task UpdateTestCaseImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request)
         {
             bool logInformation = _logger.IsEnabled(LogLevel.Information);
-            int? azureTestCaseId;
+            int? azureTestCaseId = null;
             if (logInformation)
             {
                 azureTestCaseId = await _dbService
@@ -219,6 +219,7 @@ namespace SG.TestRunService.ServiceImplementations
                 _logger.LogInformation("Impact items updated for test case {AzureTestCaseId} " +
                     "in build definition {BuildDefinitionId} - Code signatures: " +
                     "{AddedItemsCount} added, {RecoveredItemsCount} recovered (had been deleted), {DeletedItemsCount} deleted",
+                    azureTestCaseId, request.AzureProductBuildDefinitionId,
                     codeSignaturesToAdd.Count, recoverCount, deleteCount);
         }
 
