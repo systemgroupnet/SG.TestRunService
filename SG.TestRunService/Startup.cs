@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using SG.TestRunService.Data;
 using SG.TestRunService.Data.Services;
 using SG.TestRunService.Data.Services.Implementations;
@@ -66,6 +67,8 @@ namespace SG.TestRunService
         {
             app.UseDeveloperExceptionPage();
             app.UseRouting();
+
+            app.UseSerilogRequestLogging();
 
             app.UseCors(corsAllowSgServersPolicyName);
 

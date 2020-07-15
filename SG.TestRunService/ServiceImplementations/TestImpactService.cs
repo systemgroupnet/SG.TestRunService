@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using SG.TestRunService.Common.Models;
 using SG.TestRunService.Data;
 using SG.TestRunService.Data.Services;
@@ -15,10 +16,14 @@ namespace SG.TestRunService.ServiceImplementations
     public class TestImpactService : ITestImpactService
     {
         private readonly IBaseDbService _dbService;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger<TestImpactService> _logger;
 
-        public TestImpactService(IBaseDbService dbService)
+        public TestImpactService(IBaseDbService dbService, ILoggerFactory loggerFactory, ILogger<TestImpactService> logger)
         {
             _dbService = dbService;
+            _loggerFactory = loggerFactory;
+            _logger = logger;
         }
 
         public async Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastImpactUpdatesAsync()
@@ -49,6 +54,9 @@ namespace SG.TestRunService.ServiceImplementations
             if (lastImpactUpdate == null)
                 return null;
             await _dbService.DeleteAsync(lastImpactUpdate);
+
+            _logger.LogInformation("LastImpactUpdate {LastImpactUpdate} deleted", lastImpactUpdate);
+
             return lastImpactUpdate.ToResponse();
         }
 
@@ -97,7 +105,7 @@ namespace SG.TestRunService.ServiceImplementations
 
             int azureBuildDefId = buildInfo.AzureBuildDefinitionId;
 
-            var tlsUpdater = new ImpactedTestUpdater(_dbService, buildInfo);
+            var tlsUpdater = new ImpactedTestUpdater(_dbService, buildInfo, _loggerFactory.CreateLogger<ImpactedTestUpdater>());
             PublishImpactChangesResponse response = null;
             if (request.NoBaseBuild)
             {
@@ -115,6 +123,21 @@ namespace SG.TestRunService.ServiceImplementations
 
         public async Task UpdateTestCaseImpactAsync(int testCaseId, TestCaseImpactUpdateRequest request)
         {
+            bool logInformation = _logger.IsEnabled(LogLevel.Information);
+            int? azureTestCaseId;
+            if (logInformation)
+            {
+                azureTestCaseId = await _dbService
+                    .Query<TestCase>(testCaseId)
+                    .Select(t => (int?)t.AzureTestCaseId)
+                    .FirstOrDefaultAsync();
+                _logger.LogInformation("Updating impact items for test case {AzureTestCaseId} in build definition {BuildDefinitionId}:" +
+                    " {FileSignaturesCount} files, {MethodSignaturesCount} methods",
+                    azureTestCaseId, request.AzureProductBuildDefinitionId,
+                    request.CodeSignatures.Where(r => r.Type == CodeSignatureType.File).Count(),
+                    request.CodeSignatures.Where(r => r.Type == CodeSignatureType.Method).Count());
+            }
+
             var impactItemsOnDb = (await _dbService
                 .GetFilteredAsync(
                     filter: (TestCaseImpactItem tci) =>
@@ -126,6 +149,7 @@ namespace SG.TestRunService.ServiceImplementations
 
             var present = new HashSet<TestCaseImpactItem>();
             var codeSignaturesToAdd = new List<Common.Models.CodeSignature>();
+            var recoverCount = 0;
             var now = DateTime.Now;
 
             if (request.CodeSignatures != null)
@@ -139,6 +163,7 @@ namespace SG.TestRunService.ServiceImplementations
                         {
                             testImpactCodeSignature.IsDeleted = false;
                             testImpactCodeSignature.DateAdded = now;
+                            ++recoverCount;
                         }
                     }
                     else
@@ -179,13 +204,22 @@ namespace SG.TestRunService.ServiceImplementations
                 }
             }
 
+            int deleteCount = 0;
             foreach (var impactCodeSignatureEntity in impactItemsOnDb.Values)
                 if (!present.Contains(impactCodeSignatureEntity))
                 {
                     impactCodeSignatureEntity.IsDeleted = true;
                     impactCodeSignatureEntity.DateRemoved = now;
+                    ++deleteCount;
                 }
+
             await _dbService.SaveChangesAsync();
+
+            if (logInformation)
+                _logger.LogInformation("Impact items updated for test case {AzureTestCaseId} " +
+                    "in build definition {BuildDefinitionId} - Code signatures: " +
+                    "{AddedItemsCount} added, {RecoveredItemsCount} recovered (had been deleted), {DeletedItemsCount} deleted",
+                    codeSignaturesToAdd.Count, recoverCount, deleteCount);
         }
 
         public async Task<ServiceError> UpdateTestLastStateAsync(int testCaseId, TestLastStateUpdateRequest lastStateUpdateRequest)
@@ -275,6 +309,9 @@ namespace SG.TestRunService.ServiceImplementations
             if (lastState == null)
                 return null;
             await _dbService.DeleteAsync(lastState);
+
+            _logger.LogInformation("TestLastState {TestLastState} deleted", lastState);
+
             return lastState.ToResponse();
         }
 

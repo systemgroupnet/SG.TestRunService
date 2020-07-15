@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SG.TestRunService.Common.Models;
 using SG.TestRunService.Data;
 using SG.TestRunService.Data.Services;
@@ -13,17 +15,21 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
     {
         private readonly IBaseDbService _dbService;
         private readonly Data.BuildInfo _buildInfo;
+        private readonly ILogger<ImpactedTestUpdater> _logger;
         private readonly int _azureBuildDefId;
 
-        public ImpactedTestUpdater(IBaseDbService dbService, Data.BuildInfo testRunSessionBuildInfo)
+        public ImpactedTestUpdater(IBaseDbService dbService, Data.BuildInfo testRunSessionBuildInfo, ILogger<ImpactedTestUpdater> logger = null)
         {
             _dbService = dbService;
             _buildInfo = testRunSessionBuildInfo;
+            _logger = logger ?? new NullLogger<ImpactedTestUpdater>();
             _azureBuildDefId = _buildInfo.AzureBuildDefinitionId;
         }
 
         public async Task<PublishImpactChangesResponse> UpdateImpactedTests(IEnumerable<string> changedCodeSignatures)
         {
+            _logger.LogInformation("Updating impacted tests for build {@BuildInfo}, with changes {CodeSignatures}", _buildInfo, changedCodeSignatures);
+
             var impactItems =
                 from ii in _dbService.Query<TestCaseImpactItem>()
                 where
@@ -48,6 +54,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                 .Select(s => s.TestLastState)
                 .Distinct(new TestLastState.IDEqulityComparer())
                 .ToList();
+
             UpdateLastStateToImpacted(testLastStates);
 
             var impactedTests = signaturesAndImpactedTests
@@ -64,6 +71,8 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
                 .GroupBy(s => s.Signature)
                 .ToDictionary(s => s.Key, g => (IReadOnlyList<int>)g.Select(i => i.TestCaseId).ToList().AsReadOnly());
 
+            _logger.LogInformation("Impacted tests for build {@BuildInfo}: {CodeSignatureTests}", _buildInfo, codeSignatureTests);
+
             return new PublishImpactChangesResponse()
             {
                 ImpactedTests = impactedTests,
@@ -73,6 +82,8 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
 
         public async Task UpdateToNoBaseBuild()
         {
+            _logger.LogInformation("Update to 'No base build' for build {@BuildInfo}", _buildInfo);
+
             var testLastStates = await GetTestLastStates().ToListAsync();
             UpdateLastStates(testLastStates, RunReason.NoBaseBuild);
         }
@@ -91,6 +102,10 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         private void UpdateLastStates(IReadOnlyCollection<TestLastState> testLastStates, RunReason runReason)
         {
             var now = DateTime.Now;
+
+            _logger.LogInformation("Updating test last states for build {@BuildInfo} - reason: {RunReason}, date/time: {DateTime}, test case ids {TestCaseIds}",
+                _buildInfo, runReason, now, testLastStates.Select(tl => tl.TestCaseId));
+
             foreach (var state in testLastStates)
             {
                 state.LastImpactedDate = now;

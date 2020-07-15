@@ -26,6 +26,7 @@
       "launchBrowser": true,
       "launchUrl": "api/sessions",
       "environmentVariables": {
+        "SEQ_TESTRUNSERVICE_APIKEY": "hQbPevlDUdCxG1fKfM35",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "nativeDebugging": true,
