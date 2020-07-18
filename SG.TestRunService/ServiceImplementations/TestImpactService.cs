@@ -302,37 +302,47 @@ namespace SG.TestRunService.ServiceImplementations
                     t.AzureProductBuildDefinitionId == lastStateUpdateRequest.AzureProductBuildDefinitionId &&
                     !t.IsDeleted)
                 .Any();
+
             var outcome = lastStateUpdateRequest.Outcome;
             testLastState.LastOutcome = outcome;
-            switch (outcome)
+
+            if (lastStateUpdateRequest.DictatedRunReason != null)
             {
-                case TestRunOutcome.Successful:
-                    if (hasImpactData)
-                    {
-                        if (!testLastState.IsImpactedAfter(testRunSessionInfo.SessionStartTime))
+                testLastState.ShouldBeRun = true;
+                testLastState.RunReason = lastStateUpdateRequest.DictatedRunReason;
+            }
+            else
+            {
+                switch (outcome)
+                {
+                    case TestRunOutcome.Successful:
+                        if (hasImpactData)
                         {
-                            testLastState.ShouldBeRun = false;
-                            testLastState.RunReason = null;
+                            if (!testLastState.IsImpactedAfter(testRunSessionInfo.SessionStartTime))
+                            {
+                                testLastState.ShouldBeRun = false;
+                                testLastState.RunReason = null;
+                            }
                         }
-                    }
-                    else
-                    {
+                        else
+                        {
+                            testLastState.ShouldBeRun = true;
+                            testLastState.RunReason = RunReason.ImpactDataNotAvailable;
+                        }
+                        break;
+                    case TestRunOutcome.Failed:
+                    case TestRunOutcome.FatalError:
                         testLastState.ShouldBeRun = true;
-                        testLastState.RunReason = RunReason.ImpactDataNotAvailable;
-                    }
-                    break;
-                case TestRunOutcome.Failed:
-                case TestRunOutcome.FatalError:
-                    testLastState.ShouldBeRun = true;
-                    testLastState.RunReason = RunReason.Failed;
-                    break;
-                case TestRunOutcome.Aborted:
-                case TestRunOutcome.Unknown:
-                    testLastState.ShouldBeRun = true;
-                    testLastState.RunReason = RunReason.Aborted;
-                    break;
-                default:
-                    return ServiceError.UnprocessableEntity("Invalid outcome: " + outcome);
+                        testLastState.RunReason = RunReason.Failed;
+                        break;
+                    case TestRunOutcome.Aborted:
+                    case TestRunOutcome.Unknown:
+                        testLastState.ShouldBeRun = true;
+                        testLastState.RunReason = RunReason.Aborted;
+                        break;
+                    default:
+                        return ServiceError.UnprocessableEntity("Invalid outcome: " + outcome);
+                }
             }
             testLastState.LastOutcomeDate = DateTime.Now;
             testLastState.LastOutcomeProductBuildInfoId = testRunSessionInfo.BuildInfoId;

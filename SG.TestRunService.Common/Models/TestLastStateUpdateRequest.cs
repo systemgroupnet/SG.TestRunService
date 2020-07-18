@@ -9,5 +9,6 @@ namespace SG.TestRunService.Common.Models
         public int AzureProductBuildDefinitionId { get; set; }
         public int TestRunSessionId { get; set; }
         public TestRunOutcome Outcome { get; set; }
+        public RunReason? DictatedRunReason { get; set; }
     }
 }

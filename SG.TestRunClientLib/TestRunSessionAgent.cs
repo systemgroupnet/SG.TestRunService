@@ -216,7 +216,17 @@ namespace SG.TestRunClientLib
             if (impactDataCount == 0)
                 LogDebug("(No impact data is available)");
 
-            await _client.UpdateTestImpactAsync(testCase.Id, impactRequest);
+            Exception impactUpdateException = null;
+
+            try
+            {
+                await _client.UpdateTestImpactAsync(testCase.Id, impactRequest);
+            }
+            catch(Exception ex)
+            {
+                impactUpdateException = ex;
+                _logger.Error("Updating test case impact data failed:\r\n" + ex.ToString());
+            }
 
             var lastStateRequest = new TestLastStateUpdateRequest()
             {
@@ -224,6 +234,12 @@ namespace SG.TestRunClientLib
                 TestRunSessionId = _session.Id,
                 Outcome = outcome
             };
+
+            if (impactUpdateException != null)
+            {
+                lastStateRequest.DictatedRunReason = RunReason.ImpactUpdateFailed;
+                _logger.Warn("Test case will be run again next time.");
+            }
 
             LogDebug($"Updating test last state. Azure Test Case Id: {testCase.AzureTestCaseId}, Outcome: {outcome}");
 

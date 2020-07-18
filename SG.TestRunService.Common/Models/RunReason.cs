@@ -8,6 +8,7 @@
         ImpactDataNotAvailable = 4,
         NoBaseBuild = 5,
         Aborted = 6,
+        ImpactUpdateFailed = 7,
         New = 10
     }
 }
