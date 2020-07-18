@@ -31,6 +31,10 @@ namespace SG.TestRunService
                 Log.Information("Starting up");
                 CreateHostBuilder(args).Build().Run();
             }
+            catch(OperationCanceledException ex)
+            {
+                Log.Warning(ex, "Application process stopped");
+            }
             catch (Exception ex)
             {
                 Log.Fatal(ex, "Application start-up failed");
