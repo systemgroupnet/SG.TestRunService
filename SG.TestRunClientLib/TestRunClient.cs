@@ -27,7 +27,7 @@ namespace SG.TestRunClientLib
             if (string.IsNullOrWhiteSpace(serviceUri))
                 throw new ArgumentException("`serviceUri` cannot be empty.");
             _serviceUri = serviceUri;
-            _client = new HttpClient(new RetryHandler());
+            _client = new HttpClient(new RetryHandler(5, 2.3, 30, RetryHandler.BackOffStrategy.Exponential));
             _client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonMediaType));
             _client.BaseAddress = new Uri(_serviceUri.TrimEnd('/') + "/");
