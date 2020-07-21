@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Hellang.Middleware.ProblemDetails;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +12,7 @@ using SG.TestRunService.Data.Services;
 using SG.TestRunService.Data.Services.Implementations;
 using SG.TestRunService.ServiceImplementations;
 using SG.TestRunService.Services;
+using System;
 
 namespace SG.TestRunService
 {
@@ -27,6 +30,12 @@ namespace SG.TestRunService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddProblemDetails(options =>
+            {
+                options.IncludeExceptionDetails = (ctcx, ex) => true;
+                options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+            });
+
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
@@ -65,13 +74,10 @@ namespace SG.TestRunService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseDeveloperExceptionPage();
+            app.UseProblemDetails();
             app.UseRouting();
-
             app.UseSerilogRequestLogging();
-
             app.UseCors(corsAllowSgServersPolicyName);
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
