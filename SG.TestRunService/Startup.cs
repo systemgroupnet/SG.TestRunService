@@ -10,6 +10,7 @@ using Serilog;
 using SG.TestRunService.Data;
 using SG.TestRunService.Data.Services;
 using SG.TestRunService.Data.Services.Implementations;
+using SG.TestRunService.Middleware;
 using SG.TestRunService.ServiceImplementations;
 using SG.TestRunService.Services;
 using System;
@@ -77,6 +78,7 @@ namespace SG.TestRunService
             app.UseProblemDetails();
             app.UseRouting();
             app.UseSerilogRequestLogging();
+            app.UseMiddleware<RetryMiddleware>();
             app.UseCors(corsAllowSgServersPolicyName);
             app.UseEndpoints(endpoints =>
             {
