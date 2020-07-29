@@ -21,6 +21,8 @@ namespace SG.TestRunService.Data
         public static async Task<TestRunSessionResponse> MaterializeFirstOrDefaultAsync(this IQueryable<TestRunSession> sessions)
         {
             var item = await sessions.Project().FirstOrDefaultAsync();
+            if (item == null)
+                return null;
             item.Response.ExtraData = item.ExtraData.ToDto();
             return item.Response;
         }
@@ -41,6 +43,8 @@ namespace SG.TestRunService.Data
         public static async Task<TestRunResponse> MaterializeFirstOrDefaultAsync(this IQueryable<TestRun> runs)
         {
             var item = await runs.Project().FirstOrDefaultAsync();
+            if (item == null)
+                return null;
             item.Response.ExtraData = item.TestRunExtraData.ToDto();
             item.Response.TestCase.ExtraData = item.TestCaseExtraData.ToDto();
             return item.Response;
