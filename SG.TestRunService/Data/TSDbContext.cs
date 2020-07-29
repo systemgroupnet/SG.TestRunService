@@ -8,7 +8,7 @@ namespace SG.TestRunService.Data
         public TSDbContext(DbContextOptions<TSDbContext> options)
             : base(options)
         {
-            Database.SetCommandTimeout(TimeSpan.FromMinutes(4));
+            Database.SetCommandTimeout(TimeSpan.FromMinutes(3));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
