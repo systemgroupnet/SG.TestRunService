@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SG.TestRunService.Common.Models;
 using SG.TestRunService.Services;
+using SG.TestRunService.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -74,7 +75,10 @@ namespace SG.TestRunService.Controllers
                 return BadRequest(ex.Message);
             }
 
-            var responses = await _service.InsertAsync(testCaseRequests);
+            var responses = await Helpers.RetryAsync(
+                operationName: "InsertTestCases",
+                action: () => _service.InsertAsync(testCaseRequests));
+
             if (responses.Count == 1)
                 return CreatedAtAction(nameof(Get), new { id = responses[0].Id }, responses[0]);
             else

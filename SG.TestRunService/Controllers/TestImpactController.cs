@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SG.TestRunService.Common.Models;
 using SG.TestRunService.Services;
+using SG.TestRunService.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,11 @@ namespace SG.TestRunService.Controllers
         [HttpPost("changes")]
         public async Task<IActionResult> PublichChanges(PublishImpactChangesRequest request)
         {
-            var (response, error) = await _service.PublishImpactChangesAsync(request);
+            var (response, error) =
+                await Helpers.RetryAsync(
+                    operationName: "PublishChanges",
+                    action: () => _service.PublishImpactChangesAsync(request));
+
             if (!error.IsSuccessful())
                 return error.ToActionResult();
             return Ok(response);
@@ -54,13 +59,19 @@ namespace SG.TestRunService.Controllers
         {
             if (azureBuildDefinitionId == null)
                 return BadRequest($"Query string parameter missing: \"{nameof(azureBuildDefinitionId)}\"");
-            return Ok(await _service.GetTestsToRun(azureBuildDefinitionId.Value, allTests ?? false));
+
+            return Ok(
+                await Helpers.RetryAsync(
+                    operationName: nameof(GetTestsToRun),
+                    action: () => _service.GetTestsToRun(azureBuildDefinitionId.Value, allTests ?? false)));  ;
         }
 
         [HttpPost("testrun/{testCaseId:int}")]
         public async Task<ActionResult> UpdateTestCaseImpact(int testCaseId, TestCaseImpactUpdateRequest request)
         {
-            await _service.UpdateTestCaseImpactAsync(testCaseId, request);
+            await Helpers.RetryAsync(
+                operationName: nameof(UpdateTestCaseImpact),
+                action: () => _service.UpdateTestCaseImpactAsync(testCaseId, request));
             return Ok();
         }
 
