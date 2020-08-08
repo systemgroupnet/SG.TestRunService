@@ -5,16 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SG.TestRunService.Data.Services.Implementations
 {
     public sealed class BaseDbService : IBaseDbService
     {
-        private readonly TSDbContext _db;
+        private TSDbContext _db;
+        private readonly IServiceProvider _serviceProvider;
 
-        public BaseDbService(TSDbContext db)
+        public BaseDbService(IServiceProvider serviceProvider)
         {
-            _db = db;
+            _serviceProvider = serviceProvider;
+            ResetDbContext();
         }
 
         public async Task<IReadOnlyList<TOutput>> GetAllAsync<TEntity, TOutput>(Expression<Func<TEntity, TOutput>> projection)
@@ -177,6 +180,11 @@ namespace SG.TestRunService.Data.Services.Implementations
         public Task<int> SaveChangesAsync()
         {
             return _db.SaveChangesAsync();
+        }
+
+        public void ResetDbContext()
+        {
+            _db = _serviceProvider.GetService<TSDbContext>();
         }
     }
 }

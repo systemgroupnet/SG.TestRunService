@@ -36,5 +36,6 @@ namespace SG.TestRunService.Data.Services
         void Add<TEntity>(TEntity entity) where TEntity : class, IEntity;
         void Remove<TEntity>(TEntity entity) where TEntity : class, IEntity;
         Task<int> SaveChangesAsync();
+        void ResetDbContext();
     }
 }

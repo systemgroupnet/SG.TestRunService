@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SG.TestRunService.Common.Models;
 using SG.TestRunService.Services;
-using SG.TestRunService.Utility;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SG.TestRunService.Controllers
@@ -14,10 +11,12 @@ namespace SG.TestRunService.Controllers
     public class TestImpactController : ControllerBase
     {
         private readonly ITestImpactService _service;
+        private readonly IRetryFacility _retryFacility;
 
-        public TestImpactController(ITestImpactService service)
+        public TestImpactController(ITestImpactService service, IRetryFacility retryFacility)
         {
             _service = service;
+            _retryFacility = retryFacility;
         }
 
         [HttpGet("lastUpdate")]
@@ -45,7 +44,7 @@ namespace SG.TestRunService.Controllers
         public async Task<IActionResult> PublichChanges(PublishImpactChangesRequest request)
         {
             var (response, error) =
-                await Helpers.RetryAsync(
+                await _retryFacility.RetryAsync(
                     operationName: "PublishChanges",
                     action: () => _service.PublishImpactChangesAsync(request));
 
@@ -61,7 +60,7 @@ namespace SG.TestRunService.Controllers
                 return BadRequest($"Query string parameter missing: \"{nameof(azureBuildDefinitionId)}\"");
 
             return Ok(
-                await Helpers.RetryAsync(
+                await _retryFacility.RetryAsync(
                     operationName: nameof(GetTestsToRun),
                     action: () => _service.GetTestsToRun(azureBuildDefinitionId.Value, allTests ?? false)));  ;
         }
@@ -69,7 +68,7 @@ namespace SG.TestRunService.Controllers
         [HttpPost("testrun/{testCaseId:int}")]
         public async Task<ActionResult> UpdateTestCaseImpact(int testCaseId, TestCaseImpactUpdateRequest request)
         {
-            await Helpers.RetryAsync(
+            await _retryFacility.RetryAsync(
                 operationName: nameof(UpdateTestCaseImpact),
                 action: () => _service.UpdateTestCaseImpactAsync(testCaseId, request));
             return Ok();

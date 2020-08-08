@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SG.TestRunService.Common.Models;
 using SG.TestRunService.Services;
-using SG.TestRunService.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,10 +17,12 @@ namespace SG.TestRunService.Controllers
     public class TestCasesController : ControllerBase
     {
         private readonly ITestCaseService _service;
+        private readonly IRetryFacility _retryFacility;
 
-        public TestCasesController(ITestCaseService service)
+        public TestCasesController(ITestCaseService service, IRetryFacility retryFacility)
         {
             _service = service;
+            _retryFacility = retryFacility;
         }
 
         [HttpGet]
@@ -75,7 +76,7 @@ namespace SG.TestRunService.Controllers
                 return BadRequest(ex.Message);
             }
 
-            var responses = await Helpers.RetryAsync(
+            var responses = await _retryFacility.RetryAsync(
                 operationName: "InsertTestCases",
                 action: () => _service.InsertAsync(testCaseRequests));
 

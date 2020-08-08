@@ -43,8 +43,12 @@ namespace SG.TestRunService
                     options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 });
 
-            services.AddDbContext<TSDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("db")));
+            services.AddDbContext<TSDbContext>(
+                options =>
+                {
+                    options.UseSqlServer(Configuration.GetConnectionString("db"));
+                },
+                ServiceLifetime.Transient);
 
             services.AddCors(options =>
             {
@@ -65,7 +69,8 @@ namespace SG.TestRunService
                                   .AllowAnyHeader());
             });
 
-            services.AddTransient<IBaseDbService, BaseDbService>();
+            services.AddScoped<IRetryFacility, PollyRetryDbErrorFacility>();
+            services.AddScoped<IBaseDbService, BaseDbService>();
             services.AddTransient<ITestRunSessionService, TestRunSessionService>();
             services.AddTransient<ITestCaseService, TestCaseService>();
             services.AddTransient<ITestImpactService, TestImpactService>();
