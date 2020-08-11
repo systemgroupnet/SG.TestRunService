@@ -45,7 +45,9 @@ namespace SG.TestRunService.ServiceImplementations
 
         public Task RetryAsync(string operationName, Func<Task> action)
         {
-            return RetryPolicy.ExecuteAsync(ctx => action(), new Context(operationName));
+            var context = new Context(operationName);
+            context[BaseDbServiceContextKey] = _dbService;
+            return RetryPolicy.ExecuteAsync(ctx => action(), context);
         }
 
         public Task<TResult> RetryAsync<TResult>(string operationName, Func<Task<TResult>> action)
