@@ -15,8 +15,6 @@ namespace SG.TestRunService.Common.Models
             Type = type;
         }
 
-        [Obsolete("Use `Path` property.")]
-        public string FileName { get; set; }
         public string Path { get; set; }
         public string Signature { get; set; }
         public CodeSignatureType Type { get; set; }

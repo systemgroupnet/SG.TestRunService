@@ -233,9 +233,7 @@ namespace SG.TestRunService.ServiceImplementations
                         {
                             dbCodeSignature = new Data.CodeSignature()
                             {
-#pragma warning disable 618
-                                Path = csToAdd.Path ?? csToAdd.FileName,
-#pragma warning restore 618
+                                Path = csToAdd.Path,
                                 Signature = csToAdd.Signature,
                                 Type = csToAdd.Type == 0 ? CodeSignatureType.File : csToAdd.Type
                             };
