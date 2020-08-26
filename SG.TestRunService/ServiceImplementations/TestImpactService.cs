@@ -124,7 +124,7 @@ namespace SG.TestRunService.ServiceImplementations
                 await InsertImpactHistoryAfterUpdate(buildInfo, response.CodeSignatureImpactedTestCaseIds);
             }
 
-            return (response, ServiceError.NoError());
+            return (response, ServiceError.NoError);
         }
 
         private async Task InsertImpactHistoryAfterUpdate(
@@ -346,7 +346,7 @@ namespace SG.TestRunService.ServiceImplementations
             testLastState.LastOutcomeProductBuildInfoId = testRunSessionInfo.BuildInfoId;
 
             await _dbService.SaveChangesAsync();
-            return ServiceError.NoError();
+            return ServiceError.NoError;
         }
 
         public async Task<IReadOnlyList<TestLastStateResponse>> GetTestLastStatesAsync(int testCaseId)

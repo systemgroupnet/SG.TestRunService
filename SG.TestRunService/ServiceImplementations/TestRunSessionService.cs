@@ -140,7 +140,7 @@ namespace SG.TestRunService.ServiceImplementations
             if (testRun.TestRunSessionId != sessionId)
                 return (null, ServiceError.NotFound($"TestRun with Id of {testRunId} does not belong to session {sessionId}."));
             await _dbService.DeleteAsync(testRun);
-            return (testRun.ToResponse(), ServiceError.NoError());
+            return (testRun.ToResponse(), ServiceError.NoError);
         }
 
         public async Task<IReadOnlyCollection<TestRunResponse>> DeleteTestRunsAsync(int sessionId)
