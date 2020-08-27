@@ -1,10 +1,10 @@
-﻿using SG.TestRunService.Data;
+﻿using SG.TestRunService.Common.Models;
 using SG.TestRunService.Data.FetchModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SG.TestRunService.Common.Models
+namespace SG.TestRunService.Data
 {
     internal static class ModelMappingExtensions
     {
@@ -31,7 +31,7 @@ namespace SG.TestRunService.Common.Models
 
             return extraData
                 .Select(
-                    e => new Data.ExtraData()
+                    e => new ExtraData()
                     {
                         Name = e.Key,
                         Value = e.Value.Value,
@@ -82,9 +82,9 @@ namespace SG.TestRunService.Common.Models
         #endregion ExtraData
         #region BuildInfo
 
-        public static Models.BuildInfo ToDto(this Data.BuildInfo buildInfo)
+        public static Common.Models.BuildInfo ToDto(this BuildInfo buildInfo)
         {
-            return new Models.BuildInfo()
+            return new Common.Models.BuildInfo()
             {
                 TeamProject = buildInfo.TeamProject,
                 AzureBuildDefinitionId = buildInfo.AzureBuildDefinitionId,
@@ -95,9 +95,9 @@ namespace SG.TestRunService.Common.Models
             };
         }
 
-        public static Data.BuildInfo ToDataModel(this Models.BuildInfo buildInfo)
+        public static BuildInfo ToDataModel(this Common.Models.BuildInfo buildInfo)
         {
-            return new Data.BuildInfo()
+            return new BuildInfo()
             {
                 TeamProject = buildInfo.TeamProject,
                 AzureBuildDefinitionId = buildInfo.AzureBuildDefinitionId,
@@ -108,9 +108,9 @@ namespace SG.TestRunService.Common.Models
             };
         }
 
-        public static IQueryable<Models.BuildInfo> Project(this IQueryable<Data.BuildInfo> query)
+        public static IQueryable<Common.Models.BuildInfo> Project(this IQueryable<BuildInfo> query)
         {
-            return query.Select(x => new BuildInfo()
+            return query.Select(x => new Common.Models.BuildInfo()
             {
                 TeamProject = x.TeamProject,
                 AzureBuildDefinitionId = x.AzureBuildDefinitionId,
@@ -191,7 +191,7 @@ namespace SG.TestRunService.Common.Models
                     Response = new TestRunSessionResponse()
                     {
                         Id = session.Id,
-                        ProductBuild = new BuildInfo()
+                        ProductBuild = new Common.Models.BuildInfo()
                         {
                             TeamProject = session.ProductBuildInfo.TeamProject,
                             AzureBuildDefinitionId = session.ProductBuildInfo.AzureBuildDefinitionId,
@@ -347,7 +347,7 @@ namespace SG.TestRunService.Common.Models
                 {
                     AzureProductBuildDefinitionId = l.AzureProductBuildDefinitionId,
                     UpdateDate = l.UpdateDate,
-                    ProductBuild = new BuildInfo()
+                    ProductBuild = new Common.Models.BuildInfo()
                     {
                         TeamProject = l.ProductBuildInfo.TeamProject,
                         AzureBuildDefinitionId = l.ProductBuildInfo.AzureBuildDefinitionId,
@@ -380,7 +380,7 @@ namespace SG.TestRunService.Common.Models
                 TestCaseId = lastState.TestCaseId,
                 AzureProductBuildDefinitionId = lastState.AzureProductBuildDefinitionId,
                 LastOutcome = lastState.LastOutcome,
-                LastOutcomeProductBuildInfo = new BuildInfo()
+                LastOutcomeProductBuildInfo = new Common.Models.BuildInfo()
                 {
                     TeamProject = lastState.LastOutcomeProductBuildInfo.TeamProject,
                     AzureBuildDefinitionId = lastState.LastOutcomeProductBuildInfo.AzureBuildDefinitionId,
@@ -390,7 +390,7 @@ namespace SG.TestRunService.Common.Models
                     BuildNumber = lastState.LastOutcomeProductBuildInfo.BuildNumber
                 },
                 LastOutcomeDate = lastState.LastOutcomeDate,
-                LastImpactedProductBuildInfo = new BuildInfo()
+                LastImpactedProductBuildInfo = new Common.Models.BuildInfo()
                 {
                     TeamProject = lastState.LastImpactedProductBuildInfo.TeamProject,
                     AzureBuildDefinitionId = lastState.LastImpactedProductBuildInfo.AzureBuildDefinitionId,
