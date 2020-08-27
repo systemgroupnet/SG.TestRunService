@@ -74,6 +74,7 @@ namespace SG.TestRunService
             services.AddTransient<ITestRunSessionService, TestRunSessionService>();
             services.AddTransient<ITestCaseService, TestCaseService>();
             services.AddTransient<ITestImpactService, TestImpactService>();
+            services.AddTransient<IProductLineService, ProductLineService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

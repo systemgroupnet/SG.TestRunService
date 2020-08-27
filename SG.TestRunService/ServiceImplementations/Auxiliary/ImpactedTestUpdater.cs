@@ -16,14 +16,14 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         private readonly IBaseDbService _dbService;
         private readonly Data.BuildInfo _buildInfo;
         private readonly ILogger<ImpactedTestUpdater> _logger;
-        private readonly int _azureBuildDefId;
+        private readonly int _productLineId;
 
-        public ImpactedTestUpdater(IBaseDbService dbService, Data.BuildInfo testRunSessionBuildInfo, ILogger<ImpactedTestUpdater> logger = null)
+        public ImpactedTestUpdater(IBaseDbService dbService, int productLineId, Data.BuildInfo buildInfo, ILogger<ImpactedTestUpdater> logger = null)
         {
             _dbService = dbService;
-            _buildInfo = testRunSessionBuildInfo;
+            _productLineId = productLineId;
+            _buildInfo = buildInfo;
             _logger = logger ?? new NullLogger<ImpactedTestUpdater>();
-            _azureBuildDefId = _buildInfo.AzureBuildDefinitionId;
         }
 
         public async Task<PublishImpactChangesResponse> UpdateImpactedTests(IEnumerable<string> changedCodeSignatures)
@@ -33,7 +33,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
             var impactItems =
                 from ii in _dbService.Query<TestCaseImpactItem>()
                 where
-                    ii.AzureProductBuildDefinitionId == _azureBuildDefId &&
+                    ii.ProductLineId == _productLineId &&
                     !ii.IsDeleted &&
                     changedCodeSignatures.Contains(ii.CodeSignature.Signature)
                 select ii;
@@ -92,7 +92,7 @@ namespace SG.TestRunService.ServiceImplementations.Auxiliary
         private IQueryable<TestLastState> GetTestLastStates()
         {
             return _dbService.Query<TestLastState>(tl =>
-                  tl.AzureProductBuildDefinitionId == _azureBuildDefId);
+                  tl.ProductLineId == _productLineId);
         }
 
         private void UpdateLastStateToImpacted(IReadOnlyCollection<TestLastState> testLastStates)

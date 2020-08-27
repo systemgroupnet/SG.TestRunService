@@ -7,6 +7,8 @@ namespace SG.TestRunService.Common.Models
     public class TestRunSessionRequest : IExtraDataContainer
     {
         [Required]
+        public ProductLine ProductLine { get; set; }
+        [Required]
         public BuildInfo ProductBuild { get; set; }
         [Required]
         public int AzureTestBuildId { get; set; }

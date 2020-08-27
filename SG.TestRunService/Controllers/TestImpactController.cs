@@ -20,23 +20,38 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpGet("lastUpdate")]
-        public Task<IReadOnlyList<LastImpactUpdateResponse>> GetLastUpdates()
+        public async Task<IActionResult> GetLastUpdate(string productLineKey, int? productLineId)
         {
-            return _service.GetLastImpactUpdatesAsync();
+            if ((productLineKey != null) && (productLineId != null))
+                return BadRequest($"Please specify only '{nameof(productLineKey)}' or '{nameof(productLineId)}'.");
+
+            if ((productLineKey == null) && (productLineId == null))
+                return Ok(await _service.GetLastImpactUpdatesAsync());
+
+            var (response, error) = await _service.GetLastImpactUpdateAsync(
+                new ProductLineIdOrKey()
+                {
+                    Id = productLineId,
+                    Key = productLineKey
+                });
+
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
+
+            return Ok(response);
         }
 
-        [HttpGet("lastUpdate/{azureProductBuildDefId:int}")]
-        public Task<LastImpactUpdateResponse> GetLastUpdate(int azureProductBuildDefId)
+        [HttpDelete("lastUpdate")]
+        public async Task<IActionResult> DeleteLastUpdate(string productLineKey, int? productLineId)
         {
-            return _service.GetLastImpactUpdateAsync(azureProductBuildDefId);
-        }
-
-        [HttpDelete("lastUpdate/{azureProductBuildDefId:int}")]
-        public async Task<IActionResult> DeleteLastUpdate(int azureProductBuildDefId)
-        {
-            var response = await _service.DeleteLastImpactUpdateAsync(azureProductBuildDefId);
-            if (response == null)
-                return NotFound();
+            var (response, error) = await _service.DeleteLastImpactUpdateAsync(
+                new ProductLineIdOrKey()
+                {
+                    Id = productLineId,
+                    Key = productLineKey
+                });
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
             return Ok(response);
         }
 
@@ -54,24 +69,32 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpGet("testsToRun")]
-        public async Task<IActionResult> GetTestsToRun([FromQuery] int? azureBuildDefinitionId, bool? allTests)
+        public async Task<IActionResult> GetTestsToRun(
+            string productLineKey, int? productLineId, bool? allTests)
         {
-            if (azureBuildDefinitionId == null)
-                return BadRequest($"Query string parameter missing: \"{nameof(azureBuildDefinitionId)}\"");
-
-            return Ok(
+            var (response, error) =
                 await _retryFacility.RetryAsync(
                     operationName: nameof(GetTestsToRun),
-                    action: () => _service.GetTestsToRun(azureBuildDefinitionId.Value, allTests ?? false)));  ;
+                    action: () => _service.GetTestsToRun(
+                        new ProductLineIdOrKey()
+                        {
+                            Key = productLineKey,
+                            Id = productLineId
+                        },
+                        allTests ?? false));
+
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
+            return Ok(response);
         }
 
         [HttpPost("testrun/{testCaseId:int}")]
-        public async Task<ActionResult> UpdateTestCaseImpact(int testCaseId, TestCaseImpactUpdateRequest request)
+        public async Task<IActionResult> UpdateTestCaseImpact(int testCaseId, TestCaseImpactUpdateRequest request)
         {
-            await _retryFacility.RetryAsync(
+            var error = await _retryFacility.RetryAsync(
                 operationName: nameof(UpdateTestCaseImpact),
                 action: () => _service.UpdateTestCaseImpactAsync(testCaseId, request));
-            return Ok();
+            return error.ToActionResult();
         }
 
         [HttpGet("lastState/{testCaseId:int}")]
@@ -87,17 +110,22 @@ namespace SG.TestRunService.Controllers
         public async Task<IActionResult> UpdateTestLastState(int testCaseId, TestLastStateUpdateRequest request)
         {
             var error = await _service.UpdateTestLastStateAsync(testCaseId, request);
-            if (!error.IsSuccessful())
-                return error.ToActionResult();
-            return Ok();
+            return error.ToActionResult();
         }
 
         [HttpDelete("lastState/{testCaseId:int}")]
-        public async Task<IActionResult> DeleteTestLastState(int testCaseId, int azureProductBuildDefId)
+        public async Task<IActionResult> DeleteTestLastState(int testCaseId, string productLineKey, int? productLineId)
         {
-            var response = await _service.DeleteTestLastStateAsync(testCaseId, azureProductBuildDefId);
-            if (response == null)
-                return NotFound();
+            var (response, error) =
+                await _service.DeleteTestLastStateAsync(
+                    testCaseId,
+                    new ProductLineIdOrKey()
+                    {
+                        Key = productLineKey,
+                        Id = productLineId
+                    });
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
             return Ok(response);
         }
     }

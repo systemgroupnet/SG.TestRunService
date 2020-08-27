@@ -7,7 +7,7 @@ namespace SG.TestRunService.Common.Models
     public class TestLastStateResponse
     {
         public int TestCaseId { get; set; }
-        public int AzureProductBuildDefinitionId { get; set; }
+        public int ProductLineId { get; set; }
 
         public TestRunOutcome LastOutcome { get; set; }
         public BuildInfo LastOutcomeProductBuildInfo { get; set; }

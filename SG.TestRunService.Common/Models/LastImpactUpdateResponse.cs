@@ -6,8 +6,7 @@ namespace SG.TestRunService.Common.Models
 {
     public class LastImpactUpdateResponse
     {
-        public int AzureProductBuildDefinitionId { get; set; }
-
+        public ProductLine ProductLine { get; set; }
         public DateTime UpdateDate { get; set; }
         public BuildInfo ProductBuild { get; set; }
     }

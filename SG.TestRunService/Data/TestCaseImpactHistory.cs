@@ -10,7 +10,7 @@ namespace SG.TestRunService.Data
     public class TestCaseImpactHistory : IEntity
     {
         public int TestCaseId { get; set; }
-        public int AzureProductBuildDefinitionId { get; set; }
+        public int ProductLineId { get; set; }
         public int CodeSignatureId { get; set; }
         public DateTime Date { get; set; }
         public int ProductBuildInfoId { get; set; }

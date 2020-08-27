@@ -15,6 +15,7 @@ namespace SG.TestRunClientLib
         private readonly TestRunClient _client;
         private readonly ITestRunClientConfiguration _configuration;
         private readonly TestRunSessionResponse _session;
+        private readonly ProductLine _productLine;
         private readonly string _project;
         private IReadOnlyList<TestCaseRequest> _testCaseRequests;
         private IReadOnlyList<TestCaseInfo> _testsToRun;
@@ -26,11 +27,13 @@ namespace SG.TestRunClientLib
             TestRunClient client,
             ITestRunClientConfiguration configuration,
             TestRunSessionResponse session,
+            ProductLine productLine,
             ILogger logger)
         {
             _client = client;
             _configuration = configuration;
             _session = session;
+            _productLine = productLine;
             _project = session.ProductBuild.TeamProject;
             _logger = logger;
         }
@@ -45,9 +48,10 @@ namespace SG.TestRunClientLib
             logger.Info("'TestRunClient' created.");
 
             var response = await client.InsertSessionAsync(sessionRequest);
+            var productLine = response.ProductLine;
             logger.Debug("'TestRunSession' inserted: " + ObjToString(response));
 
-            return new TestRunSessionAgent(client, configuration, response, logger);
+            return new TestRunSessionAgent(client, configuration, response, productLine, logger);
         }
 
         public async Task IntroduceTestCasesAsync(IEnumerable<TestCaseRequest> tests)
@@ -65,19 +69,6 @@ namespace SG.TestRunClientLib
             }
         }
 
-        private async Task<BuildInfo> GetBaseBuildAsync()
-        {
-            var build = _session.ProductBuild;
-            var lastUpdate = await _client.GetLastImpactUpdateAsync(build.AzureBuildDefinitionId);
-            if (lastUpdate == null)
-            {
-                LogDebug("No previous impact info is available for pipeline " + build.AzureBuildDefinitionId);
-                return null;
-            }
-            LogDebug("Previous update information:", lastUpdate);
-            return lastUpdate.ProductBuild;
-        }
-
         public async Task<IReadOnlyList<TestCaseInfo>> GetTestsToRunAsync(bool runAllTests = false)
         {
             if (_testCaseRequests == null)
@@ -89,7 +80,7 @@ namespace SG.TestRunClientLib
                 return _testsToRun;
             }
 
-            var response = await _client.GetTestsToRun(_session.ProductBuild.AzureBuildDefinitionId, runAllTests);
+            var response = await _client.GetTestsToRun(_productLine, runAllTests);
             var azureIdToTestCases = _testCaseRequests.ToDictionary(t => t.AzureTestCaseId);
             var testsToRun = new List<TestCaseInfo>();
             foreach (var tr in response)
@@ -206,7 +197,7 @@ namespace SG.TestRunClientLib
 
             var impactRequest = new TestCaseImpactUpdateRequest()
             {
-                AzureProductBuildDefinitionId = _session.ProductBuild.AzureBuildDefinitionId,
+                ProductLine = _productLine,
                 CodeSignatures = codeSignatures
             };
 
@@ -230,7 +221,7 @@ namespace SG.TestRunClientLib
 
             var lastStateRequest = new TestLastStateUpdateRequest()
             {
-                AzureProductBuildDefinitionId = _session.ProductBuild.AzureBuildDefinitionId,
+                ProductLine = _productLine,
                 TestRunSessionId = _session.Id,
                 Outcome = outcome
             };

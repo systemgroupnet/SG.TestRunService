@@ -17,6 +17,7 @@ namespace SG.TestRunService.Data
         }
 
         public int Id { get; set; }
+        public int ProductLineId { get; set; }
         public int ProductBuildInfoId { get; set; }
         public int AzureTestBuildId { get; set; }
         [Required]
@@ -36,6 +37,8 @@ namespace SG.TestRunService.Data
         public IList<Attachment> Attachments { get; set; }
         [OnDelete(DeleteBehavior.Cascade)]
         public IList<ExtraData> ExtraData { get; set; }
+        [OnDelete(DeleteBehavior.Restrict)]
+        public ProductLine ProductLine { get; set; }
 
         [Timestamp]
         public byte[] Timestamp { get; set; }

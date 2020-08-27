@@ -22,9 +22,11 @@ namespace SG.TestRunService.Controllers
         }
 
         [HttpPost("")]
-        public async Task<ActionResult<TestRunSessionResponse>> Insert(TestRunSessionRequest sessionRequest)
+        public async Task<IActionResult> Insert(TestRunSessionRequest sessionRequest)
         {
-            var sessionResponse = await _service.InsertSessionAsync(sessionRequest);
+            var (sessionResponse, error) = await _service.InsertSessionAsync(sessionRequest);
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
             return CreatedAtAction(nameof(GetById), new { sessionId = sessionResponse.Id }, sessionResponse);
         }
 

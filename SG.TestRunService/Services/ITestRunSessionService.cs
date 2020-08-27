@@ -9,7 +9,7 @@ namespace SG.TestRunService.Services
 {
     public interface ITestRunSessionService
     {
-        Task<TestRunSessionResponse> InsertSessionAsync(TestRunSessionRequest session);
+        Task<(TestRunSessionResponse, ServiceError)> InsertSessionAsync(TestRunSessionRequest sessionDto);
         Task<TestRunSessionResponse> DeleteSessionAsync(int sessionId);
         Task<IReadOnlyList<TestRunSessionResponse>> GetAllSessionsAsync();
         Task<TestRunSessionResponse> GetSessionAsync(int sessionId);

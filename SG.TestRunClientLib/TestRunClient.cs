@@ -110,9 +110,10 @@ namespace SG.TestRunClientLib
             return await SendAsync<TestCaseResponse>(HttpMethod.Post, "testcases", testCaseRequest);
         }
 
-        public async Task<LastImpactUpdateResponse> GetLastImpactUpdateAsync(int azureProductBuildDefId)
+        public async Task<LastImpactUpdateResponse> GetLastImpactUpdateAsync(ProductLineIdOrKey productLine)
         {
-            return await SendAsync<LastImpactUpdateResponse>(HttpMethod.Get, "impact/lastUpdate/" + azureProductBuildDefId);
+            string query = GetProductLineQuery(productLine);
+            return await SendAsync<LastImpactUpdateResponse>(HttpMethod.Get, "impact/lastUpdate?" + query);
         }
 
         public async Task<PublishImpactChangesResponse> PublishImpactChangesAsync(
@@ -121,11 +122,12 @@ namespace SG.TestRunClientLib
             return await SendAsync<PublishImpactChangesResponse>(HttpMethod.Post, "impact/changes", impactChangeRequest);
         }
 
-        public async Task<IReadOnlyList<TestToRunResponse>> GetTestsToRun(int azureBuildDefinitionId, bool allTests = false)
+        public async Task<IReadOnlyList<TestToRunResponse>> GetTestsToRun(ProductLineIdOrKey productLine, bool allTests = false)
         {
+            string query = GetProductLineQuery(productLine);
             return await SendAsync<IReadOnlyList<TestToRunResponse>>(
                 HttpMethod.Get,
-                $"impact/testsToRun?azureBuildDefinitionId={azureBuildDefinitionId}&allTests={allTests}");
+                $"impact/testsToRun?{query}&allTests={allTests}");
         }
 
         public async Task<TestRunResponse> InsertTestRunAsync(int sessionId, TestRunRequest testRunRequest)
@@ -157,6 +159,19 @@ namespace SG.TestRunClientLib
         {
             await SendAsync<IReadOnlyCollection<TestLastStateResponse>>(HttpMethod.Post, "impact/lastState/" + testCaseId, request);
         }
+
+        private static string GetProductLineQuery(ProductLineIdOrKey productLine)
+        {
+            string query;
+            if (productLine.Id.HasValue)
+                query = "productLineId=" + productLine.Id.Value;
+            else if (!string.IsNullOrEmpty(productLine.Key))
+                query = "productLineKey=" + productLine.Key;
+            else
+                throw new ArgumentException("ProductLine's Id or Key should be specified.");
+            return query;
+        }
+
     }
 }
 

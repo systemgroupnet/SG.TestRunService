@@ -14,10 +14,10 @@ namespace SG.TestRunService.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TestCaseImpactItem>()
-                .HasKey(i => new { i.AzureProductBuildDefinitionId, i.CodeSignatureId, i.TestCaseId });
+                .HasKey(i => new { i.ProductLineId, i.CodeSignatureId, i.TestCaseId });
 
             modelBuilder.Entity<TestCaseImpactHistory>()
-                .HasKey(i => new { i.AzureProductBuildDefinitionId, i.CodeSignatureId, i.TestCaseId, i.ProductBuildInfoId });
+                .HasKey(i => new { i.ProductLineId, i.CodeSignatureId, i.TestCaseId, i.ProductBuildInfoId });
 
             ConfigureIndexes(modelBuilder);
             Infrastructure.OnDeleteAttribute.Apply(modelBuilder);
@@ -33,7 +33,7 @@ namespace SG.TestRunService.Data
                 .HasIndex(t => new { t.AzureTestCaseId })
                 .IsUnique();
             modelBuilder.Entity<TestLastState>()
-                .HasIndex(t => new { t.TestCaseId, t.AzureProductBuildDefinitionId })
+                .HasIndex(t => new { t.TestCaseId, t.ProductLineId })
                 .IsUnique();
             modelBuilder.Entity<TestRun>()
                 .HasIndex(t => new { t.TestRunSessionId, t.TestCaseId })
@@ -42,12 +42,13 @@ namespace SG.TestRunService.Data
                 .HasIndex(b => new { b.AzureBuildDefinitionId, b.AzureBuildId })
                 .IsUnique();
             modelBuilder.Entity<LastImpactUpdate>()
-                .HasIndex(e => e.AzureProductBuildDefinitionId)
+                .HasIndex(e => e.ProductLineId)
                 .IsUnique();
             modelBuilder.Entity<TestCaseImpactItem>()
-                .HasIndex(e => new { e.AzureProductBuildDefinitionId, e.TestCaseId });
+                .HasIndex(e => new { e.ProductLineId, e.TestCaseId });
         }
 
+        public DbSet<ProductLine> ProductLine { get; set; }
         public DbSet<TestCase> TestCase { get; }
         public DbSet<BuildInfo> BuildInfo { get; }
         public DbSet<TestRunSession> TestRunSession { get; }

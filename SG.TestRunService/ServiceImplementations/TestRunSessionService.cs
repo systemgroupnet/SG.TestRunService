@@ -13,13 +13,15 @@ namespace SG.TestRunService.ServiceImplementations
     public class TestRunSessionService : ITestRunSessionService
     {
         private readonly IBaseDbService _dbService;
+        private readonly IProductLineService _productLineService;
 
-        public TestRunSessionService(IBaseDbService dbService)
+        public TestRunSessionService(IBaseDbService dbService, IProductLineService productLineService)
         {
             _dbService = dbService;
+            _productLineService = productLineService;
         }
 
-        public async Task<TestRunSessionResponse> InsertSessionAsync(TestRunSessionRequest sessionDto)
+        public async Task<(TestRunSessionResponse, ServiceError)> InsertSessionAsync(TestRunSessionRequest sessionDto)
         {
             var build = await _dbService.Query<Data.BuildInfo>(b =>
                    b.AzureBuildDefinitionId == sessionDto.ProductBuild.AzureBuildDefinitionId &&
@@ -30,11 +32,19 @@ namespace SG.TestRunService.ServiceImplementations
                 build = sessionDto.ProductBuild.ToDataModel();
                 _dbService.Add(build);
             }
+            var (productLine, error) = await _productLineService.GetOrInsertProductLineAsync(sessionDto.ProductLine);
+
+            if (!error.IsSuccessful())
+                return (null, error);
+
+            sessionDto.ProductLine = productLine.ToDto();
             var session = sessionDto.ToDataModel();
             session.ProductBuildInfo = build;
             _dbService.Add(session);
             await _dbService.SaveChangesAsync();
-            return session.ToResponse();
+            var response = session.ToResponse();
+            response.ProductLine = sessionDto.ProductLine;
+            return (response, ServiceError.NoError);
         }
 
         public async Task<TestRunSessionResponse> DeleteSessionAsync(int sessionId)

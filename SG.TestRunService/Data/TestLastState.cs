@@ -13,7 +13,7 @@ namespace SG.TestRunService.Data
         public int Id { get; set; }
 
         public int TestCaseId { get; set; }
-        public int AzureProductBuildDefinitionId { get; set; }
+        public int ProductLineId { get; set; }
 
         public TestRunOutcome LastOutcome { get; set; }
         public int LastOutcomeProductBuildInfoId { get; set; }
@@ -34,6 +34,9 @@ namespace SG.TestRunService.Data
 
         [OnDelete(DeleteBehavior.Restrict)]
         public BuildInfo LastImpactedProductBuildInfo { get; set; }
+
+        [OnDelete(DeleteBehavior.Cascade)]
+        public ProductLine ProductLine { get; set; }
 
         public bool IsImpactedAfter(DateTime dateTimeToCompare)
         {

@@ -21,7 +21,7 @@ namespace SG.TestRunService.Services
 
         public static ServiceError NoError { get; } = new ServiceError(ServiceErrorCategory.NoError, null);
 
-        public static ServiceError NotFound(string message)
+        public static ServiceError NotFound(string message = null)
         {
             return new ServiceError(ServiceErrorCategory.NotFound, message);
         }

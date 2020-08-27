@@ -8,6 +8,7 @@ namespace SG.TestRunService.Common.Models
     public class TestRunSessionResponse : IExtraDataContainer
     {
         public int Id { get; set; }
+        public ProductLine ProductLine { get; set; }
         public BuildInfo ProductBuild { get; set; }
         public int AzureTestBuildId { get; set; }
         public string AzureTestBuildNumber { get; set; }

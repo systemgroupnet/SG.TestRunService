@@ -122,12 +122,28 @@ namespace SG.TestRunService.Data
         }
 
         #endregion BuildInfo
+        #region ProductLine
+
+        public static Common.Models.ProductLine ToDto(this ProductLine productLine)
+        {
+            return new Common.Models.ProductLine()
+            {
+                Id = productLine.Id,
+                Key = productLine.Key,
+                AzureProductBuildDefinitionId = productLine.AzureProductBuildDefinitionId
+            };
+        }
+
+        #endregion
         #region TestRunSession
 
         public static TestRunSession ToDataModel(this TestRunSessionRequest r)
         {
+            if (r.ProductLine.Id == null)
+                throw new ArgumentException("`ProductLine.Id` is required.");
             return new TestRunSession()
             {
+                ProductLineId = r.ProductLine.Id.Value,
                 ProductBuildInfo = r.ProductBuild.ToDataModel(),
                 AzureTestBuildId = r.AzureTestBuildId,
                 AzureTestBuildNumber = r.AzureTestBuildNumber,
@@ -145,6 +161,9 @@ namespace SG.TestRunService.Data
             return new TestRunSessionResponse()
             {
                 Id = session.Id,
+                ProductLine = session.ProductLine != null
+                    ? session.ProductLine.ToDto()
+                    : new Common.Models.ProductLine() { Id = session.ProductLineId },
                 ProductBuild = session.ProductBuildInfo?.ToDto(),
                 AzureTestBuildId = session.AzureTestBuildId,
                 AzureTestBuildNumber = session.AzureTestBuildNumber,
@@ -160,6 +179,9 @@ namespace SG.TestRunService.Data
         {
             return new TestRunSessionRequest()
             {
+                ProductLine = session.ProductLine != null
+                    ? session.ProductLine.ToDto()
+                    : new Common.Models.ProductLine() { Id = session.ProductLineId },
                 AzureTestBuildId = session.AzureTestBuildId,
                 AzureTestBuildNumber = session.AzureTestBuildNumber,
                 SuiteName = session.SuiteName,
@@ -174,6 +196,8 @@ namespace SG.TestRunService.Data
 
         public static void Update(this TestRunSessionRequest request, TestRunSession session)
         {
+            if (request.ProductLine.Id.HasValue)
+                session.ProductLineId = request.ProductLine.Id.Value;
             session.AzureTestBuildId = request.AzureTestBuildId;
             session.AzureTestBuildNumber = request.AzureTestBuildNumber;
             session.SuiteName = request.SuiteName;
@@ -191,6 +215,12 @@ namespace SG.TestRunService.Data
                     Response = new TestRunSessionResponse()
                     {
                         Id = session.Id,
+                        ProductLine = new Common.Models.ProductLine()
+                        {
+                            Id = session.ProductLineId,
+                            Key = session.ProductLine.Key,
+                            AzureProductBuildDefinitionId = session.ProductLine.AzureProductBuildDefinitionId
+                        },
                         ProductBuild = new Common.Models.BuildInfo()
                         {
                             TeamProject = session.ProductBuildInfo.TeamProject,
@@ -345,7 +375,12 @@ namespace SG.TestRunService.Data
             return query.Select(
                 l => new LastImpactUpdateResponse()
                 {
-                    AzureProductBuildDefinitionId = l.AzureProductBuildDefinitionId,
+                    ProductLine = new Common.Models.ProductLine()
+                    {
+                        Id = l.ProductLineId,
+                        Key = l.ProductLine.Key,
+                        AzureProductBuildDefinitionId = l.ProductLine.AzureProductBuildDefinitionId
+                    },
                     UpdateDate = l.UpdateDate,
                     ProductBuild = new Common.Models.BuildInfo()
                     {
@@ -363,7 +398,9 @@ namespace SG.TestRunService.Data
         {
             var response = new LastImpactUpdateResponse()
             {
-                AzureProductBuildDefinitionId = lastImpactUpdate.AzureProductBuildDefinitionId,
+                ProductLine = lastImpactUpdate.ProductLine != null
+                    ? lastImpactUpdate.ProductLine.ToDto()
+                    : new Common.Models.ProductLine() { Id = lastImpactUpdate.ProductLineId },
                 UpdateDate = lastImpactUpdate.UpdateDate,
                 ProductBuild = lastImpactUpdate.ProductBuildInfo?.ToDto()
             };
@@ -378,7 +415,7 @@ namespace SG.TestRunService.Data
             return lastStates.Select(lastState => new TestLastStateResponse()
             {
                 TestCaseId = lastState.TestCaseId,
-                AzureProductBuildDefinitionId = lastState.AzureProductBuildDefinitionId,
+                ProductLineId = lastState.ProductLineId,
                 LastOutcome = lastState.LastOutcome,
                 LastOutcomeProductBuildInfo = new Common.Models.BuildInfo()
                 {
@@ -410,7 +447,7 @@ namespace SG.TestRunService.Data
             return new TestLastStateResponse()
             {
                 TestCaseId = testLastState.TestCaseId,
-                AzureProductBuildDefinitionId = testLastState.AzureProductBuildDefinitionId,
+                ProductLineId = testLastState.ProductLineId,
                 LastOutcome = testLastState.LastOutcome,
                 LastOutcomeProductBuildInfo = testLastState.LastOutcomeProductBuildInfo.ToDto(),
                 LastOutcomeDate = testLastState.LastOutcomeDate,

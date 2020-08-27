@@ -6,7 +6,7 @@ namespace SG.TestRunService.Common.Models
 {
     public class TestCaseImpactUpdateRequest
     {
-        public int AzureProductBuildDefinitionId { get; set; }
+        public ProductLine ProductLine { get; set; }
         public IList<CodeSignature> CodeSignatures { get; set; } 
     }
 }

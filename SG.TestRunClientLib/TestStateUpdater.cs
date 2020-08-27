@@ -13,17 +13,25 @@ namespace SG.TestRunClientLib
     {
         private readonly TestRunClient _client;
         private readonly IDevOpsServerHandle _devOpsServerHandle;
+        private readonly string _productLineKey;
+        private readonly ProductLine _productLine;
         private readonly BuildInfo _build;
         private readonly ILogger _logger;
 
         private static readonly JsonSerializerSettings _logSerializerSettings = CreateLogSerializerSettings();
 
-        public TestStateUpdater(TestRunClient client, IDevOpsServerHandle devOpsServerHandle, BuildInfo build, ILogger logger = null)
+        public TestStateUpdater(TestRunClient client, IDevOpsServerHandle devOpsServerHandle, string productLineKey, BuildInfo build, ILogger logger = null)
         {
             _client = client;
             _devOpsServerHandle = devOpsServerHandle;
+            _productLineKey = productLineKey;
             _build = build;
             _logger = logger ?? new NullLogger();
+            _productLine = new ProductLine()
+            {
+                Key = _productLineKey,
+                AzureProductBuildDefinitionId = _build.AzureBuildDefinitionId
+            };
         }
 
         public async Task<PublishImpactChangesResponse> PublishChanges()
@@ -32,7 +40,7 @@ namespace SG.TestRunClientLib
             var baseBuild = await GetBaseBuildAsync();
             if (baseBuild == null)
             {
-                _logger.Info("This is the first test session for pipeline " + _build.AzureBuildDefinitionId + ". All tests will be run.");
+                _logger.Info($"This is the first test session for pipeline {_build.AzureBuildDefinitionId}, product-line '{_productLineKey}'. All tests will be run.");
                 return await PublishNoBaseBuild();
             }
             var baseSourceVersion = baseBuild.SourceVersion;
@@ -54,7 +62,7 @@ namespace SG.TestRunClientLib
         {
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
-                AzureProductBuildDefinitionId = _build.AzureBuildDefinitionId,
+                ProductLine = _productLine,
                 ProductBuild = _build,
                 CodeSignatures = new List<string>(),
                 NoBaseBuild = true
@@ -67,7 +75,7 @@ namespace SG.TestRunClientLib
             var codeSignaturesDict = changedFilesOrMethods.Distinct().ToDictionary(CodeSignatureUtils.CalculateSignature);
             PublishImpactChangesRequest req = new PublishImpactChangesRequest()
             {
-                AzureProductBuildDefinitionId = _build.AzureBuildDefinitionId,
+                ProductLine = _productLine,
                 ProductBuild = _build,
                 CodeSignatures = codeSignaturesDict.Keys
             };
@@ -90,7 +98,7 @@ namespace SG.TestRunClientLib
 
         private async Task<BuildInfo> GetBaseBuildAsync()
         {
-            var lastUpdate = await _client.GetLastImpactUpdateAsync(_build.AzureBuildDefinitionId);
+            var lastUpdate = await _client.GetLastImpactUpdateAsync(_productLine);
             if (lastUpdate == null)
             {
                 _logger.Debug("No previous impact info is available for pipeline " + _build.AzureBuildDefinitionId);
