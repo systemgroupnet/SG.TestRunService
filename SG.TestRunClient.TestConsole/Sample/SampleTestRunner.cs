@@ -35,7 +35,7 @@ namespace SG.TestRunClient.TestConsole.Sample
             };
             _agent = await TestRunSessionFactory.StartAsync(
                 new TestRunClientJsonFileConfiguration("appsettings.json"),
-                build, suite, testBuildId, testBuildNumber, new ConsoleLogger(),
+                build, suite, testBuildId, testBuildNumber, "test1", new ConsoleLogger(),
                 new Dictionary<string, ExtraDataValue>()
                 {
                     ["AgentName"] = new ExtraDataValue("ws-223")

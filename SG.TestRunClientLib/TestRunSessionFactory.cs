@@ -12,6 +12,7 @@ namespace SG.TestRunClientLib
             ITestRunClientConfiguration configuration,
             BuildInfo productBuild, string suiteName,
             int testBuildId, string testBuildNumber,
+            string productLineKey = null,
             ILogger logger = null,
             IDictionary<string, ExtraDataValue> extraData = null)
         {
@@ -23,10 +24,23 @@ namespace SG.TestRunClientLib
                 SuiteName = suiteName,
                 StartTime = DateTime.Now,
                 State = TestRunSessionState.NotStarted,
-                ExtraData = extraData
+                ExtraData = extraData,
+                ProductLine = new ProductLine()
+                {
+                    Key = productLineKey ?? ExtractBuildName(productBuild) ?? productBuild.AzureBuildDefinitionId.ToString(),
+                    AzureProductBuildDefinitionId = productBuild.AzureBuildDefinitionId
+                }
             };
 
             return await TestRunSessionAgent.CreateAsync(configuration, sessionRequest, logger);
+        }
+
+        private static string ExtractBuildName(BuildInfo build)
+        {
+            var i = build.BuildNumber.LastIndexOf('_');
+            if (i > 0)
+                return build.BuildNumber.Substring(0, i);
+            return null;
         }
     }
 }
