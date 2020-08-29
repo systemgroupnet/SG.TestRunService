@@ -35,7 +35,7 @@ namespace SG.TestRunService.Controllers
                     Key = productLineKey
                 });
 
-            if (!error.IsSuccessful())
+            if (!error.IsSuccessful() && error.Category != ServiceErrorCategory.NotFound)
                 return error.ToActionResult();
 
             return Ok(response);
