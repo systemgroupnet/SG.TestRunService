@@ -130,7 +130,7 @@ namespace SG.TestRunClientLib
             sb.AppendLine(new string('=', headerLine.Length));
             if (testCases.Count > 0)
             {
-                var reasons = string.Join(",",
+                var reasons = string.Join(", ",
                     testCases.GroupBy(t => t.RunReason).Select(g => g.Count().ToString() + " " + g.Key));
                 sb.Append("Reasons: ").AppendLine(reasons);
             }
