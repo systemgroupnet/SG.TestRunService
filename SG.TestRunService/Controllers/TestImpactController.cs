@@ -128,5 +128,22 @@ namespace SG.TestRunService.Controllers
                 return error.ToActionResult();
             return Ok(response);
         }
+
+
+        [HttpGet("lineImpactStats")]
+        public async Task<IActionResult> GetProdutionLineMethodImpactStats(string productLineKey, int? productLineId)
+        {
+            var (response, error) =
+                await _service.GetProductLineMathodImpactStats(
+                    new ProductLineIdOrKey
+                    {
+                        Key = productLineKey,
+                        Id = productLineId
+                    });
+            if (!error.IsSuccessful())
+                return error.ToActionResult();
+
+            return Ok(response);
+        }
     }
 }

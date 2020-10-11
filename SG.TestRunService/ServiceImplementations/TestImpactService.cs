@@ -458,5 +458,24 @@ namespace SG.TestRunService.ServiceImplementations
 
             return (await testsToRun.ToListAsync(), ServiceError.NoError);
         }
+
+        public async Task<(IReadOnlyList<ProductLineMethodImpactStat>, ServiceError)> GetProductLineMathodImpactStats(ProductLineIdOrKey productLine)
+        {
+            var (productLineId, error) = await _productLineService.GetProductLineIdAsync(productLine);
+            if (!error.IsSuccessful())
+                return (null, error);
+
+            var result = from cs in _dbService.Query<Data.CodeSignature>(csig => csig.Type == CodeSignatureType.Method)
+            join ti in _dbService.Query<TestCaseImpactItem>(tci => tci.ProductLineId == productLineId) on cs.Id equals ti.CodeSignatureId
+            where ti.IsDeleted == false
+            group cs by cs.Path into g
+            select new ProductLineMethodImpactStat
+            {
+                MethodFullName = g.Key,
+                ImpactedTestCasesCount = g.Count()
+            };
+
+            return (result.ToList().AsReadOnly(), ServiceError.NoError);
+        }
     }
 }

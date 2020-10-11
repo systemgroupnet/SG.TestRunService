@@ -18,5 +18,6 @@ namespace SG.TestRunService.Services
         Task<(LastImpactUpdateResponse, ServiceError)> DeleteLastImpactUpdateAsync(ProductLineIdOrKey productLine);
         Task<(TestLastStateResponse, ServiceError)> DeleteTestLastStateAsync(int testCaseId, ProductLineIdOrKey productLine);
         Task<(IReadOnlyCollection<TestToRunResponse>, ServiceError)> GetTestsToRun(ProductLineIdOrKey productLine, bool allTests = false);
+        Task<(IReadOnlyList<ProductLineMethodImpactStat>, ServiceError)> GetProductLineMathodImpactStats(ProductLineIdOrKey productLine);
     }
 }
