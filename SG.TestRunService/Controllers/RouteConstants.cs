@@ -14,5 +14,6 @@ namespace SG.TestRunService.Controllers
         public static string GetSessionTestRuns(int sessionId) => $"{Sessions}/{sessionId}/runs";
         public static string GetSessionTestRun(int sessionId, int runId) => $"{GetSessionTestRuns(sessionId)}/{runId}";
         public const string TestCases = ApiRoot + "/testcases";
+        public const string ProductLine = ApiRoot + "/productline";
     }
 }

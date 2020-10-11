@@ -20,6 +20,11 @@ namespace SG.TestRunService.ServiceImplementations
             _dbService = dbService;
         }
 
+        public async Task<(IReadOnlyList<Data.ProductLine>, ServiceError)> GetAllProductLines()
+        {
+            return (await _dbService.GetAllAsync<Data.ProductLine>(), ServiceError.NoError);
+        }
+
         public Task<(Data.ProductLine, ServiceError)> GetProductLineAsync(ProductLineIdOrKey productLine)
         {
             return GetProductLineInternalAsync(productLine, p => p);
