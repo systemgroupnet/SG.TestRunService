@@ -20,7 +20,7 @@ namespace SG.TestRunService.ServiceImplementations
             _dbService = dbService;
         }
 
-        public async Task<(IReadOnlyList<Data.ProductLine>, ServiceError)> GetAllProductLines()
+        public async Task<(IReadOnlyList<Data.ProductLine>, ServiceError)> GetAllProductLinesAsync()
         {
             return (await _dbService.GetAllAsync<Data.ProductLine>(), ServiceError.NoError);
         }

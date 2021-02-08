@@ -21,7 +21,7 @@ namespace SG.TestRunService.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var (result, _) = await _productLineService.GetAllProductLines();
+            var (result, _) = await _productLineService.GetAllProductLinesAsync();
             return Ok(result);
         }
     }
