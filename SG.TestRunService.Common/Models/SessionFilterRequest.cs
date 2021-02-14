@@ -8,10 +8,16 @@ namespace SG.TestRunService.Common.Models
     {
         public string ProjectName { get; set; }
 
-        public long? StartThreshold { get; set; }
+        public DateTime? StartedBefore { get; set; }
 
-        public long? CompletedThreshold { get; set; }
+        public DateTime? StartedAfter { get; set; }
 
-        public int? Max { get; set; }
+        public DateTime? CompletedBefore { get; set; }
+
+        public DateTime? CompletedAfter { get; set; }
+
+        public int? Top { get; set; }
+
+        public int? Skip { get; set; }
     }
 }

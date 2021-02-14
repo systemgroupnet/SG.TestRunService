@@ -60,20 +60,29 @@ namespace SG.TestRunService.ServiceImplementations
             return await _dbService.Query<TestRunSession>().MaterializeAllAsync();
         }
 
-        public async Task<IReadOnlyList<TestRunSessionResponse>> GetSessionsAsync(SessionFilterRequest sessionFilter)
+        public async Task<IReadOnlyList<TestRunSessionResponse>> GetAllSessionsAsync(SessionFilterRequest sessionFilter)
         {
             var query = _dbService.Query<TestRunSession>();
 
             query = string.IsNullOrWhiteSpace(sessionFilter.ProjectName) ? query :
                 query.Where(x => string.Equals(x.ProductBuildInfo.TeamProject, sessionFilter.ProjectName, StringComparison.OrdinalIgnoreCase));
 
-            query = sessionFilter.StartThreshold.HasValue ?
-                    query.Where(x => ((DateTimeOffset)x.StartTime).ToUnixTimeMilliseconds() > sessionFilter.StartThreshold.Value) : query;
+            query = sessionFilter.StartedBefore.HasValue ?
+                    query.Where(x => x.StartTime < sessionFilter.StartedBefore.Value) : query;
 
-            query = sessionFilter.CompletedThreshold.HasValue ?
-                    query.Where(x => ((DateTimeOffset)x.FinishTime).ToUnixTimeMilliseconds() > sessionFilter.CompletedThreshold.Value) : query;
+            query = sessionFilter.StartedAfter.HasValue ?
+                    query.Where(x =>  x.StartTime > sessionFilter.StartedAfter.Value) : query;
 
-            query = sessionFilter.Max.HasValue ? query.Take(sessionFilter.Max.Value) : query;
+            query = sessionFilter.CompletedBefore.HasValue ?
+                    query.Where(x => x.FinishTime < sessionFilter.CompletedBefore.Value) : query;
+
+            query = sessionFilter.CompletedAfter.HasValue ?
+                    query.Where(x => x.FinishTime > sessionFilter.CompletedAfter.Value) : query;
+
+            query = sessionFilter.Skip.HasValue ? query.Skip(sessionFilter.Skip.Value) : query;
+
+            query = sessionFilter.Top.HasValue ? query.Take(sessionFilter.Top.Value) : query;
+
 
             return await query.MaterializeAllAsync();
         }
