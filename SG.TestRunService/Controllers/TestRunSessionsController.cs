@@ -45,6 +45,12 @@ namespace SG.TestRunService.Controllers
             return await _service.GetAllSessionsAsync();
         }
 
+        [HttpPost("filter")]
+        public async Task<IReadOnlyList<TestRunSessionResponse>> GetFiltered(SessionFilterRequest sessionFilter)
+        {
+            return await _service.GetSessionsAsync(sessionFilter);
+        }
+
         [HttpGet("{sessionId:int}")]
         public async Task<ActionResult<TestRunSessionResponse>> GetById(int sessionId)
         {

@@ -60,6 +60,24 @@ namespace SG.TestRunService.ServiceImplementations
             return await _dbService.Query<TestRunSession>().MaterializeAllAsync();
         }
 
+        public async Task<IReadOnlyList<TestRunSessionResponse>> GetSessionsAsync(SessionFilterRequest sessionFilter)
+        {
+            var query = _dbService.Query<TestRunSession>();
+
+            query = string.IsNullOrWhiteSpace(sessionFilter.ProjectName) ? query :
+                query.Where(x => string.Equals(x.ProductBuildInfo.TeamProject, sessionFilter.ProjectName, StringComparison.OrdinalIgnoreCase));
+
+            query = sessionFilter.StartThreshold.HasValue ?
+                    query.Where(x => ((DateTimeOffset)x.StartTime).ToUnixTimeMilliseconds() > sessionFilter.StartThreshold.Value) : query;
+
+            query = sessionFilter.CompletedThreshold.HasValue ?
+                    query.Where(x => ((DateTimeOffset)x.FinishTime).ToUnixTimeMilliseconds() > sessionFilter.CompletedThreshold.Value) : query;
+
+            query = sessionFilter.Max.HasValue ? query.Take(sessionFilter.Max.Value) : query;
+
+            return await query.MaterializeAllAsync();
+        }
+
         public Task<TestRunSessionResponse> GetSessionAsync(int sessionId)
         {
             return _dbService.Query<TestRunSession>(sessionId).MaterializeFirstOrDefaultAsync();
@@ -163,6 +181,10 @@ namespace SG.TestRunService.ServiceImplementations
             await _dbService.SaveChangesAsync();
             return testRuns.Select(tr => tr.ToResponse()).ToList();
         }
+
+
     }
+
+
 }
 
