@@ -74,10 +74,10 @@ namespace SG.TestRunService.ServiceImplementations
                     query.Where(x =>  x.StartTime > sessionFilter.StartedAfter.Value) : query;
 
             query = sessionFilter.CompletedBefore.HasValue ?
-                    query.Where(x => x.FinishTime < sessionFilter.CompletedBefore.Value) : query;
+                    query.Where(x => x.FinishTime.HasValue && x.FinishTime < sessionFilter.CompletedBefore.Value) : query;
 
             query = sessionFilter.CompletedAfter.HasValue ?
-                    query.Where(x => x.FinishTime > sessionFilter.CompletedAfter.Value) : query;
+                    query.Where(x => !x.FinishTime.HasValue || x.FinishTime > sessionFilter.CompletedAfter.Value) : query;
 
             query = sessionFilter.Skip.HasValue ? query.Skip(sessionFilter.Skip.Value) : query;
 
