@@ -62,7 +62,7 @@ namespace SG.TestRunService.ServiceImplementations
 
         public async Task<IReadOnlyList<TestRunSessionResponse>> GetAllSessionsAsync(SessionFilterRequest sessionFilter)
         {
-            var query = _dbService.Query<TestRunSession>();
+            var query = _dbService.Query<TestRunSession>().Reverse();
 
 
             query = sessionFilter.StartedBefore.HasValue ?
