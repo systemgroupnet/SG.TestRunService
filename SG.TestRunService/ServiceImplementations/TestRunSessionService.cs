@@ -79,13 +79,12 @@ namespace SG.TestRunService.ServiceImplementations
 
             var result = await query.MaterializeAllAsync();
 
-            var modifiedResult = sessionFilter.Skip.HasValue ? result.SkipLast(sessionFilter.Skip.Value) : result;
+            var modifiedResult = string.IsNullOrWhiteSpace(sessionFilter.ProjectName) ? result :
+                result.Where(x => string.Equals(x.ProductBuild.TeamProject, sessionFilter.ProjectName, StringComparison.OrdinalIgnoreCase));
+
+            modifiedResult = sessionFilter.Skip.HasValue ? modifiedResult.SkipLast(sessionFilter.Skip.Value) : modifiedResult;
 
             modifiedResult = sessionFilter.Top.HasValue ? modifiedResult.TakeLast(sessionFilter.Top.Value) : modifiedResult;
-
-
-            modifiedResult = string.IsNullOrWhiteSpace(sessionFilter.ProjectName) ? modifiedResult :
-                modifiedResult.Where(x => string.Equals(x.ProductBuild.TeamProject, sessionFilter.ProjectName, StringComparison.OrdinalIgnoreCase));
 
             return modifiedResult.ToList();
         }
