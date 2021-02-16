@@ -64,8 +64,6 @@ namespace SG.TestRunService.ServiceImplementations
         {
             var query = _dbService.Query<TestRunSession>();
 
-            query = string.IsNullOrWhiteSpace(sessionFilter.ProjectName) ? query :
-                query.Where(x => string.Equals(x.ProductBuildInfo.TeamProject, sessionFilter.ProjectName, StringComparison.OrdinalIgnoreCase));
 
             query = sessionFilter.StartedBefore.HasValue ?
                     query.Where(x => x.StartTime < sessionFilter.StartedBefore.Value) : query;
@@ -83,8 +81,12 @@ namespace SG.TestRunService.ServiceImplementations
 
             query = sessionFilter.Top.HasValue ? query.Take(sessionFilter.Top.Value) : query;
 
+            var result = await query.MaterializeAllAsync();
 
-            return await query.MaterializeAllAsync();
+            result = string.IsNullOrWhiteSpace(sessionFilter.ProjectName) ? result :
+                result.Where(x => string.Equals(x.ProductBuild.TeamProject, sessionFilter.ProjectName, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            return result;
         }
 
         public Task<TestRunSessionResponse> GetSessionAsync(int sessionId)
