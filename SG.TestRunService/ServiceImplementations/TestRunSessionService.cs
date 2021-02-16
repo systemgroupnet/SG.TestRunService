@@ -62,7 +62,7 @@ namespace SG.TestRunService.ServiceImplementations
 
         public async Task<IReadOnlyList<TestRunSessionResponse>> GetAllSessionsAsync(SessionFilterRequest sessionFilter)
         {
-            var query = _dbService.Query<TestRunSession>().Reverse();
+            var query = _dbService.Query<TestRunSession>();
 
 
             query = sessionFilter.StartedBefore.HasValue ?
@@ -77,16 +77,17 @@ namespace SG.TestRunService.ServiceImplementations
             query = sessionFilter.CompletedAfter.HasValue ?
                     query.Where(x => !x.FinishTime.HasValue || x.FinishTime > sessionFilter.CompletedAfter.Value) : query;
 
-            query = sessionFilter.Skip.HasValue ? query.Skip(sessionFilter.Skip.Value) : query;
-
-            query = sessionFilter.Top.HasValue ? query.Take(sessionFilter.Top.Value) : query;
-
             var result = await query.MaterializeAllAsync();
 
-            result = string.IsNullOrWhiteSpace(sessionFilter.ProjectName) ? result :
-                result.Where(x => string.Equals(x.ProductBuild.TeamProject, sessionFilter.ProjectName, StringComparison.OrdinalIgnoreCase)).ToList();
+            var modifiedResult = sessionFilter.Skip.HasValue ? result.SkipLast(sessionFilter.Skip.Value) : result;
 
-            return result;
+            modifiedResult = sessionFilter.Top.HasValue ? modifiedResult.TakeLast(sessionFilter.Top.Value) : modifiedResult;
+
+
+            modifiedResult = string.IsNullOrWhiteSpace(sessionFilter.ProjectName) ? modifiedResult :
+                modifiedResult.Where(x => string.Equals(x.ProductBuild.TeamProject, sessionFilter.ProjectName, StringComparison.OrdinalIgnoreCase));
+
+            return modifiedResult.ToList();
         }
 
         public Task<TestRunSessionResponse> GetSessionAsync(int sessionId)
